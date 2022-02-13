@@ -6,9 +6,10 @@ public enum ChefAuthorities implements GrantedAuthority {
 
     ADMIN("ADMIN");
 
-    private String authority;
+    private final String authority;
 
     ChefAuthorities(String authority) {
+        this.authority = authority;
     }
 
     @Override
