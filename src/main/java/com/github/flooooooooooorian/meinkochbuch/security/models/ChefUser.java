@@ -63,22 +63,25 @@ public class ChefUser implements UserDetails {
     @ToString.Exclude
     private List<Recipe> favoriteRecipes;
 
-    //TODO
     @OneToOne
     private OAuthDataApple oAuthDataApple;
     @OneToOne
     private OAuthDataGoogle oAuthDataGoogle;
 
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner", cascade = CascadeType.ALL)
     @ToString.Exclude
     private List<Recipe> recipes;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner", cascade = CascadeType.ALL)
     @ToString.Exclude
     private List<Cookbook> cookbooks;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner", cascade = CascadeType.ALL)
     @ToString.Exclude
     private List<Image> images;
+
+    public static ChefUser ofId(Long userId) {
+        return ChefUser.builder().id(userId).build();
+    }
 }

@@ -32,7 +32,7 @@ public class BaseIngredient {
     @ElementCollection
     private Set<String> synonyms;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "baseIngredient")
     @ToString.Exclude
     private List<Ingredient> ingredients;
 

@@ -24,14 +24,15 @@ public class Cookbook {
     private String name;
     private boolean privacy;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     private List<Recipe> recipes;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id")
     @ToString.Exclude
     private ChefUser owner;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.LAZY)
     private Image thumbnail;
 
     @Override

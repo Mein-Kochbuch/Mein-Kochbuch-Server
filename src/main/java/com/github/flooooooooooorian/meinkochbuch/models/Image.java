@@ -4,10 +4,7 @@ import com.github.flooooooooooorian.meinkochbuch.security.models.ChefUser;
 import lombok.*;
 import org.hibernate.Hibernate;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import java.util.Objects;
 
@@ -24,7 +21,12 @@ public class Image {
     private Long id;
 
     @ManyToOne
+    @JoinColumn(name = "owner_id")
     private ChefUser owner;
+
+    @ManyToOne
+    @JoinColumn(name = "recipe_id")
+    private Recipe recipe;
 
     @NotEmpty
     private String url;

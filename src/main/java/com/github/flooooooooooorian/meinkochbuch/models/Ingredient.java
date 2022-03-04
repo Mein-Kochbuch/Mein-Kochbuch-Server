@@ -21,12 +21,14 @@ public class Ingredient {
     private Long id;
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinColumn(name = "base_ingredient_id")
     private BaseIngredient baseIngredient;
 
     private String text;
     private BigDecimal amount;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "recipe_id")
     @ToString.Exclude
     private Recipe recipe;
 

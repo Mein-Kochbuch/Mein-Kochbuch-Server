@@ -10,6 +10,7 @@ import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.Instant;
 import java.util.List;
 
@@ -20,18 +21,18 @@ public class RecipeService {
     private static final Log LOG = LogFactory.getLog(RecipeService.class);
     private final RecipeRepository recipeRepository;
 
-
     public List<Recipe> getAllRecipes() {
         return recipeRepository.findAll();
     }
 
-    public Recipe getRecipeById(String recipeId) {
-        return recipeRepository.findById(Long.getLong(recipeId)).orElseThrow(() -> new RecipeDoesNotExistException("Recipe with id: " + recipeId + " not found!"));
+    public Recipe getRecipeById(Long recipeId) {
+        return recipeRepository.findById(recipeId).orElseThrow(() -> new RecipeDoesNotExistException("Recipe with id: " + recipeId + " not found!"));
     }
 
-    public Recipe addRecipe(RecipeCreationDto recipeCreationDto, ChefUser user) {
+    @Transactional
+    public Recipe addRecipe(RecipeCreationDto recipeCreationDto, Long userId) {
         Recipe recipeToAdd = Recipe.builder()
-                .owner(user)
+                .owner(ChefUser.ofId(userId))
                 .name(recipeCreationDto.getName())
                 .createdAt(Instant.now())
                 .privacy(recipeCreationDto.isPrivacy())
@@ -44,6 +45,14 @@ public class RecipeService {
                 .build();
 
         LOG.error("Add: " + recipeToAdd);
+//        ChefUser updated = userService.addRecipeToUser(user, recipeToAdd);
+        //LOG.warn("Updated: " + updated);
+//        return recipeToAdd;
+
+//        List<Recipe> recipes = user.getRecipes();
+//        recipes.add(recipeToAdd);
+//        user.setRecipes(recipes);
+
         return recipeRepository.save(recipeToAdd);
     }
 }

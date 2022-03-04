@@ -34,6 +34,7 @@ public class Recipe {
     private Instant createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id")
     @ToString.Exclude
     private ChefUser owner;
 
@@ -44,14 +45,15 @@ public class Recipe {
     private Difficulty difficulty;
     private int portions;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
     private Image thumbnail;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner")
     @ToString.Exclude
     private List<Image> images;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "recipe", cascade = CascadeType.ALL)
     @ToString.Exclude
     private List<Ingredient> ingredients;
 
@@ -63,7 +65,7 @@ public class Recipe {
     @ToString.Exclude
     private List<Tag> tags;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "recipe", cascade = CascadeType.ALL)
     @ToString.Exclude
     private List<Rating> ratings;
 

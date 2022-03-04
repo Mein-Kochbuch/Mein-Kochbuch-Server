@@ -17,7 +17,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -35,6 +34,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 Claims claims = this.jwtUtilsService.parseClaim(token);
                 setSecurityContext(claims.getSubject());
             } catch (Exception e) {
+                e.printStackTrace();
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN, "invalid token");
             }
         }
@@ -42,8 +42,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     }
 
     private void setSecurityContext(String subject) {
-        Optional<ChefUser> userOptional = userSecurityService.findChefUserByEmail(subject);
-        ChefUser user = userOptional.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
+        ChefUser user = userSecurityService.loadUserByUsername(subject);
 
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(user, "", user.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(token);

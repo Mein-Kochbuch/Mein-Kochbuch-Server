@@ -27,10 +27,12 @@ public class Rating {
     private BigDecimal value;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "recipe_id")
     @ToString.Exclude
     private Recipe recipe;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     @ToString.Exclude
     private ChefUser user;
 

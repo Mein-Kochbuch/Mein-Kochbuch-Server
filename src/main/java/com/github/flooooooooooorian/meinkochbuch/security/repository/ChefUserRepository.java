@@ -10,4 +10,6 @@ import java.util.Optional;
 public interface ChefUserRepository extends PagingAndSortingRepository<ChefUser, String> {
 
     Optional<ChefUser> findChefUserByUsername(String username);
+
+    Optional<ChefUser> findChefUserById(Long id);
 }

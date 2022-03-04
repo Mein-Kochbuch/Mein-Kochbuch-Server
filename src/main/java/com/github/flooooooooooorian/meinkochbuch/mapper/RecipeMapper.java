@@ -1,23 +1,15 @@
 package com.github.flooooooooooorian.meinkochbuch.mapper;
 
-import com.github.flooooooooooorian.meinkochbuch.dtos.ChefUserPreviewDto;
 import com.github.flooooooooooorian.meinkochbuch.dtos.RecipeDto;
 import com.github.flooooooooooorian.meinkochbuch.dtos.RecipePreviewDto;
 import com.github.flooooooooooorian.meinkochbuch.models.Recipe;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
-@Service
-@RequiredArgsConstructor
-public class RecipeMapper {
+public interface RecipeMapper {
 
-    public RecipePreviewDto convertRecipeToRecipeReviewDto(Recipe recipe) {
+    public static RecipePreviewDto recipeToRecipePreviewDto(Recipe recipe) {
         return RecipePreviewDto.builder()
                 .id(recipe.getId())
-                .owner(ChefUserPreviewDto.builder()
-                        .id(recipe.getOwner().getId())
-                        .name(recipe.getOwner().getName())
-                        .build())
+                .owner(ChefUserMapper.chefUserToChefUserPreviewDto(recipe.getOwner()))
                 .name(recipe.getName())
                 .ratingAverage(recipe.getRatingAverage())
                 .ratingCount(recipe.getRatings().size())
@@ -25,13 +17,10 @@ public class RecipeMapper {
                 .build();
     }
 
-    public RecipeDto convertRecipeToRecipeDto(Recipe recipe) {
+    public static RecipeDto recipeToRecipeDto(Recipe recipe) {
         return RecipeDto.builder()
                 .id(recipe.getId())
-                .owner(ChefUserPreviewDto.builder()
-                        .id(recipe.getOwner().getId())
-                        .name(recipe.getOwner().getName())
-                        .build())
+                .owner(ChefUserMapper.chefUserToChefUserPreviewDto(recipe.getOwner()))
                 .name(recipe.getName())
                 .createdAt(recipe.getCreatedAt())
                 .instruction(recipe.getInstruction())
