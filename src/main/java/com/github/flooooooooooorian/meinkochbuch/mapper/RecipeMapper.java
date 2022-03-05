@@ -2,7 +2,8 @@ package com.github.flooooooooooorian.meinkochbuch.mapper;
 
 import com.github.flooooooooooorian.meinkochbuch.dtos.RecipeDto;
 import com.github.flooooooooooorian.meinkochbuch.dtos.RecipePreviewDto;
-import com.github.flooooooooooorian.meinkochbuch.models.Recipe;
+import com.github.flooooooooooorian.meinkochbuch.models.recipe.Recipe;
+import com.github.flooooooooooorian.meinkochbuch.models.tag.RecipeTagging;
 
 public interface RecipeMapper {
 
@@ -32,7 +33,7 @@ public interface RecipeMapper {
                 .privacy(recipe.isPrivacy())
                 .ratingAverage(recipe.getRatingAverage())
                 .ratingCount(recipe.getRatings() != null ? recipe.getRatings().size() : 0)
-                .tags(recipe.getTags())
+                .tags(recipe.getTaggings().stream().map(RecipeTagging::getTag).toList())
                 .ratingAverage(recipe.getRatingAverage())
                 .thumbnail(recipe.getThumbnail())
                 .build();

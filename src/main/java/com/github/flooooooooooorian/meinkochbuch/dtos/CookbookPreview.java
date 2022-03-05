@@ -1,6 +1,6 @@
 package com.github.flooooooooooorian.meinkochbuch.dtos;
 
-import com.github.flooooooooooorian.meinkochbuch.models.Image;
+import com.github.flooooooooooorian.meinkochbuch.models.image.Image;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

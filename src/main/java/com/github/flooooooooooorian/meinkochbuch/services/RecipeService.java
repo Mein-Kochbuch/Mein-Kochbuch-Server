@@ -2,7 +2,7 @@ package com.github.flooooooooooorian.meinkochbuch.services;
 
 import com.github.flooooooooooorian.meinkochbuch.dtos.RecipeCreationDto;
 import com.github.flooooooooooorian.meinkochbuch.exceptions.RecipeDoesNotExistException;
-import com.github.flooooooooooorian.meinkochbuch.models.Recipe;
+import com.github.flooooooooooorian.meinkochbuch.models.recipe.Recipe;
 import com.github.flooooooooooorian.meinkochbuch.repository.RecipeRepository;
 import com.github.flooooooooooorian.meinkochbuch.security.models.ChefUser;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +41,6 @@ public class RecipeService {
                 .ingredients(recipeCreationDto.getIngredients())
                 .instruction(recipeCreationDto.getInstruction())
                 .portions(recipeCreationDto.getPortions())
-                .tags(recipeCreationDto.getTags())
                 .build();
 
         LOG.error("Add: " + recipeToAdd);

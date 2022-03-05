@@ -1,7 +1,7 @@
 package com.github.flooooooooooorian.meinkochbuch.services;
 
 import com.github.flooooooooooorian.meinkochbuch.exceptions.UserDoesNotExistsException;
-import com.github.flooooooooooorian.meinkochbuch.models.Recipe;
+import com.github.flooooooooooorian.meinkochbuch.models.recipe.Recipe;
 import com.github.flooooooooooorian.meinkochbuch.security.dtos.LoginJWTDto;
 import com.github.flooooooooooorian.meinkochbuch.security.dtos.UserLoginDto;
 import com.github.flooooooooooorian.meinkochbuch.security.models.ChefUser;

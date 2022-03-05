@@ -1,8 +1,12 @@
-package com.github.flooooooooooorian.meinkochbuch.models;
+package com.github.flooooooooooorian.meinkochbuch.models.recipe;
 
+import com.github.flooooooooooorian.meinkochbuch.models.image.Image;
+import com.github.flooooooooooorian.meinkochbuch.models.rating.Rating;
+import com.github.flooooooooooorian.meinkochbuch.models.recipe.difficulty.Difficulty;
+import com.github.flooooooooooorian.meinkochbuch.models.recipe.ingredient.Ingredient;
+import com.github.flooooooooooorian.meinkochbuch.models.tag.RecipeTagging;
 import com.github.flooooooooooorian.meinkochbuch.security.models.ChefUser;
 import lombok.*;
-import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
@@ -12,11 +16,9 @@ import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.time.Instant;
 import java.util.List;
-import java.util.Objects;
 
 @Getter
 @Setter
-@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -33,9 +35,9 @@ public class Recipe {
     @NotNull
     private Instant createdAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne()
     @JoinColumn(name = "owner_id")
-    @ToString.Exclude
+
     private ChefUser owner;
 
     @NotEmpty
@@ -45,34 +47,25 @@ public class Recipe {
     private Difficulty difficulty;
     private int portions;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @ToString.Exclude
+    @OneToOne()
+
     private Image thumbnail;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner")
-    @ToString.Exclude
+    @OneToMany(mappedBy = "owner")
     private List<Image> images;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "recipe", cascade = CascadeType.ALL)
-    @ToString.Exclude
+    @OneToMany()
     private List<Ingredient> ingredients;
 
     private boolean privacy;
 
     private BigInteger relevance;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @ToString.Exclude
-    private List<Tag> tags;
+    @OneToMany(mappedBy = "recipe")
+    private List<RecipeTagging> taggings;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "recipe", cascade = CascadeType.ALL)
-    @ToString.Exclude
+    @OneToMany(mappedBy = "recipe")
     private List<Rating> ratings;
-
-    @ManyToMany(fetch = FetchType.LAZY)
-    @ToString.Exclude
-    private List<Cookbook> cookbooks;
-
 
     public BigDecimal getRatingAverage() {
         if (this.getRatings() == null || this.getRatings().isEmpty()) {
@@ -83,18 +76,5 @@ public class Recipe {
             avgRating = avgRating.add(rating.getValue());
         }
         return avgRating.divide(BigDecimal.valueOf(this.ratings.size()), RoundingMode.UNNECESSARY);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        Recipe recipe = (Recipe) o;
-        return id != null && Objects.equals(id, recipe.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
     }
 }

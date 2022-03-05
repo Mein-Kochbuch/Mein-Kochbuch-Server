@@ -1,8 +1,8 @@
 package com.github.flooooooooooorian.meinkochbuch.services;
 
 import com.github.flooooooooooorian.meinkochbuch.dtos.RecipeCreationDto;
-import com.github.flooooooooooorian.meinkochbuch.models.Difficulty;
-import com.github.flooooooooooorian.meinkochbuch.models.Recipe;
+import com.github.flooooooooooorian.meinkochbuch.models.recipe.Recipe;
+import com.github.flooooooooooorian.meinkochbuch.models.recipe.difficulty.Difficulty;
 import com.github.flooooooooooorian.meinkochbuch.repository.RecipeRepository;
 import com.github.flooooooooooorian.meinkochbuch.security.models.ChefUser;
 import org.hamcrest.Matchers;
@@ -62,7 +62,6 @@ class RecipeServiceTest {
                 .difficulty(Difficulty.EXPERT)
                 .createdAt(Instant.now())
                 .ingredients(List.of())
-                .tags(List.of())
                 .build();
 
         Recipe r2 = Recipe.builder()
@@ -75,7 +74,6 @@ class RecipeServiceTest {
                 .difficulty(Difficulty.EXPERT)
                 .createdAt(Instant.now())
                 .ingredients(List.of())
-                .tags(List.of())
                 .build();
 
         when(recipeRepository.findAll()).thenReturn(List.of(r1, r2));
@@ -114,7 +112,6 @@ class RecipeServiceTest {
                 .difficulty(Difficulty.EXPERT)
                 .createdAt(Instant.now())
                 .ingredients(List.of())
-                .tags(List.of())
                 .build();
 
         when(recipeRepository.findById(1L)).thenReturn(Optional.ofNullable(r1));
@@ -152,7 +149,6 @@ class RecipeServiceTest {
                 .duration(40)
                 .difficulty(Difficulty.EXPERT)
                 .ingredients(List.of())
-                .tags(List.of())
                 .build();
 
         Recipe r1Result = Recipe.builder()
@@ -166,7 +162,6 @@ class RecipeServiceTest {
                 .difficulty(Difficulty.EXPERT)
                 .createdAt(Instant.now())
                 .ingredients(List.of())
-                .tags(List.of())
                 .build();
 
         when(recipeRepository.save(any())).thenReturn(r1Result);
