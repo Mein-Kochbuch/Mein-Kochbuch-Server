@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface ChefUserRepository extends PagingAndSortingRepository<ChefUser, String> {
+public interface ChefUserRepository extends PagingAndSortingRepository<ChefUser, Long> {
 
     Optional<ChefUser> findChefUserByUsername(String username);
 
