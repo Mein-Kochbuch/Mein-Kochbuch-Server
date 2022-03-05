@@ -8,8 +8,6 @@ import com.github.flooooooooooorian.meinkochbuch.security.models.ChefUser;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -32,9 +30,6 @@ class RecipeServiceTest {
 
     @InjectMocks
     private RecipeService recipeService;
-
-    @Captor
-    private ArgumentCaptor<Recipe> captor;
 
     @Test
     void getAllRecipes() {

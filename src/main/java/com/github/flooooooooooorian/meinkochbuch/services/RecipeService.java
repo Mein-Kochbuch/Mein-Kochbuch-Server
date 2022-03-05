@@ -43,15 +43,6 @@ public class RecipeService {
                 .portions(recipeCreationDto.getPortions())
                 .build();
 
-        LOG.error("Add: " + recipeToAdd);
-//        ChefUser updated = userService.addRecipeToUser(user, recipeToAdd);
-        //LOG.warn("Updated: " + updated);
-//        return recipeToAdd;
-
-//        List<Recipe> recipes = user.getRecipes();
-//        recipes.add(recipeToAdd);
-//        user.setRecipes(recipes);
-
         return recipeRepository.save(recipeToAdd);
     }
 }
