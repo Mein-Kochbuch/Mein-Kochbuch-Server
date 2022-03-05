@@ -1,9 +1,11 @@
 package com.github.flooooooooooorian.meinkochbuch.mapper;
 
-import com.github.flooooooooooorian.meinkochbuch.dtos.RecipeDto;
-import com.github.flooooooooooorian.meinkochbuch.dtos.RecipePreviewDto;
+import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipeDto;
+import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipePreviewDto;
 import com.github.flooooooooooorian.meinkochbuch.models.recipe.Recipe;
 import com.github.flooooooooooorian.meinkochbuch.models.tag.RecipeTagging;
+
+import java.util.List;
 
 public interface RecipeMapper {
 
@@ -33,7 +35,9 @@ public interface RecipeMapper {
                 .privacy(recipe.isPrivacy())
                 .ratingAverage(recipe.getRatingAverage())
                 .ratingCount(recipe.getRatings() != null ? recipe.getRatings().size() : 0)
-                .tags(recipe.getTaggings().stream().map(RecipeTagging::getTag).toList())
+                .tags(recipe.getTaggings() != null
+                        ? recipe.getTaggings().stream().map(RecipeTagging::getTag).toList()
+                        : List.of())
                 .ratingAverage(recipe.getRatingAverage())
                 .thumbnail(recipe.getThumbnail())
                 .build();

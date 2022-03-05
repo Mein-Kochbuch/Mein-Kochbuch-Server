@@ -1,6 +1,6 @@
 package com.github.flooooooooooorian.meinkochbuch.services;
 
-import com.github.flooooooooooorian.meinkochbuch.dtos.RecipeCreationDto;
+import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipeCreationDto;
 import com.github.flooooooooooorian.meinkochbuch.models.recipe.Recipe;
 import com.github.flooooooooooorian.meinkochbuch.models.recipe.difficulty.Difficulty;
 import com.github.flooooooooooorian.meinkochbuch.repository.RecipeRepository;

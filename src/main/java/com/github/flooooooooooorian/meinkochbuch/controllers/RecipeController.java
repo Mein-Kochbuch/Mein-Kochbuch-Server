@@ -1,8 +1,8 @@
 package com.github.flooooooooooorian.meinkochbuch.controllers;
 
-import com.github.flooooooooooorian.meinkochbuch.dtos.RecipeCreationDto;
-import com.github.flooooooooooorian.meinkochbuch.dtos.RecipeDto;
-import com.github.flooooooooooorian.meinkochbuch.dtos.RecipePreviewDto;
+import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipeCreationDto;
+import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipeDto;
+import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipePreviewDto;
 import com.github.flooooooooooorian.meinkochbuch.mapper.RecipeMapper;
 import com.github.flooooooooooorian.meinkochbuch.security.models.ChefUser;
 import com.github.flooooooooooorian.meinkochbuch.services.RecipeService;

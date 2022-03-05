@@ -1,4 +1,4 @@
-package com.github.flooooooooooorian.meinkochbuch.dtos;
+package com.github.flooooooooooorian.meinkochbuch.dtos.recipe;
 
 import com.github.flooooooooooorian.meinkochbuch.models.recipe.difficulty.Difficulty;
 import com.github.flooooooooooorian.meinkochbuch.models.recipe.ingredient.Ingredient;

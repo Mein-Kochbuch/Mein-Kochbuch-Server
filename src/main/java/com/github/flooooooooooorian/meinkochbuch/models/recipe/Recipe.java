@@ -21,7 +21,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@Builder(toBuilder = true)
 @Entity
 public class Recipe {
 
@@ -37,7 +37,6 @@ public class Recipe {
 
     @ManyToOne()
     @JoinColumn(name = "owner_id")
-
     private ChefUser owner;
 
     @NotEmpty
@@ -48,13 +47,12 @@ public class Recipe {
     private int portions;
 
     @OneToOne()
-
     private Image thumbnail;
 
     @OneToMany(mappedBy = "owner")
     private List<Image> images;
 
-    @OneToMany()
+    @OneToMany(cascade = CascadeType.ALL)
     private List<Ingredient> ingredients;
 
     private boolean privacy;

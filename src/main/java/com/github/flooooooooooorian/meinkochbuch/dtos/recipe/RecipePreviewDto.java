@@ -1,5 +1,6 @@
-package com.github.flooooooooooorian.meinkochbuch.dtos;
+package com.github.flooooooooooorian.meinkochbuch.dtos.recipe;
 
+import com.github.flooooooooooorian.meinkochbuch.dtos.chefuser.ChefUserPreviewDto;
 import com.github.flooooooooooorian.meinkochbuch.models.image.Image;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,6 +1,6 @@
 package com.github.flooooooooooorian.meinkochbuch.mapper;
 
-import com.github.flooooooooooorian.meinkochbuch.dtos.CookbookPreview;
+import com.github.flooooooooooorian.meinkochbuch.dtos.cookbook.CookbookPreview;
 import com.github.flooooooooooorian.meinkochbuch.models.cookbook.Cookbook;
 
 public interface CookbookMapper {

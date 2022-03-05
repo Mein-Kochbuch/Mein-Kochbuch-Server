@@ -1,7 +1,7 @@
 package com.github.flooooooooooorian.meinkochbuch.mapper;
 
-import com.github.flooooooooooorian.meinkochbuch.dtos.ChefUserPreviewDto;
-import com.github.flooooooooooorian.meinkochbuch.dtos.ChefUserProfileDto;
+import com.github.flooooooooooorian.meinkochbuch.dtos.chefuser.ChefUserPreviewDto;
+import com.github.flooooooooooorian.meinkochbuch.dtos.chefuser.ChefUserProfileDto;
 import com.github.flooooooooooorian.meinkochbuch.security.models.ChefUser;
 
 public interface ChefUserMapper {
