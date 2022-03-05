@@ -1,7 +1,7 @@
 package com.github.flooooooooooorian.meinkochbuch.dtos.recipe;
 
+import com.github.flooooooooooorian.meinkochbuch.dtos.ImageDto;
 import com.github.flooooooooooorian.meinkochbuch.dtos.chefuser.ChefUserPreviewDto;
-import com.github.flooooooooooorian.meinkochbuch.models.image.Image;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,7 +19,7 @@ public class RecipePreviewDto {
     private ChefUserPreviewDto owner;
 
     private String name;
-    private Image thumbnail;
+    private ImageDto thumbnail;
     private BigDecimal ratingAverage;
     private int ratingCount;
 

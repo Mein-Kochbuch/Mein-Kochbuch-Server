@@ -4,7 +4,6 @@ package com.github.flooooooooooorian.meinkochbuch.models.recipe.ingredient;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -27,7 +26,4 @@ public class BaseIngredient {
 
     @ElementCollection
     private Set<String> synonyms;
-
-    @OneToMany(mappedBy = "baseIngredient")
-    private List<Ingredient> ingredients;
 }

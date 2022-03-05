@@ -12,7 +12,7 @@ public interface CookbookMapper {
                 .recipes(cookbook.getContents().stream().map(cookbookContent -> RecipeMapper.recipeToRecipePreviewDto(cookbookContent.getRecipe())).toList())
                 .owner(ChefUserMapper.chefUserToChefUserPreviewDto(cookbook.getOwner()))
                 .privacy(cookbook.isPrivacy())
-                .thumbnail(cookbook.getThumbnail())
+                .thumbnail(ImageMapper.imageToImageDto(cookbook.getThumbnail()))
                 .build();
     }
 }

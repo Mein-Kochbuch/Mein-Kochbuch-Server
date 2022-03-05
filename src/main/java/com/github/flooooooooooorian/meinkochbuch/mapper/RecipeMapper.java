@@ -9,18 +9,18 @@ import java.util.List;
 
 public interface RecipeMapper {
 
-    public static RecipePreviewDto recipeToRecipePreviewDto(Recipe recipe) {
+    static RecipePreviewDto recipeToRecipePreviewDto(Recipe recipe) {
         return RecipePreviewDto.builder()
                 .id(recipe.getId())
                 .owner(ChefUserMapper.chefUserToChefUserPreviewDto(recipe.getOwner()))
                 .name(recipe.getName())
                 .ratingAverage(recipe.getRatingAverage())
                 .ratingCount(recipe.getRatings().size())
-                .thumbnail(recipe.getThumbnail())
+                .thumbnail(ImageMapper.imageToImageDto(recipe.getThumbnail()))
                 .build();
     }
 
-    public static RecipeDto recipeToRecipeDto(Recipe recipe) {
+    static RecipeDto recipeToRecipeDto(Recipe recipe) {
         return RecipeDto.builder()
                 .id(recipe.getId())
                 .owner(ChefUserMapper.chefUserToChefUserPreviewDto(recipe.getOwner()))
@@ -30,7 +30,9 @@ public interface RecipeMapper {
                 .duration(recipe.getDuration())
                 .difficulty(recipe.getDifficulty())
                 .portions(recipe.getPortions())
-                .images(recipe.getImages())
+                .images(recipe.getImages() != null
+                        ? recipe.getImages().stream().map(image -> ImageMapper.imageToImageDto(recipe.getThumbnail())).toList()
+                        : List.of())
                 .ingredients(recipe.getIngredients())
                 .privacy(recipe.isPrivacy())
                 .ratingAverage(recipe.getRatingAverage())
@@ -39,7 +41,7 @@ public interface RecipeMapper {
                         ? recipe.getTaggings().stream().map(RecipeTagging::getTag).toList()
                         : List.of())
                 .ratingAverage(recipe.getRatingAverage())
-                .thumbnail(recipe.getThumbnail())
+                .thumbnail(ImageMapper.imageToImageDto(recipe.getThumbnail()))
                 .build();
     }
 }

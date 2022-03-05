@@ -1,8 +1,8 @@
 package com.github.flooooooooooorian.meinkochbuch.dtos.cookbook;
 
+import com.github.flooooooooooorian.meinkochbuch.dtos.ImageDto;
 import com.github.flooooooooooorian.meinkochbuch.dtos.chefuser.ChefUserPreviewDto;
 import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipePreviewDto;
-import com.github.flooooooooooorian.meinkochbuch.models.image.Image;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,5 +23,5 @@ public class CookbookPreview {
 
     private ChefUserPreviewDto owner;
 
-    private Image thumbnail;
+    private ImageDto thumbnail;
 }
