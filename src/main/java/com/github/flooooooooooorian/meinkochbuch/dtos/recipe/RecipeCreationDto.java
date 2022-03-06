@@ -1,8 +1,7 @@
-package com.github.flooooooooooorian.meinkochbuch.dtos;
+package com.github.flooooooooooorian.meinkochbuch.dtos.recipe;
 
-import com.github.flooooooooooorian.meinkochbuch.models.Difficulty;
-import com.github.flooooooooooorian.meinkochbuch.models.Ingredient;
-import com.github.flooooooooooorian.meinkochbuch.models.Tag;
+import com.github.flooooooooooorian.meinkochbuch.models.recipe.difficulty.Difficulty;
+import com.github.flooooooooooorian.meinkochbuch.models.recipe.ingredient.Ingredient;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,5 +22,4 @@ public class RecipeCreationDto {
     private int portions;
     private List<Ingredient> ingredients;
     private boolean privacy;
-    private List<Tag> tags;
 }

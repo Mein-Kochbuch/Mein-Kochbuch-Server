@@ -1,4 +1,4 @@
-package com.github.flooooooooooorian.meinkochbuch.models;
+package com.github.flooooooooooorian.meinkochbuch.models.recipe.difficulty;
 
 public enum Difficulty {
     VERY_EASY,

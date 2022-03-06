@@ -1,6 +1,6 @@
 package com.github.flooooooooooorian.meinkochbuch.repository;
 
-import com.github.flooooooooooorian.meinkochbuch.models.Recipe;
+import com.github.flooooooooooorian.meinkochbuch.models.recipe.Recipe;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

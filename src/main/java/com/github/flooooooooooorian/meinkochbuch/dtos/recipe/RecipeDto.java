@@ -1,9 +1,10 @@
-package com.github.flooooooooooorian.meinkochbuch.dtos;
+package com.github.flooooooooooorian.meinkochbuch.dtos.recipe;
 
-import com.github.flooooooooooorian.meinkochbuch.models.Difficulty;
-import com.github.flooooooooooorian.meinkochbuch.models.Image;
-import com.github.flooooooooooorian.meinkochbuch.models.Ingredient;
-import com.github.flooooooooooorian.meinkochbuch.models.Tag;
+import com.github.flooooooooooorian.meinkochbuch.dtos.ImageDto;
+import com.github.flooooooooooorian.meinkochbuch.dtos.chefuser.ChefUserPreviewDto;
+import com.github.flooooooooooorian.meinkochbuch.models.recipe.difficulty.Difficulty;
+import com.github.flooooooooooorian.meinkochbuch.models.recipe.ingredient.Ingredient;
+import com.github.flooooooooooorian.meinkochbuch.models.tag.Tag;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -27,8 +28,8 @@ public class RecipeDto {
     private int duration;
     private Difficulty difficulty;
     private int portions;
-    private Image thumbnail;
-    private List<Image> images;
+    private ImageDto thumbnail;
+    private List<ImageDto> images;
     private List<Ingredient> ingredients;
     private boolean privacy;
     private BigDecimal ratingAverage;

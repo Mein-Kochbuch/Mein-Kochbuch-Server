@@ -1,8 +1,8 @@
 package com.github.flooooooooooorian.meinkochbuch.security.models;
 
-import com.github.flooooooooooorian.meinkochbuch.models.Cookbook;
-import com.github.flooooooooooorian.meinkochbuch.models.Image;
-import com.github.flooooooooooorian.meinkochbuch.models.Recipe;
+import com.github.flooooooooooorian.meinkochbuch.models.cookbook.Cookbook;
+import com.github.flooooooooooorian.meinkochbuch.models.image.Image;
+import com.github.flooooooooooorian.meinkochbuch.models.recipe.Recipe;
 import com.github.flooooooooooorian.meinkochbuch.security.models.oauth.OAuthDataApple;
 import com.github.flooooooooooorian.meinkochbuch.security.models.oauth.OAuthDataGoogle;
 import lombok.*;
@@ -18,7 +18,6 @@ import java.util.Set;
 
 @Getter
 @Setter
-@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -59,26 +58,25 @@ public class ChefUser implements UserDetails {
     private String name;
 
     @NotNull
-    @ManyToMany(fetch = FetchType.LAZY)
-    @ToString.Exclude
+    @ManyToMany()
     private List<Recipe> favoriteRecipes;
 
-    //TODO
     @OneToOne
     private OAuthDataApple oAuthDataApple;
     @OneToOne
     private OAuthDataGoogle oAuthDataGoogle;
 
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @ToString.Exclude
+    @OneToMany(mappedBy = "owner")
     private List<Recipe> recipes;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @ToString.Exclude
+    @OneToMany(mappedBy = "owner")
     private List<Cookbook> cookbooks;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @ToString.Exclude
+    @OneToMany(mappedBy = "owner")
     private List<Image> images;
+
+    public static ChefUser ofId(Long userId) {
+        return ChefUser.builder().id(userId).build();
+    }
 }
