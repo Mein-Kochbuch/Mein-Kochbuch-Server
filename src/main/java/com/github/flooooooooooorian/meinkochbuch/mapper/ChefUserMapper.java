@@ -4,15 +4,21 @@ import com.github.flooooooooooorian.meinkochbuch.dtos.chefuser.ChefUserPreviewDt
 import com.github.flooooooooooorian.meinkochbuch.dtos.chefuser.ChefUserProfileDto;
 import com.github.flooooooooooorian.meinkochbuch.security.models.ChefUser;
 
+import java.util.List;
+
 public interface ChefUserMapper {
 
 
-    static ChefUserProfileDto chefUserToChefUserDto(ChefUser chefUser) {
+    static ChefUserProfileDto chefUserToChefUserProfileDto(ChefUser chefUser) {
         return ChefUserProfileDto.builder()
                 .id(chefUser.getId())
                 .name(chefUser.getName())
-                .recipes(chefUser.getRecipes().stream().map(RecipeMapper::recipeToRecipePreviewDto).toList())
-                .cookbooks(chefUser.getCookbooks().stream().map(CookbookMapper::cookbookToCookbookPreview).toList())
+                .recipes(chefUser.getRecipes() != null
+                        ? chefUser.getRecipes().stream().map(RecipeMapper::recipeToRecipePreviewDto).toList()
+                        : List.of())
+                .cookbooks(chefUser.getCookbooks() != null
+                        ? chefUser.getCookbooks().stream().map(CookbookMapper::cookbookToCookbookPreview).toList()
+                        : List.of())
                 .build();
     }
 
