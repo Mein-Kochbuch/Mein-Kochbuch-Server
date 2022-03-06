@@ -15,8 +15,12 @@ public interface RecipeMapper {
                 .owner(ChefUserMapper.chefUserToChefUserPreviewDto(recipe.getOwner()))
                 .name(recipe.getName())
                 .ratingAverage(recipe.getRatingAverage())
-                .ratingCount(recipe.getRatings().size())
-                .thumbnail(ImageMapper.imageToImageDto(recipe.getThumbnail()))
+                .ratingCount(recipe.getRatings() != null
+                        ? recipe.getRatings().size()
+                        : 0)
+                .thumbnail(recipe.getThumbnail() != null
+                        ? ImageMapper.imageToImageDto(recipe.getThumbnail())
+                        : null)
                 .build();
     }
 
@@ -25,15 +29,16 @@ public interface RecipeMapper {
                 .id(recipe.getId())
                 .owner(ChefUserMapper.chefUserToChefUserPreviewDto(recipe.getOwner()))
                 .name(recipe.getName())
-                .createdAt(recipe.getCreatedAt())
                 .instruction(recipe.getInstruction())
                 .duration(recipe.getDuration())
                 .difficulty(recipe.getDifficulty())
                 .portions(recipe.getPortions())
                 .images(recipe.getImages() != null
-                        ? recipe.getImages().stream().map(image -> ImageMapper.imageToImageDto(recipe.getThumbnail())).toList()
+                        ? recipe.getImages().stream().map(ImageMapper::imageToImageDto).toList()
                         : List.of())
-                .ingredients(recipe.getIngredients())
+                .ingredients(recipe.getIngredients() != null
+                        ? recipe.getIngredients()
+                        : List.of())
                 .privacy(recipe.isPrivacy())
                 .ratingAverage(recipe.getRatingAverage())
                 .ratingCount(recipe.getRatings() != null ? recipe.getRatings().size() : 0)
@@ -41,7 +46,9 @@ public interface RecipeMapper {
                         ? recipe.getTaggings().stream().map(RecipeTagging::getTag).toList()
                         : List.of())
                 .ratingAverage(recipe.getRatingAverage())
-                .thumbnail(ImageMapper.imageToImageDto(recipe.getThumbnail()))
+                .thumbnail(recipe.getThumbnail() != null
+                        ? ImageMapper.imageToImageDto(recipe.getThumbnail())
+                        : null)
                 .build();
     }
 }

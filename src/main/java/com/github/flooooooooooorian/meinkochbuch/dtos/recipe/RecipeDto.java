@@ -11,7 +11,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.Instant;
 import java.util.List;
 
 @Data
@@ -22,7 +21,6 @@ public class RecipeDto {
 
     private Long id;
     private String name;
-    private Instant createdAt;
     private ChefUserPreviewDto owner;
     private String instruction;
     private int duration;
