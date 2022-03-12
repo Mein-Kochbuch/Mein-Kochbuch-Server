@@ -8,7 +8,6 @@ public interface ImageMapper {
     static ImageDto imageToImageDto(Image image) {
         return ImageDto.builder()
                 .id(image.getId())
-                .url(image.getUrl())
                 .build();
     }
 }

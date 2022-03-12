@@ -25,12 +25,12 @@ public class RecipeService {
         return recipeRepository.findAll();
     }
 
-    public Recipe getRecipeById(Long recipeId) {
+    public Recipe getRecipeById(String recipeId) {
         return recipeRepository.findById(recipeId).orElseThrow(() -> new RecipeDoesNotExistException("Recipe with id: " + recipeId + " not found!"));
     }
 
     @Transactional
-    public Recipe addRecipe(RecipeCreationDto recipeCreationDto, Long userId) {
+    public Recipe addRecipe(RecipeCreationDto recipeCreationDto, String userId) {
         Recipe recipeToAdd = Recipe.builder()
                 .owner(ChefUser.ofId(userId))
                 .name(recipeCreationDto.getName())

@@ -33,17 +33,16 @@ class RecipeMapperTest {
 
         //THEN
         RecipePreviewDto expected = RecipePreviewDto.builder()
-                .id(1L)
+                .id("1")
                 .name("test-name")
                 .owner(ChefUserPreviewDto.builder()
-                        .id(1L)
+                        .id("1")
                         .name("test-name")
                         .build())
                 .ratingAverage(BigDecimal.valueOf(4L))
                 .ratingCount(1)
                 .thumbnail(ImageDto.builder()
-                        .id(1L)
-                        .url("test-thumbnail-url")
+                        .id("1")
                         .build())
                 .build();
         assertThat(result, Matchers.is(expected));
@@ -53,11 +52,11 @@ class RecipeMapperTest {
     void recipeWithNullToRecipePreviewDto() {
         //GIVEN
         Recipe recipe = Recipe.builder()
-                .id(1L)
+                .id("1")
                 .name("test-name")
                 .createdAt(Instant.now())
                 .owner(ChefUser.builder()
-                        .id(1L)
+                        .id("1")
                         .name("test-name")
                         .username("test-username")
                         .password("test-password")
@@ -75,10 +74,10 @@ class RecipeMapperTest {
 
         //THEN
         RecipePreviewDto expected = RecipePreviewDto.builder()
-                .id(1L)
+                .id("1")
                 .name("test-name")
                 .owner(ChefUserPreviewDto.builder()
-                        .id(1L)
+                        .id("1")
                         .name("test-name")
                         .build())
                 .ratingAverage(BigDecimal.ZERO)
@@ -97,10 +96,10 @@ class RecipeMapperTest {
 
         //THEN
         RecipeDto expected = RecipeDto.builder()
-                .id(1L)
+                .id("1")
                 .name("test-name")
                 .owner(ChefUserPreviewDto.builder()
-                        .id(1L)
+                        .id("1")
                         .name("test-name")
                         .build())
                 .instruction("test-instructions")
@@ -108,19 +107,17 @@ class RecipeMapperTest {
                 .difficulty(Difficulty.HARD)
                 .portions(2)
                 .thumbnail(ImageDto.builder()
-                        .id(1L)
-                        .url("test-thumbnail-url")
+                        .id("1")
                         .build())
                 .images(List.of(ImageDto.builder()
-                        .id(2L)
-                        .url("test-img-url")
+                        .id("2")
                         .build()))
                 .ingredients(List.of(Ingredient.builder()
-                        .id(1L)
+                        .id("1")
                         .amount(BigDecimal.valueOf(20L))
                         .text("test-ingredient-test")
                         .baseIngredient(BaseIngredient.builder()
-                                .id(1L)
+                                .id("1")
                                 .name("test-baseIngredient")
                                 .children(Set.of(BaseIngredient.builder()
                                         .build()))
@@ -130,7 +127,7 @@ class RecipeMapperTest {
                         .build()))
                 .privacy(false)
                 .tags(List.of(Tag.builder()
-                        .id(1L)
+                        .id("1")
                         .name("test-tag")
                         .build()))
                 .ratingCount(1)
@@ -139,9 +136,6 @@ class RecipeMapperTest {
 
 
         assertThat(result, Matchers.is(expected));
-        for (int i = 0; i < result.getImages().size(); i++) {
-            assertThat(result.getImages().get(i).getUrl(), Matchers.is(expected.getImages().get(i).getUrl()));
-        }
         for (int i = 0; i < result.getIngredients().size(); i++) {
             assertThat(result.getIngredients().get(i), Matchers.is(expected.getIngredients().get(i)));
             assertThat(result.getIngredients().get(i).getBaseIngredient(), Matchers.is(expected.getIngredients().get(i).getBaseIngredient()));
@@ -153,11 +147,11 @@ class RecipeMapperTest {
     void recipeWithNullValuesToRecipeDto() {
         //GIVEN
         Recipe recipe = Recipe.builder()
-                .id(1L)
+                .id("1")
                 .name("test-name")
                 .createdAt(Instant.now())
                 .owner(ChefUser.builder()
-                        .id(1L)
+                        .id("1")
                         .name("test-name")
                         .username("test-username")
                         .password("test-password")
@@ -175,10 +169,10 @@ class RecipeMapperTest {
 
         //THEN
         RecipeDto expected = RecipeDto.builder()
-                .id(1L)
+                .id("1")
                 .name("test-name")
                 .owner(ChefUserPreviewDto.builder()
-                        .id(1L)
+                        .id("1")
                         .name("test-name")
                         .build())
                 .instruction("test-instructions")

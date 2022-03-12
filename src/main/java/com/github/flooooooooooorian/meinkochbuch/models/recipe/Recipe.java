@@ -28,7 +28,7 @@ public class Recipe {
 
     @Id
     @GeneratedValue
-    private Long id;
+    private String id;
 
     @NotEmpty
     private String name;

@@ -15,7 +15,7 @@ import java.util.List;
 @Builder
 public class ChefUserProfileDto {
 
-    private Long id;
+    private String id;
     private String name;
 
     private List<RecipePreviewDto> recipes;

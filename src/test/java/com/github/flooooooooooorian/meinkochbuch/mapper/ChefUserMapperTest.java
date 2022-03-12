@@ -30,39 +30,38 @@ class ChefUserMapperTest {
 
         //THEN
         ChefUserProfileDto expected = ChefUserProfileDto.builder()
-                .id(1L)
+                .id("1")
                 .name("test-name")
                 .cookbooks(List.of(CookbookPreview.builder()
-                        .id(1L)
+                        .id("1")
                         .name("cookbook-name")
                         .privacy(false)
                         .thumbnail(ImageDto.builder()
-                                .id(1L)
-                                .url("img-url")
+                                .id("1")
                                 .build())
                         .owner(ChefUserPreviewDto.builder()
-                                .id(1L)
+                                .id("1")
                                 .name("test-name")
                                 .build())
                         .recipes(List.of(RecipePreviewDto.builder()
                                 .owner(ChefUserPreviewDto.builder()
-                                        .id(1L)
+                                        .id("1")
                                         .name("test-name")
                                         .build())
                                 .ratingCount(0)
                                 .ratingAverage(BigDecimal.ZERO)
-                                .id(1L)
+                                .id("1")
                                 .name("test-recipe")
                                 .build()))
                         .build()))
                 .recipes(List.of(RecipePreviewDto.builder()
                         .ratingCount(0)
                         .owner(ChefUserPreviewDto.builder()
-                                .id(1L)
+                                .id("1")
                                 .name("test-name")
                                 .build())
                         .ratingAverage(BigDecimal.ZERO)
-                        .id(1L)
+                        .id("1")
                         .name("test-recipe")
                         .build()))
                 .build();
@@ -74,7 +73,7 @@ class ChefUserMapperTest {
     void chefUserWithNullValuesToChefUserProfileDto() {
         //GIVEN
         ChefUser chefUser = ChefUser.builder()
-                .id(1L)
+                .id("1")
                 .password("test-password")
                 .username("test@email.com")
                 .name("test-name")
@@ -92,7 +91,7 @@ class ChefUserMapperTest {
 
         //THEN
         ChefUserProfileDto expected = ChefUserProfileDto.builder()
-                .id(1L)
+                .id("1")
                 .name("test-name")
                 .cookbooks(List.of())
                 .recipes(List.of())
@@ -111,7 +110,7 @@ class ChefUserMapperTest {
 
         //THEN
         ChefUserPreviewDto expected = ChefUserPreviewDto.builder()
-                .id(1L)
+                .id("1")
                 .name("test-name")
                 .build();
 
@@ -122,7 +121,7 @@ class ChefUserMapperTest {
     void chefUserWithNullValuesToChefUserPreviewDto() {
         //GIVEN
         ChefUser chefUser = ChefUser.builder()
-                .id(1L)
+                .id("1")
                 .password("test-password")
                 .username("test@email.com")
                 .name("test-name")
@@ -140,7 +139,7 @@ class ChefUserMapperTest {
 
         //THEN
         ChefUserPreviewDto expected = ChefUserPreviewDto.builder()
-                .id(1L)
+                .id("1")
                 .name("test-name")
                 .build();
 

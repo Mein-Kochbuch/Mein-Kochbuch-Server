@@ -35,7 +35,7 @@ class RecipeServiceTest {
     void getAllRecipes() {
         //GIVEN
         ChefUser chefUser1 = ChefUser.builder()
-                .id(1L)
+                .id("1")
                 .accountNonExpired(true)
                 .accountNonLocked(true)
                 .authorities(Set.of())
@@ -48,7 +48,7 @@ class RecipeServiceTest {
                 .build();
 
         Recipe r1 = Recipe.builder()
-                .id(1L)
+                .id("1")
                 .owner(chefUser1)
                 .privacy(false)
                 .portions(4)
@@ -60,7 +60,7 @@ class RecipeServiceTest {
                 .build();
 
         Recipe r2 = Recipe.builder()
-                .id(2L)
+                .id("2")
                 .owner(chefUser1)
                 .privacy(true)
                 .portions(4)
@@ -85,7 +85,7 @@ class RecipeServiceTest {
     void getRecipeById() {
         //GIVEN
         ChefUser chefUser1 = ChefUser.builder()
-                .id(1L)
+                .id("1")
                 .accountNonExpired(true)
                 .accountNonLocked(true)
                 .authorities(Set.of())
@@ -98,7 +98,7 @@ class RecipeServiceTest {
                 .build();
 
         Recipe r1 = Recipe.builder()
-                .id(1L)
+                .id("1")
                 .owner(chefUser1)
                 .privacy(false)
                 .portions(4)
@@ -109,11 +109,11 @@ class RecipeServiceTest {
                 .ingredients(List.of())
                 .build();
 
-        when(recipeRepository.findById(1L)).thenReturn(Optional.ofNullable(r1));
+        when(recipeRepository.findById("1")).thenReturn(Optional.ofNullable(r1));
 
         //WHEN
 
-        Recipe result = recipeService.getRecipeById(1L);
+        Recipe result = recipeService.getRecipeById("1");
 
         //THEN
 
@@ -124,7 +124,7 @@ class RecipeServiceTest {
     void addRecipe() {
         //GIVEN
         ChefUser chefUser1 = ChefUser.builder()
-                .id(1L)
+                .id("1")
                 .accountNonExpired(true)
                 .accountNonLocked(true)
                 .authorities(Set.of())
@@ -147,7 +147,7 @@ class RecipeServiceTest {
                 .build();
 
         Recipe r1Result = Recipe.builder()
-                .id(1L)
+                .id("1")
                 .owner(chefUser1)
                 .name("test-name")
                 .privacy(false)

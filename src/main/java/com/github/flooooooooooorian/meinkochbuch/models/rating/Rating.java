@@ -21,7 +21,7 @@ public class Rating {
 
     @Id
     @GeneratedValue
-    private Long id;
+    private String id;
 
     private BigDecimal value;
 

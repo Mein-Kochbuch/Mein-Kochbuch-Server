@@ -18,7 +18,7 @@ import java.util.Objects;
 public class OAuthDataGoogle {
     @Id
     @GeneratedValue
-    private Long id;
+    private String id;
 
     @Override
     public boolean equals(Object o) {

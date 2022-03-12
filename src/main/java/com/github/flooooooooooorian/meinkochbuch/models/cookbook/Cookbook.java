@@ -18,7 +18,7 @@ public class Cookbook {
 
     @Id
     @GeneratedValue
-    private Long id;
+    private String id;
 
     private String name;
     private boolean privacy;

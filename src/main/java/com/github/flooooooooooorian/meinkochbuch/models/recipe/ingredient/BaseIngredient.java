@@ -17,7 +17,7 @@ public class BaseIngredient {
 
     @Id
     @GeneratedValue
-    private Long id;
+    private String id;
 
     private String name;
     private String singular;
