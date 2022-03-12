@@ -12,6 +12,6 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TaggingKey implements Serializable {
-    private Long recipe;
-    private Long tag;
+    private String recipe;
+    private String tag;
 }

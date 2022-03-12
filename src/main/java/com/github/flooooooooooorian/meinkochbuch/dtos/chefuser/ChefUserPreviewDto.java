@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class ChefUserPreviewDto {
-    private Long id;
+    private String id;
     private String name;
 }

@@ -4,7 +4,6 @@ import com.github.flooooooooooorian.meinkochbuch.security.models.ChefUser;
 import lombok.*;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
 import java.util.Objects;
 
 @Getter
@@ -16,14 +15,11 @@ import java.util.Objects;
 public class Image {
     @Id
     @GeneratedValue
-    private Long id;
+    private String id;
 
     @ManyToOne
     @JoinColumn(name = "owner_id")
     private ChefUser owner;
-
-    @NotEmpty
-    private String url;
 
     @Override
     public boolean equals(Object o) {

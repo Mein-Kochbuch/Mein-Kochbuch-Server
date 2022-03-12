@@ -19,7 +19,7 @@ public class OAuthDataApple {
 
     @Id
     @GeneratedValue
-    private Long id;
+    private String id;
 
     @Override
     public boolean equals(Object o) {

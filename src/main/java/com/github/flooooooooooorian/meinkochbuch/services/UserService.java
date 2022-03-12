@@ -25,7 +25,7 @@ public class UserService {
     private final JwtUtilsService jwtUtilsService;
     private final AuthenticationManager authenticationManager;
 
-    public ChefUser getUserById(Long id) {
+    public ChefUser getUserById(String id) {
         return chefUserRepository.findChefUserById(id).orElseThrow(() -> new UserDoesNotExistsException("User with id: " + id + " does not exists!"));
     }
 

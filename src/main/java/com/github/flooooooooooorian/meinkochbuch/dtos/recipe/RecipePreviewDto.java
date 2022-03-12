@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 @Builder
 public class RecipePreviewDto {
 
-    private Long id;
+    private String id;
     private ChefUserPreviewDto owner;
 
     private String name;

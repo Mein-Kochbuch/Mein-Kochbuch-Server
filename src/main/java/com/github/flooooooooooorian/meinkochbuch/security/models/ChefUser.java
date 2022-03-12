@@ -27,7 +27,7 @@ public class ChefUser implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
-    private Long id;
+    private String id;
 
     @NotEmpty
     @Size(min = 8)
@@ -76,7 +76,7 @@ public class ChefUser implements UserDetails {
     @OneToMany(mappedBy = "owner")
     private List<Image> images;
 
-    public static ChefUser ofId(Long userId) {
+    public static ChefUser ofId(String userId) {
         return ChefUser.builder().id(userId).build();
     }
 }

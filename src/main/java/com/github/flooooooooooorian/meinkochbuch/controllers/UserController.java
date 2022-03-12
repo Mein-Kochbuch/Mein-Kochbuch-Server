@@ -18,7 +18,7 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("{userId}")
-    public ChefUserProfileDto getUserById(@PathVariable Long userId) {
-        return ChefUserMapper.chefUserToChefUserDto(userService.getUserById(userId));
+    public ChefUserProfileDto getUserById(@PathVariable String userId) {
+        return ChefUserMapper.chefUserToChefUserProfileDto(userService.getUserById(userId));
     }
 }

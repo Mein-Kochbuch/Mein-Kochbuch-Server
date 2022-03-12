@@ -43,7 +43,7 @@ class UserServiceTest {
     void getUserById() {
         //GIVEN
         ChefUser chefUser1 = ChefUser.builder()
-                .id(1L)
+                .id("1")
                 .accountNonExpired(true)
                 .accountNonLocked(true)
                 .authorities(Set.of())
@@ -55,11 +55,11 @@ class UserServiceTest {
                 .recipes(List.of())
                 .build();
 
-        when(chefUserRepository.findChefUserById(1L)).thenReturn(Optional.of(chefUser1));
+        when(chefUserRepository.findChefUserById("1")).thenReturn(Optional.of(chefUser1));
 
         //WHEN
 
-        ChefUser result = userService.getUserById(1L);
+        ChefUser result = userService.getUserById("1");
 
         //THEN
 
@@ -71,14 +71,14 @@ class UserServiceTest {
         //GIVEN
         //WHEN
         //THEN
-        assertThrows(UserDoesNotExistsException.class, () -> userService.getUserById(1L));
+        assertThrows(UserDoesNotExistsException.class, () -> userService.getUserById("1"));
     }
 
     @Test
     void validLogin() {
         //GIVEN
         ChefUser chefUser1 = ChefUser.builder()
-                .id(1L)
+                .id("1")
                 .accountNonExpired(true)
                 .accountNonLocked(true)
                 .authorities(Set.of())
@@ -116,7 +116,7 @@ class UserServiceTest {
     void loginInvalidCredentials() {
         //GIVEN
         ChefUser chefUser1 = ChefUser.builder()
-                .id(1L)
+                .id("1")
                 .accountNonExpired(true)
                 .accountNonLocked(true)
                 .authorities(Set.of())
@@ -146,7 +146,7 @@ class UserServiceTest {
     void loginNotEnabled() {
         //GIVEN
         ChefUser chefUser1 = ChefUser.builder()
-                .id(1L)
+                .id("1")
                 .accountNonExpired(true)
                 .accountNonLocked(true)
                 .authorities(Set.of())

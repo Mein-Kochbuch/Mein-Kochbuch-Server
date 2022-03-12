@@ -19,7 +19,7 @@ import java.util.List;
 @Builder
 public class RecipeDto {
 
-    private Long id;
+    private String id;
     private String name;
     private ChefUserPreviewDto owner;
     private String instruction;

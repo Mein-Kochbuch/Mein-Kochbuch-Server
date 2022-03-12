@@ -30,7 +30,7 @@ public class RecipeController {
     }
 
     @GetMapping("{recipeId}")
-    public RecipeDto getRecipeById(@PathVariable Long recipeId) {
+    public RecipeDto getRecipeById(@PathVariable String recipeId) {
         LOG.debug("GET Recipe: " + recipeId);
         return RecipeMapper.recipeToRecipeDto(recipeService.getRecipeById(recipeId));
     }

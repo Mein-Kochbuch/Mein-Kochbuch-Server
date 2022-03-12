@@ -12,6 +12,6 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CookbookContentKey implements Serializable {
-    private Long recipe;
-    private Long cookbook;
+    private String recipe;
+    private String cookbook;
 }
