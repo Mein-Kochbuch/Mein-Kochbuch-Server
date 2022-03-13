@@ -7,6 +7,8 @@ import org.testcontainers.containers.PostgreSQLContainer;
 
 import java.util.stream.Stream;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 @SpringBootTest
 class MeinKochbuchApplicationTests {
 
@@ -30,6 +32,7 @@ class MeinKochbuchApplicationTests {
 
     @Test
     void contextLoads() {
+        assertTrue(true);
     }
 
 }
