@@ -27,7 +27,6 @@ import java.util.Objects;
 public class Recipe {
 
     @Id
-    @GeneratedValue
     private String id;
 
     @NotEmpty
@@ -67,7 +66,10 @@ public class Recipe {
     private List<Rating> ratings;
 
     public BigDecimal getRatingAverage() {
-        if (this.getRatings() == null || this.getRatings().isEmpty()) {
+        if (this.getRatings() == null) {
+            return BigDecimal.ZERO;
+        }
+        if (this.getRatings().isEmpty()) {
             return BigDecimal.ZERO;
         }
         BigDecimal avgRating = BigDecimal.ZERO;

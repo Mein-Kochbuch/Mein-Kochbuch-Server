@@ -3,7 +3,6 @@ package com.github.flooooooooooorian.meinkochbuch.models.tag;
 import lombok.*;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import java.util.List;
@@ -18,7 +17,6 @@ import java.util.Objects;
 public class Tag {
 
     @Id
-    @GeneratedValue
     private String id;
 
     private String name;

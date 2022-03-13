@@ -39,6 +39,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .mvcMatchers(HttpMethod.GET, "/api/recipe/**").permitAll()
                 .mvcMatchers(HttpMethod.GET, "/api/cookbook/**").permitAll()
                 .mvcMatchers(HttpMethod.GET, "/api/user/**").permitAll()
+                .mvcMatchers(HttpMethod.POST, "/api/user").permitAll()
 
                 .mvcMatchers(HttpMethod.POST, "/auth/**").permitAll()
 

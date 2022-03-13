@@ -2,7 +2,10 @@ package com.github.flooooooooooorian.meinkochbuch.models.recipe.ingredient;
 
 import lombok.*;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import java.math.BigDecimal;
 import java.util.Objects;
 
@@ -15,7 +18,6 @@ import java.util.Objects;
 public class Ingredient {
 
     @Id
-    @GeneratedValue
     private String id;
 
     @ManyToOne()

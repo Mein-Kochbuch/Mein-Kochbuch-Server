@@ -6,7 +6,6 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.util.Objects;
 
 @Getter
 @Setter
@@ -14,39 +13,23 @@ import java.util.Objects;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"recipe_id", "user_id"})
-})
+@IdClass(RatingKey.class)
 public class Rating {
 
+
     @Id
-    @GeneratedValue
-    private String id;
-
-    private BigDecimal value;
-
-    @ManyToOne()
-    @JoinColumn(name = "recipe_id")
-
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(
+            name = "recipe_id",
+            referencedColumnName = "id")
     private Recipe recipe;
 
-    @ManyToOne()
-    @JoinColumn(name = "user_id")
-
+    @Id
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(
+            name = "user_id",
+            referencedColumnName = "id")
     private ChefUser user;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Rating rating = (Rating) o;
-
-        return Objects.equals(id, rating.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return id != null ? id.hashCode() : 0;
-    }
+    private BigDecimal value;
 }

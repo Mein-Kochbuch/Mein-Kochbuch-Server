@@ -10,6 +10,8 @@ public interface RecipeRepository extends JpaRepository<Recipe, String> {
 
     List<Recipe> findAll();
 
+    List<Recipe> findAllByPrivacyIsFalseOrOwner_Id(String userId);
+
     @Override
     Optional<Recipe> findById(String id);
 }

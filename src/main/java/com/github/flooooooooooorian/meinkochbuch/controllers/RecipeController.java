@@ -5,6 +5,7 @@ import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipeDto;
 import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipePreviewDto;
 import com.github.flooooooooooorian.meinkochbuch.mapper.RecipeMapper;
 import com.github.flooooooooooorian.meinkochbuch.security.models.ChefUser;
+import com.github.flooooooooooorian.meinkochbuch.security.utils.SecurityContextUtil;
 import com.github.flooooooooooorian.meinkochbuch.services.RecipeService;
 import lombok.RequiredArgsConstructor;
 import org.apache.juli.logging.Log;
@@ -22,11 +23,14 @@ public class RecipeController {
 
     private static final Log LOG = LogFactory.getLog(RecipeController.class);
     private final RecipeService recipeService;
+    private final SecurityContextUtil securityContextUtil;
 
     @GetMapping()
     public List<RecipePreviewDto> getAllRecipes() {
         LOG.debug("GET All Recipes");
-        return recipeService.getAllRecipes().stream().map(RecipeMapper::recipeToRecipePreviewDto).toList();
+        return recipeService.getAllRecipes(securityContextUtil.getUser()).stream()
+                .map(RecipeMapper::recipeToRecipePreviewDto)
+                .toList();
     }
 
     @GetMapping("{recipeId}")

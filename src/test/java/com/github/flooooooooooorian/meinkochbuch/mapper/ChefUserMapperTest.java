@@ -7,8 +7,6 @@ import com.github.flooooooooooorian.meinkochbuch.dtos.cookbook.CookbookPreview;
 import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipePreviewDto;
 import com.github.flooooooooooorian.meinkochbuch.security.models.ChefAuthorities;
 import com.github.flooooooooooorian.meinkochbuch.security.models.ChefUser;
-import com.github.flooooooooooorian.meinkochbuch.security.models.oauth.OAuthDataApple;
-import com.github.flooooooooooorian.meinkochbuch.security.models.oauth.OAuthDataGoogle;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
@@ -72,8 +70,6 @@ class ChefUserMapperTest {
                 .authorities(Set.of(ChefAuthorities.USER))
                 .credentialsNonExpired(true)
                 .enabled(true)
-                .oAuthDataApple(OAuthDataApple.builder().build())
-                .oAuthDataGoogle(OAuthDataGoogle.builder().build())
                 .build();
 
         //WHEN
@@ -120,8 +116,6 @@ class ChefUserMapperTest {
                 .authorities(Set.of(ChefAuthorities.USER))
                 .credentialsNonExpired(true)
                 .enabled(true)
-                .oAuthDataApple(OAuthDataApple.builder().build())
-                .oAuthDataGoogle(OAuthDataGoogle.builder().build())
                 .build();
 
         //WHEN

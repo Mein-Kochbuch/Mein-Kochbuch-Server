@@ -3,9 +3,12 @@ package com.github.flooooooooooorian.meinkochbuch.services;
 import com.github.flooooooooooorian.meinkochbuch.exceptions.UserDoesNotExistsException;
 import com.github.flooooooooooorian.meinkochbuch.security.dtos.LoginJWTDto;
 import com.github.flooooooooooorian.meinkochbuch.security.dtos.UserLoginDto;
+import com.github.flooooooooooorian.meinkochbuch.security.models.ChefAuthorities;
 import com.github.flooooooooooorian.meinkochbuch.security.models.ChefUser;
 import com.github.flooooooooooorian.meinkochbuch.security.repository.ChefUserRepository;
 import com.github.flooooooooooorian.meinkochbuch.security.service.JwtUtilsService;
+import com.github.flooooooooooorian.meinkochbuch.services.utils.IdUtils;
+import com.github.flooooooooooorian.meinkochbuch.utils.TimeUtils;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,8 +16,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -31,7 +36,16 @@ class UserServiceTest {
     private ChefUserRepository chefUserRepository;
 
     @Mock
+    private IdUtils idUtils;
+
+    @Mock
+    private PasswordEncoder passwordEncoder;
+
+    @Mock
     private JwtUtilsService jwtUtilsService;
+
+    @Mock
+    private TimeUtils timeUtils;
 
     @Mock
     private AuthenticationManager authenticationManager;
@@ -171,5 +185,34 @@ class UserServiceTest {
         //THEN
 
         assertThrows(ResponseStatusException.class, () -> userService.login(userLoginDto));
+    }
+
+    @Test
+    void registerUser() {
+        //GIVEN
+        Instant instant = Instant.now();
+        ChefUser expected = ChefUser.builder()
+                .id("1")
+                .joined_at(instant)
+                .accountNonExpired(true)
+                .accountNonLocked(true)
+                .credentialsNonExpired(true)
+                .authorities(Set.of(ChefAuthorities.USER))
+                .name("test-name")
+                .password("test-password-encoded")
+                .username("test-username")
+                .enabled(false)
+                .build();
+
+        when(idUtils.generateId()).thenReturn("1");
+        when(timeUtils.now()).thenReturn(instant);
+        when(passwordEncoder.encode("test-password")).thenReturn("test-password-encoded");
+        when(chefUserRepository.save(expected)).thenReturn(expected);
+
+        //WHEN
+        ChefUser result = userService.registerUser("test-username", "test-name", "test-password");
+
+        //THEN
+        assertThat(result, Matchers.is(expected));
     }
 }

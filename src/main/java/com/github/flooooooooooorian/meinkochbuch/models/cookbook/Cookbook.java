@@ -17,15 +17,12 @@ import java.util.Objects;
 public class Cookbook {
 
     @Id
-    @GeneratedValue
     private String id;
 
     private String name;
     private boolean privacy;
 
     @OneToMany(mappedBy = "cookbook")
-
-
     private List<CookbookContent> contents;
 
     @ManyToOne()

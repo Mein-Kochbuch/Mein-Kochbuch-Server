@@ -3,8 +3,11 @@ package com.github.flooooooooooorian.meinkochbuch.services;
 import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipeCreationDto;
 import com.github.flooooooooooorian.meinkochbuch.models.recipe.Recipe;
 import com.github.flooooooooooorian.meinkochbuch.models.recipe.difficulty.Difficulty;
+import com.github.flooooooooooorian.meinkochbuch.models.recipe.ingredient.Ingredient;
+import com.github.flooooooooooorian.meinkochbuch.repository.IngredientRepository;
 import com.github.flooooooooooorian.meinkochbuch.repository.RecipeRepository;
 import com.github.flooooooooooorian.meinkochbuch.security.models.ChefUser;
+import com.github.flooooooooooorian.meinkochbuch.services.utils.IdUtils;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -28,11 +32,17 @@ class RecipeServiceTest {
     @Mock
     private RecipeRepository recipeRepository;
 
+    @Mock
+    private IngredientRepository ingredientRepository;
+
+    @Mock
+    private IdUtils idUtils;
+
     @InjectMocks
     private RecipeService recipeService;
 
     @Test
-    void getAllRecipes() {
+    void getAllRecipesWithOutUser() {
         //GIVEN
         ChefUser chefUser1 = ChefUser.builder()
                 .id("1")
@@ -71,11 +81,61 @@ class RecipeServiceTest {
                 .ingredients(List.of())
                 .build();
 
-        when(recipeRepository.findAll()).thenReturn(List.of(r1, r2));
+        when(recipeRepository.findAllByPrivacyIsFalseOrOwner_Id(null)).thenReturn(List.of(r1));
 
         //WHEN
 
-        List<Recipe> result = recipeService.getAllRecipes();
+        List<Recipe> result = recipeService.getAllRecipes(Optional.empty());
+
+        //THEN
+        assertThat(result, Matchers.containsInAnyOrder(r1));
+    }
+
+    @Test
+    void getAllRecipesAndOwnRecipes() {
+        //GIVEN
+        ChefUser chefUser1 = ChefUser.builder()
+                .id("1")
+                .accountNonExpired(true)
+                .accountNonLocked(true)
+                .authorities(Set.of())
+                .cookbooks(List.of())
+                .credentialsNonExpired(true)
+                .favoriteRecipes(List.of())
+                .enabled(true)
+                .name("my-name")
+                .recipes(List.of())
+                .build();
+
+        Recipe r1 = Recipe.builder()
+                .id("1")
+                .owner(chefUser1)
+                .privacy(false)
+                .portions(4)
+                .instruction("test-instructions")
+                .duration(40)
+                .difficulty(Difficulty.EXPERT)
+                .createdAt(Instant.now())
+                .ingredients(List.of())
+                .build();
+
+        Recipe r2 = Recipe.builder()
+                .id("2")
+                .owner(chefUser1)
+                .privacy(true)
+                .portions(4)
+                .instruction("test-instructions")
+                .duration(40)
+                .difficulty(Difficulty.EXPERT)
+                .createdAt(Instant.now())
+                .ingredients(List.of())
+                .build();
+
+        when(recipeRepository.findAllByPrivacyIsFalseOrOwner_Id("1")).thenReturn(List.of(r1, r2));
+
+        //WHEN
+
+        List<Recipe> result = recipeService.getAllRecipes(Optional.of(chefUser1));
 
         //THEN
         assertThat(result, Matchers.containsInAnyOrder(r1, r2));
@@ -136,6 +196,12 @@ class RecipeServiceTest {
                 .recipes(List.of())
                 .build();
 
+        Ingredient ingredient = Ingredient.builder()
+                .id("1")
+                .text("test-ingredient")
+                .amount(BigDecimal.valueOf(20))
+                .build();
+
         RecipeCreationDto creationDto = RecipeCreationDto.builder()
                 .privacy(false)
                 .name("test-name")
@@ -143,7 +209,7 @@ class RecipeServiceTest {
                 .instruction("test-instructions")
                 .duration(40)
                 .difficulty(Difficulty.EXPERT)
-                .ingredients(List.of())
+                .ingredients(List.of(ingredient))
                 .build();
 
         Recipe r1Result = Recipe.builder()
@@ -160,6 +226,8 @@ class RecipeServiceTest {
                 .build();
 
         when(recipeRepository.save(any())).thenReturn(r1Result);
+        when(ingredientRepository.save(any())).thenReturn(ingredient);
+        when(idUtils.generateId()).thenReturn("uuid-1");
 
         //WHEN
 

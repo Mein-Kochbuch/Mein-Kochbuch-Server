@@ -12,8 +12,6 @@ import com.github.flooooooooooorian.meinkochbuch.models.tag.RecipeTagging;
 import com.github.flooooooooooorian.meinkochbuch.models.tag.Tag;
 import com.github.flooooooooooorian.meinkochbuch.security.models.ChefAuthorities;
 import com.github.flooooooooooorian.meinkochbuch.security.models.ChefUser;
-import com.github.flooooooooooorian.meinkochbuch.security.models.oauth.OAuthDataApple;
-import com.github.flooooooooooorian.meinkochbuch.security.models.oauth.OAuthDataGoogle;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -66,7 +64,6 @@ public class MapperUtils {
                             .build())
                     .build()))
             .ratings(List.of(Rating.builder()
-                    .id("1")
                     .user(ChefUser.ofId("1"))
                     .value(BigDecimal.valueOf(4L))
                     .build()))
@@ -129,7 +126,5 @@ public class MapperUtils {
                             .duration(40)
                             .build()
             ))
-            .oAuthDataApple(OAuthDataApple.builder().build())
-            .oAuthDataGoogle(OAuthDataGoogle.builder().build())
             .build();
 }

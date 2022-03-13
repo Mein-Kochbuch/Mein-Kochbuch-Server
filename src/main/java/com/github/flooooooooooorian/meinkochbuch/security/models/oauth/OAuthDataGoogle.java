@@ -4,20 +4,17 @@ import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.util.Objects;
 
 @Entity
 @Getter
 @Setter
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class OAuthDataGoogle {
     @Id
-    @GeneratedValue
     private String id;
 
     @Override
