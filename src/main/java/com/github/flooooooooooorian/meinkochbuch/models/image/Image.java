@@ -3,7 +3,10 @@ package com.github.flooooooooooorian.meinkochbuch.models.image;
 import com.github.flooooooooooorian.meinkochbuch.security.models.ChefUser;
 import lombok.*;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import java.util.Objects;
 
 @Getter
@@ -14,7 +17,6 @@ import java.util.Objects;
 @Entity
 public class Image {
     @Id
-    @GeneratedValue
     private String id;
 
     @ManyToOne

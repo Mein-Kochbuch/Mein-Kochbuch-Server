@@ -7,8 +7,6 @@ import com.github.flooooooooooorian.meinkochbuch.dtos.cookbook.CookbookPreview;
 import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipePreviewDto;
 import com.github.flooooooooooorian.meinkochbuch.security.models.ChefAuthorities;
 import com.github.flooooooooooorian.meinkochbuch.security.models.ChefUser;
-import com.github.flooooooooooorian.meinkochbuch.security.models.oauth.OAuthDataApple;
-import com.github.flooooooooooorian.meinkochbuch.security.models.oauth.OAuthDataGoogle;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
@@ -35,7 +33,6 @@ class ChefUserMapperTest {
                 .cookbooks(List.of(CookbookPreview.builder()
                         .id("1")
                         .name("cookbook-name")
-                        .privacy(false)
                         .thumbnail(ImageDto.builder()
                                 .id("1")
                                 .build())
@@ -43,16 +40,7 @@ class ChefUserMapperTest {
                                 .id("1")
                                 .name("test-name")
                                 .build())
-                        .recipes(List.of(RecipePreviewDto.builder()
-                                .owner(ChefUserPreviewDto.builder()
-                                        .id("1")
-                                        .name("test-name")
-                                        .build())
-                                .ratingCount(0)
-                                .ratingAverage(BigDecimal.ZERO)
-                                .id("1")
-                                .name("test-recipe")
-                                .build()))
+                        .ratingAverage(BigDecimal.valueOf(0))
                         .build()))
                 .recipes(List.of(RecipePreviewDto.builder()
                         .ratingCount(0)
@@ -82,8 +70,6 @@ class ChefUserMapperTest {
                 .authorities(Set.of(ChefAuthorities.USER))
                 .credentialsNonExpired(true)
                 .enabled(true)
-                .oAuthDataApple(OAuthDataApple.builder().build())
-                .oAuthDataGoogle(OAuthDataGoogle.builder().build())
                 .build();
 
         //WHEN
@@ -130,8 +116,6 @@ class ChefUserMapperTest {
                 .authorities(Set.of(ChefAuthorities.USER))
                 .credentialsNonExpired(true)
                 .enabled(true)
-                .oAuthDataApple(OAuthDataApple.builder().build())
-                .oAuthDataGoogle(OAuthDataGoogle.builder().build())
                 .build();
 
         //WHEN

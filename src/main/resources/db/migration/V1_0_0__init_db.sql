@@ -18,25 +18,63 @@ CREATE TABLE IF NOT EXISTS chef_user
 (
     id                      VARCHAR(200) not null,
     account_non_expired     boolean      not null,
-    account_non_locked      boolean      not null,
-    credentials_non_expired boolean      not null,
-    enabled                 boolean      not null,
-    joined_at               timestamp with time zone,
-    name                    varchar(255) not null,
-    password                varchar(255),
-    username                varchar(255),
-    o_auth_data_apple_id    VARCHAR(200),
-    o_auth_data_google_id   VARCHAR(200),
-    authorities             TEXT[],
-    primary key (id)
-);
+    account_non_locked boolean not null,
+    credentials_non_expired boolean not null,
+    enabled boolean not null,
+    joined_at timestamp with time zone,
+                            name varchar (255) not null,
+    password varchar
+(
+    255
+),
+    username varchar
+(
+    255
+),
+    primary key
+(
+    id
+)
+    );
+
+CREATE TABLE IF NOT EXISTS chef_user_authorities
+(
+    chef_user_id varchar
+(
+    200
+) REFERENCES chef_user
+(
+    id
+),
+    authorities varchar
+(
+    200
+),
+    primary key
+(
+    chef_user_id,
+    authorities
+)
+    );
 
 CREATE TABLE IF NOT EXISTS image
 (
-    id       VARCHAR(200) not null,
-    owner_id VARCHAR(200) REFERENCES chef_user (id),
-    primary key (id)
-);
+    id VARCHAR
+(
+    200
+) not null,
+    owner_id VARCHAR
+(
+    200
+) REFERENCES chef_user
+(
+    id
+),
+    primary key
+(
+    id
+)
+    );
 
 CREATE TABLE IF NOT EXISTS recipe
 (

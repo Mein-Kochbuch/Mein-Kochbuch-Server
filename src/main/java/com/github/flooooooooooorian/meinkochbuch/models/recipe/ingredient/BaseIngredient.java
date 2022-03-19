@@ -3,7 +3,10 @@ package com.github.flooooooooooorian.meinkochbuch.models.recipe.ingredient;
 
 import lombok.*;
 
-import javax.persistence.*;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import java.util.Objects;
 import java.util.Set;
 
@@ -16,7 +19,6 @@ import java.util.Set;
 public class BaseIngredient {
 
     @Id
-    @GeneratedValue
     private String id;
 
     private String name;
