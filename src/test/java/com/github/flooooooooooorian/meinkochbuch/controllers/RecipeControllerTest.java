@@ -12,6 +12,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -188,12 +189,43 @@ class RecipeControllerTest extends IntegrationTest {
                         .name("some-user-name")
                         .build())
                 .name("test-recipe-name")
+                .instruction("test-recipe-instructions")
                 .ratingAverage(BigDecimal.ZERO)
                 .ratingCount(0)
                 .thumbnail(null)
+                .images(List.of())
+                .ingredients(List.of())
+                .tags(List.of())
                 .build();
 
         assertThat(result, is(expected));
+    }
+
+    @Test
+    void getRecipeByIdAnonymousPrivate() {
+        //GIVEN
+        webClient = WebClient.create("http://localhost:" + port + "/api");
+
+        recipeRepository.save(Recipe.builder()
+                .id("test-recipe-id")
+                .createdAt(Instant.now())
+                .owner(ChefUser.ofId("some-user-id"))
+                .instruction("test-recipe-instructions")
+                .name("test-recipe-name")
+                .privacy(true)
+                .build());
+
+        //WHEN
+        ResponseEntity<RecipeDto> result = webClient.get()
+                .uri("/recipes/test-recipe-id")
+                .retrieve()
+                .onStatus(HttpStatus::isError, response -> Mono.empty())
+                .toEntity(RecipeDto.class)
+                .block();
+
+        //THEN
+
+        assertThat(result.getStatusCode(), is(HttpStatus.FORBIDDEN));
     }
 
     @Test
@@ -203,15 +235,16 @@ class RecipeControllerTest extends IntegrationTest {
 
 
         //WHEN
-        ResponseEntity result = webClient.get()
+        ResponseEntity<RecipeDto> result = webClient.get()
                 .uri("/recipes/test-recipe-id")
                 .retrieve()
+                .onStatus(HttpStatus::isError, response -> Mono.empty())
                 .toEntity(RecipeDto.class)
                 .block();
 
         //THEN
 
-        assertThat(result.getStatusCode(), is(HttpStatus.BAD_REQUEST));
+        assertThat(result.getStatusCode(), is(HttpStatus.NOT_FOUND));
     }
 
     @Test

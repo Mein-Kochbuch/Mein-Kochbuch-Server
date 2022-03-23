@@ -1,6 +1,7 @@
 package com.github.flooooooooooorian.meinkochbuch.services;
 
 import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipeCreationDto;
+import com.github.flooooooooooorian.meinkochbuch.exceptions.RecipePrivacyForbiddenException;
 import com.github.flooooooooooorian.meinkochbuch.models.recipe.Recipe;
 import com.github.flooooooooooorian.meinkochbuch.models.recipe.difficulty.Difficulty;
 import com.github.flooooooooooorian.meinkochbuch.models.recipe.ingredient.Ingredient;
@@ -22,6 +23,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
 
@@ -173,7 +175,82 @@ class RecipeServiceTest {
 
         //WHEN
 
-        Recipe result = recipeService.getRecipeById("1");
+        Recipe result = recipeService.getRecipeById("1", Optional.empty());
+
+        //THEN
+
+        assertThat(result, Matchers.is(r1));
+    }
+
+    @Test
+    void getRecipeByIdAnonymousDenied() {
+        //GIVEN
+        ChefUser chefUser1 = ChefUser.builder()
+                .id("1")
+                .accountNonExpired(true)
+                .accountNonLocked(true)
+                .authorities(Set.of())
+                .cookbooks(List.of())
+                .credentialsNonExpired(true)
+                .favoriteRecipes(List.of())
+                .enabled(true)
+                .name("my-name")
+                .recipes(List.of())
+                .build();
+
+        Recipe r1 = Recipe.builder()
+                .id("1")
+                .owner(chefUser1)
+                .privacy(true)
+                .portions(4)
+                .instruction("test-instructions")
+                .duration(40)
+                .difficulty(Difficulty.EXPERT)
+                .createdAt(Instant.now())
+                .ingredients(List.of())
+                .build();
+
+        when(recipeRepository.findById("1")).thenReturn(Optional.ofNullable(r1));
+
+        //WHEN
+        //THEN
+
+        assertThrows(RecipePrivacyForbiddenException.class, () -> recipeService.getRecipeById("1", Optional.empty()));
+    }
+
+    @Test
+    void getRecipeByIdUserAllowed() {
+        //GIVEN
+        ChefUser chefUser1 = ChefUser.builder()
+                .id("1")
+                .accountNonExpired(true)
+                .accountNonLocked(true)
+                .authorities(Set.of())
+                .cookbooks(List.of())
+                .credentialsNonExpired(true)
+                .favoriteRecipes(List.of())
+                .enabled(true)
+                .name("my-name")
+                .recipes(List.of())
+                .build();
+
+        Recipe r1 = Recipe.builder()
+                .id("1")
+                .owner(chefUser1)
+                .privacy(true)
+                .portions(4)
+                .instruction("test-instructions")
+                .duration(40)
+                .difficulty(Difficulty.EXPERT)
+                .createdAt(Instant.now())
+                .ingredients(List.of())
+                .build();
+
+        when(recipeRepository.findById("1")).thenReturn(Optional.ofNullable(r1));
+
+        //WHEN
+
+        Recipe result = recipeService.getRecipeById("1", Optional.of(chefUser1));
 
         //THEN
 

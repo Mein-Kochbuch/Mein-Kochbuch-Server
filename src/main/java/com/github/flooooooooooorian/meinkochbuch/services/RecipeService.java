@@ -2,6 +2,7 @@ package com.github.flooooooooooorian.meinkochbuch.services;
 
 import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipeCreationDto;
 import com.github.flooooooooooorian.meinkochbuch.exceptions.RecipeDoesNotExistException;
+import com.github.flooooooooooorian.meinkochbuch.exceptions.RecipePrivacyForbiddenException;
 import com.github.flooooooooooorian.meinkochbuch.models.recipe.Recipe;
 import com.github.flooooooooooorian.meinkochbuch.models.recipe.ingredient.Ingredient;
 import com.github.flooooooooooorian.meinkochbuch.repository.IngredientRepository;
@@ -34,8 +35,13 @@ public class RecipeService {
         return recipeRepository.findAllByPrivacyIsFalseOrOwner_Id(null);
     }
 
-    public Recipe getRecipeById(String recipeId) {
-        return recipeRepository.findById(recipeId).orElseThrow(() -> new RecipeDoesNotExistException("Recipe with id: " + recipeId + " not found!"));
+    public Recipe getRecipeById(String recipeId, Optional<ChefUser> optionalChefUser) {
+
+        Recipe recipe = recipeRepository.findById(recipeId).orElseThrow(() -> new RecipeDoesNotExistException("Recipe with id: " + recipeId + " not found!"));
+        if ((recipe.isPrivacy() && optionalChefUser.isEmpty()) || (recipe.isPrivacy() && optionalChefUser.isPresent() && !recipe.getOwner().getId().equals(optionalChefUser.get().getId()))) {
+            throw new RecipePrivacyForbiddenException("User: " + (optionalChefUser.isPresent() ? optionalChefUser.get().getId() : "Anonymous" + " is not allowed to access Recipe: " + recipeId));
+        }
+        return recipe;
     }
 
     @Transactional
