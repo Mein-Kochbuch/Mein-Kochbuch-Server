@@ -36,8 +36,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable().authorizeRequests()
 
-                .mvcMatchers(HttpMethod.GET, "/api/recipe/**").permitAll()
-                .mvcMatchers(HttpMethod.GET, "/api/cookbook/**").permitAll()
+                .mvcMatchers(HttpMethod.GET, "/api/recipes/**").permitAll()
+                .mvcMatchers(HttpMethod.GET, "/api/cookbooks/**").permitAll()
                 .mvcMatchers(HttpMethod.GET, "/api/user/**").permitAll()
                 .mvcMatchers(HttpMethod.POST, "/api/user").permitAll()
 
