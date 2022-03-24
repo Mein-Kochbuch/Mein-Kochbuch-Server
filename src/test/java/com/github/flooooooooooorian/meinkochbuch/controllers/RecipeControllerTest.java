@@ -2,9 +2,13 @@ package com.github.flooooooooooorian.meinkochbuch.controllers;
 
 import com.github.flooooooooooorian.meinkochbuch.IntegrationTest;
 import com.github.flooooooooooorian.meinkochbuch.dtos.chefuser.ChefUserPreviewDto;
+import com.github.flooooooooooorian.meinkochbuch.dtos.ingredient.IngredientCreationDto;
+import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipeCreationDto;
 import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipeDto;
 import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipePreviewDto;
 import com.github.flooooooooooorian.meinkochbuch.models.recipe.Recipe;
+import com.github.flooooooooooorian.meinkochbuch.models.recipe.difficulty.Difficulty;
+import com.github.flooooooooooorian.meinkochbuch.models.recipe.ingredient.Ingredient;
 import com.github.flooooooooooorian.meinkochbuch.security.models.ChefUser;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,8 +23,7 @@ import java.time.Instant;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class RecipeControllerTest extends IntegrationTest {
@@ -52,12 +55,11 @@ class RecipeControllerTest extends IntegrationTest {
                 .build());
 
         //WHEN
-        List<RecipePreviewDto> result = webClient.get()
+        ResponseEntity<List<RecipePreviewDto>> result = webClient.get()
                 .uri("/recipes")
                 .retrieve()
                 .toEntityList(RecipePreviewDto.class)
-                .block()
-                .getBody();
+                .block();
 
         //THEN
         RecipePreviewDto expected1 = RecipePreviewDto.builder()
@@ -72,7 +74,9 @@ class RecipeControllerTest extends IntegrationTest {
                 .thumbnail(null)
                 .build();
 
-        assertThat(result, containsInAnyOrder(expected1));
+        assertThat(result, notNullValue());
+        assertThat(result.getStatusCode(), is(HttpStatus.OK));
+        assertThat(result.getBody(), containsInAnyOrder(expected1));
     }
 
     @Test
@@ -112,13 +116,12 @@ class RecipeControllerTest extends IntegrationTest {
                 .build());
 
         //WHEN
-        List<RecipePreviewDto> result = webClient.get()
+        ResponseEntity<List<RecipePreviewDto>> result = webClient.get()
                 .uri("/recipes")
                 .header("Authorization", "Bearer " + getTokenByUserId("some-user-id"))
                 .retrieve()
                 .toEntityList(RecipePreviewDto.class)
-                .block()
-                .getBody();
+                .block();
 
         //THEN
         RecipePreviewDto expected1 = RecipePreviewDto.builder()
@@ -157,7 +160,9 @@ class RecipeControllerTest extends IntegrationTest {
                 .thumbnail(null)
                 .build();
 
-        assertThat(result, containsInAnyOrder(expected1, expected2, expected3));
+        assertThat(result, notNullValue());
+        assertThat(result.getStatusCode(), is(HttpStatus.OK));
+        assertThat(result.getBody(), containsInAnyOrder(expected1, expected2, expected3));
     }
 
     @Test
@@ -174,12 +179,11 @@ class RecipeControllerTest extends IntegrationTest {
                 .build());
 
         //WHEN
-        RecipeDto result = webClient.get()
+        ResponseEntity<RecipeDto> result = webClient.get()
                 .uri("/recipes/test-recipe-id")
                 .retrieve()
                 .toEntity(RecipeDto.class)
-                .block()
-                .getBody();
+                .block();
 
         //THEN
         RecipeDto expected = RecipeDto.builder()
@@ -198,7 +202,9 @@ class RecipeControllerTest extends IntegrationTest {
                 .tags(List.of())
                 .build();
 
-        assertThat(result, is(expected));
+        assertThat(result, notNullValue());
+        assertThat(result.getStatusCode(), is(HttpStatus.OK));
+        assertThat(result.getBody(), is(expected));
     }
 
     @Test
@@ -224,7 +230,7 @@ class RecipeControllerTest extends IntegrationTest {
                 .block();
 
         //THEN
-
+        assertThat(result, notNullValue());
         assertThat(result.getStatusCode(), is(HttpStatus.FORBIDDEN));
     }
 
@@ -244,10 +250,91 @@ class RecipeControllerTest extends IntegrationTest {
 
         //THEN
 
+        assertThat(result, notNullValue());
         assertThat(result.getStatusCode(), is(HttpStatus.NOT_FOUND));
     }
 
     @Test
     void addRecipe() {
+        //GIVEN
+        webClient = WebClient.create("http://localhost:" + port + "/api");
+
+        RecipeCreationDto recipeCreationDto = RecipeCreationDto.builder()
+                .name("test-recipe-name")
+                .difficulty(Difficulty.MEDIUM)
+                .duration(40)
+                .ingredients(List.of(IngredientCreationDto.builder()
+                        .text("test-ingredient-text")
+                        .amount(BigDecimal.valueOf(10))
+                        .build()))
+                .portions(4)
+                .instruction("test-instructions")
+                .privacy(false)
+                .build();
+
+
+        //WHEN
+
+        ResponseEntity<RecipeDto> result = webClient.post()
+                .uri("/recipes")
+                .bodyValue(recipeCreationDto)
+                .header("Authorization", "Bearer " + getTokenByUserId("some-user-id"))
+                .retrieve()
+                .toEntity(RecipeDto.class)
+                .block();
+
+        //THEN
+
+        assertThat(result, notNullValue());
+        assertThat(result.getBody(), notNullValue());
+        assertThat(result.getStatusCode(), is(HttpStatus.OK));
+        assertThat(result.getBody().getId(), notNullValue());
+        assertThat(result.getBody().getName(), is(recipeCreationDto.getName()));
+        assertThat(result.getBody().getInstruction(), is(recipeCreationDto.getInstruction()));
+        assertThat(result.getBody().getDifficulty(), is(recipeCreationDto.getDifficulty()));
+        assertThat(result.getBody().getDuration(), is(recipeCreationDto.getDuration()));
+        assertThat(result.getBody().getImages(), empty());
+        assertThat(result.getBody().getOwner().getId(), is("some-user-id"));
+        assertThat(result.getBody().getIngredients().stream().map(Ingredient::getText).toList(), is(recipeCreationDto.getIngredients().stream().map(IngredientCreationDto::getText).toList()));
+        assertThat(result.getBody().getPortions(), is(recipeCreationDto.getPortions()));
+        assertThat(result.getBody().getRatingAverage(), is(BigDecimal.ZERO));
+        assertThat(result.getBody().getRatingCount(), is(0));
+        assertThat(result.getBody().getTags(), empty());
+        assertThat(result.getBody().getThumbnail(), nullValue());
+        assertThat(result.getBody().isPrivacy(), is(recipeCreationDto.isPrivacy()));
+    }
+
+    @Test
+    void addRecipeForbidden() {
+        //GIVEN
+        webClient = WebClient.create("http://localhost:" + port + "/api");
+
+        RecipeCreationDto recipeCreationDto = RecipeCreationDto.builder()
+                .name("test-recipe-name")
+                .difficulty(Difficulty.MEDIUM)
+                .duration(40)
+                .ingredients(List.of(IngredientCreationDto.builder()
+                        .text("test-ingredient-text")
+                        .amount(BigDecimal.valueOf(10))
+                        .build()))
+                .portions(4)
+                .instruction("test-instructions")
+                .privacy(false)
+                .build();
+
+
+        //WHEN
+
+        ResponseEntity<RecipeDto> result = webClient.post()
+                .uri("/recipes")
+                .bodyValue(recipeCreationDto)
+                .retrieve()
+                .onStatus(HttpStatus::isError, ex -> Mono.empty())
+                .toEntity(RecipeDto.class)
+                .block();
+
+        //THEN
+        assertThat(result, notNullValue());
+        assertThat(result.getStatusCode(), is(HttpStatus.FORBIDDEN));
     }
 }

@@ -1,5 +1,6 @@
 package com.github.flooooooooooorian.meinkochbuch.services;
 
+import com.github.flooooooooooorian.meinkochbuch.dtos.ingredient.IngredientCreationDto;
 import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipeCreationDto;
 import com.github.flooooooooooorian.meinkochbuch.exceptions.RecipePrivacyForbiddenException;
 import com.github.flooooooooooorian.meinkochbuch.models.recipe.Recipe;
@@ -9,6 +10,7 @@ import com.github.flooooooooooorian.meinkochbuch.repository.IngredientRepository
 import com.github.flooooooooooorian.meinkochbuch.repository.RecipeRepository;
 import com.github.flooooooooooorian.meinkochbuch.security.models.ChefUser;
 import com.github.flooooooooooorian.meinkochbuch.services.utils.IdUtils;
+import com.github.flooooooooooorian.meinkochbuch.utils.TimeUtils;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,6 +41,9 @@ class RecipeServiceTest {
 
     @Mock
     private IdUtils idUtils;
+
+    @Mock
+    private TimeUtils timeUtils;
 
     @InjectMocks
     private RecipeService recipeService;
@@ -273,8 +278,7 @@ class RecipeServiceTest {
                 .recipes(List.of())
                 .build();
 
-        Ingredient ingredient = Ingredient.builder()
-                .id("1")
+        IngredientCreationDto ingredientCreationDto = IngredientCreationDto.builder()
                 .text("test-ingredient")
                 .amount(BigDecimal.valueOf(20))
                 .build();
@@ -286,7 +290,7 @@ class RecipeServiceTest {
                 .instruction("test-instructions")
                 .duration(40)
                 .difficulty(Difficulty.EXPERT)
-                .ingredients(List.of(ingredient))
+                .ingredients(List.of(ingredientCreationDto))
                 .build();
 
         Recipe r1Result = Recipe.builder()
@@ -303,7 +307,11 @@ class RecipeServiceTest {
                 .build();
 
         when(recipeRepository.save(any())).thenReturn(r1Result);
-        when(ingredientRepository.save(any())).thenReturn(ingredient);
+        when(ingredientRepository.save(any())).thenReturn(Ingredient.builder()
+                .id("1")
+                .text("test-ingredient")
+                .amount(BigDecimal.valueOf(20))
+                .build());
         when(idUtils.generateId()).thenReturn("uuid-1");
 
         //WHEN

@@ -9,13 +9,13 @@ import com.github.flooooooooooorian.meinkochbuch.repository.IngredientRepository
 import com.github.flooooooooooorian.meinkochbuch.repository.RecipeRepository;
 import com.github.flooooooooooorian.meinkochbuch.security.models.ChefUser;
 import com.github.flooooooooooorian.meinkochbuch.services.utils.IdUtils;
+import com.github.flooooooooooorian.meinkochbuch.utils.TimeUtils;
 import lombok.RequiredArgsConstructor;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,6 +27,7 @@ public class RecipeService {
     private final RecipeRepository recipeRepository;
     private final IngredientRepository ingredientRepository;
     private final IdUtils idUtils;
+    private final TimeUtils timeUtils;
 
     public List<Recipe> getAllRecipes(Optional<ChefUser> optionalChefUser) {
         if (optionalChefUser.isPresent()) {
@@ -47,7 +48,12 @@ public class RecipeService {
     @Transactional
     public Recipe addRecipe(RecipeCreationDto recipeCreationDto, String userId) {
         List<Ingredient> ingredients = recipeCreationDto.getIngredients().stream()
-                .peek(ingredient -> ingredient.setId(idUtils.generateId()))
+                .map(dto -> Ingredient.builder()
+                        .id(idUtils.generateId())
+                        .text(dto.getText())
+                        .amount(dto.getAmount())
+                        .baseIngredient(dto.getBaseIngredient())
+                        .build())
                 .map(ingredientRepository::save)
                 .toList();
 
@@ -55,7 +61,7 @@ public class RecipeService {
                 .id(idUtils.generateId())
                 .owner(ChefUser.ofId(userId))
                 .name(recipeCreationDto.getName())
-                .createdAt(Instant.now())
+                .createdAt(timeUtils.now())
                 .privacy(recipeCreationDto.isPrivacy())
                 .difficulty(recipeCreationDto.getDifficulty())
                 .duration(recipeCreationDto.getDuration())
