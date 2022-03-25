@@ -17,7 +17,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/recipe")
+@RequestMapping("/api/recipes")
 @RequiredArgsConstructor
 public class RecipeController {
 
@@ -36,7 +36,7 @@ public class RecipeController {
     @GetMapping("{recipeId}")
     public RecipeDto getRecipeById(@PathVariable String recipeId) {
         LOG.debug("GET Recipe: " + recipeId);
-        return RecipeMapper.recipeToRecipeDto(recipeService.getRecipeById(recipeId));
+        return RecipeMapper.recipeToRecipeDto(recipeService.getRecipeById(recipeId, securityContextUtil.getUser()));
     }
 
     @PostMapping()

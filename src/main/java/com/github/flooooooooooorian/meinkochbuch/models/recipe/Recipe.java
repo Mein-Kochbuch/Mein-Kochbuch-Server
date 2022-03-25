@@ -16,7 +16,6 @@ import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.time.Instant;
 import java.util.List;
-import java.util.Objects;
 
 @Getter
 @Setter
@@ -77,20 +76,5 @@ public class Recipe {
             avgRating = avgRating.add(rating.getValue());
         }
         return avgRating.divide(BigDecimal.valueOf(this.ratings.size()), RoundingMode.UNNECESSARY);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Recipe recipe = (Recipe) o;
-
-        return Objects.equals(id, recipe.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return id != null ? id.hashCode() : 0;
     }
 }

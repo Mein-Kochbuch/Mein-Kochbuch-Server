@@ -66,22 +66,7 @@ public class ChefUser implements UserDetails {
     @OneToMany(mappedBy = "owner")
     private List<Image> images;
 
-    private Instant joined_at;
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        ChefUser chefUser = (ChefUser) o;
-
-        return id != null ? id.equals(chefUser.id) : chefUser.id == null;
-    }
-
-    @Override
-    public int hashCode() {
-        return id != null ? id.hashCode() : 0;
-    }
+    private Instant joinedAt;
 
     public static ChefUser ofId(String userId) {
         return ChefUser.builder().id(userId).build();

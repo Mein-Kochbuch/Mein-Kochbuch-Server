@@ -15,13 +15,13 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.HashMap;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -46,7 +46,7 @@ public class UserService {
                 .credentialsNonExpired(true)
                 .accountNonLocked(true)
                 .accountNonExpired(true)
-                .joined_at(timeUtils.now())
+                .joinedAt(timeUtils.now())
                 .name(name)
                 .build());
     }
@@ -59,15 +59,15 @@ public class UserService {
 
         } catch (DisabledException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email not verified");
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad Credentials");
         }
         HashMap<String, Object> claims = new HashMap<>();
         claims.put("name", ((ChefUser) auth.getPrincipal()).getId());
         return LoginJWTDto.builder()
                 .authorities(auth.getAuthorities().stream()
-                        .map(GrantedAuthority::getAuthority)
-                        .toArray(String[]::new))
+                        .map(ChefAuthorities.class::cast)
+                        .collect(Collectors.toSet()))
                 .jwt(jwtUtilsService.createToken(claims, auth.getName()))
                 .build();
     }
