@@ -6,7 +6,6 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
-import java.util.Objects;
 
 @Getter
 @Setter
@@ -32,19 +31,4 @@ public class Cookbook {
 
     @OneToOne()
     private Image thumbnail;
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Cookbook cookbook = (Cookbook) o;
-
-        return Objects.equals(id, cookbook.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return id != null ? id.hashCode() : 0;
-    }
 }

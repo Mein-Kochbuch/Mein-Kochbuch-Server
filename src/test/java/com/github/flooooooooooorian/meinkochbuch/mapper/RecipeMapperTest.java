@@ -135,10 +135,22 @@ class RecipeMapperTest {
                 .build();
 
 
-        assertThat(result, Matchers.is(expected));
+        //assertThat(result, Matchers.is(expected));
+        assertThat(result.getId(), Matchers.is(expected.getId()));
+        assertThat(result.getDifficulty(), Matchers.is(expected.getDifficulty()));
+        assertThat(result.getDuration(), Matchers.is(expected.getDuration()));
+        assertThat(result.getPortions(), Matchers.is(expected.getPortions()));
+        assertThat(result.getInstruction(), Matchers.is(expected.getInstruction()));
+        assertThat(result.getName(), Matchers.is(expected.getName()));
+        assertThat(result.getOwner().getId(), Matchers.is(expected.getOwner().getId()));
+        assertThat(result.getRatingAverage(), Matchers.is(expected.getRatingAverage()));
+        assertThat(result.getRatingCount(), Matchers.is(expected.getRatingCount()));
+
         for (int i = 0; i < result.getIngredients().size(); i++) {
-            assertThat(result.getIngredients().get(i), Matchers.is(expected.getIngredients().get(i)));
-            assertThat(result.getIngredients().get(i).getBaseIngredient(), Matchers.is(expected.getIngredients().get(i).getBaseIngredient()));
+            assertThat(result.getIngredients().get(i).getId(), Matchers.is(expected.getIngredients().get(i).getId()));
+            assertThat(result.getIngredients().get(i).getAmount(), Matchers.is(expected.getIngredients().get(i).getAmount()));
+            assertThat(result.getIngredients().get(i).getText(), Matchers.is(expected.getIngredients().get(i).getText()));
+            assertThat(result.getIngredients().get(i).getBaseIngredient().getId(), Matchers.is(expected.getIngredients().get(i).getBaseIngredient().getId()));
         }
 
     }

@@ -5,6 +5,8 @@ import com.github.flooooooooooorian.meinkochbuch.exceptions.RecipePrivacyForbidd
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
@@ -29,6 +31,24 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
         ApiError apiError = new ApiError("Access to Recipe denied!", ex.getMessage());
 
         return new ResponseEntity<>(apiError, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(DisabledException.class)
+    public ResponseEntity<ApiError> handleLoginAccountDisabled(DisabledException ex) {
+        log.error("Account disabled!", ex);
+
+        ApiError apiError = new ApiError("Account disabled!", ex.getMessage());
+
+        return new ResponseEntity<>(apiError, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ApiError> handleLoginBadCredentials(BadCredentialsException ex) {
+        log.error("Bad credentials!", ex);
+
+        ApiError apiError = new ApiError("Bad credentials", ex.getMessage());
+
+        return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(Throwable.class)

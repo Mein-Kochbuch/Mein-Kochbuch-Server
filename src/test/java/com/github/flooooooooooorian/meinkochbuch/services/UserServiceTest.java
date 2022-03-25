@@ -12,6 +12,8 @@ import com.github.flooooooooooorian.meinkochbuch.utils.TimeUtils;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -52,6 +54,9 @@ class UserServiceTest {
 
     @InjectMocks
     private UserService userService;
+
+    @Captor
+    private ArgumentCaptor<ChefUser> chefUserArgumentCaptor;
 
     @Test
     void getUserById() {
@@ -123,7 +128,7 @@ class UserServiceTest {
 
         //THEN
 
-        assertThat(result, Matchers.is(LoginJWTDto.builder().jwt("test-jwt").authorities(new String[0]).build()));
+        assertThat(result, Matchers.is(LoginJWTDto.builder().jwt("test-jwt").authorities(Set.of()).build()));
     }
 
     @Test
@@ -153,7 +158,7 @@ class UserServiceTest {
         //WHEN
         //THEN
 
-        assertThrows(ResponseStatusException.class, () -> userService.login(userLoginDto));
+        assertThrows(BadCredentialsException.class, () -> userService.login(userLoginDto));
     }
 
     @Test
@@ -193,7 +198,7 @@ class UserServiceTest {
         Instant instant = Instant.now();
         ChefUser expected = ChefUser.builder()
                 .id("1")
-                .joined_at(instant)
+                .joinedAt(instant)
                 .accountNonExpired(true)
                 .accountNonLocked(true)
                 .credentialsNonExpired(true)
@@ -207,12 +212,21 @@ class UserServiceTest {
         when(idUtils.generateId()).thenReturn("1");
         when(timeUtils.now()).thenReturn(instant);
         when(passwordEncoder.encode("test-password")).thenReturn("test-password-encoded");
-        when(chefUserRepository.save(expected)).thenReturn(expected);
+        when(chefUserRepository.save(chefUserArgumentCaptor.capture())).thenReturn(expected);
 
         //WHEN
         ChefUser result = userService.registerUser("test-username", "test-name", "test-password");
 
         //THEN
         assertThat(result, Matchers.is(expected));
+        assertThat(chefUserArgumentCaptor.getValue().getId(), Matchers.is(expected.getId()));
+        assertThat(chefUserArgumentCaptor.getValue().getUsername(), Matchers.is(expected.getUsername()));
+        assertThat(chefUserArgumentCaptor.getValue().getName(), Matchers.is(expected.getName()));
+        assertThat(chefUserArgumentCaptor.getValue().getAuthorities(), Matchers.containsInAnyOrder(ChefAuthorities.USER));
+        assertThat(chefUserArgumentCaptor.getValue().getJoinedAt(), Matchers.is(instant));
+        assertThat(chefUserArgumentCaptor.getValue().isAccountNonExpired(), Matchers.is(true));
+        assertThat(chefUserArgumentCaptor.getValue().isAccountNonLocked(), Matchers.is(true));
+        assertThat(chefUserArgumentCaptor.getValue().isCredentialsNonExpired(), Matchers.is(true));
+        assertThat(chefUserArgumentCaptor.getValue().isEnabled(), Matchers.is(false));
     }
 }

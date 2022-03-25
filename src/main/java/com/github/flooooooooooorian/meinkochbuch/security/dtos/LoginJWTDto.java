@@ -1,9 +1,12 @@
 package com.github.flooooooooooorian.meinkochbuch.security.dtos;
 
+import com.github.flooooooooooorian.meinkochbuch.security.models.ChefAuthorities;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -11,5 +14,5 @@ import lombok.NoArgsConstructor;
 @Builder
 public class LoginJWTDto {
     private String jwt;
-    private String[] authorities;
+    private Set<ChefAuthorities> authorities;
 }

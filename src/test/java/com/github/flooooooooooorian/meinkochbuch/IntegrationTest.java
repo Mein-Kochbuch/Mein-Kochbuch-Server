@@ -7,11 +7,11 @@ import com.github.flooooooooooorian.meinkochbuch.security.repository.ChefUserRep
 import com.github.flooooooooooorian.meinkochbuch.security.service.JwtUtilsService;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -44,6 +44,8 @@ public class IntegrationTest {
     @Autowired
     protected RecipeRepository recipeRepository;
 
+    @Autowired
+    protected PasswordEncoder passwordEncoder;
 
     @BeforeEach
     public void clear() {
@@ -67,7 +69,7 @@ public class IntegrationTest {
                 .credentialsNonExpired(true)
                 .enabled(true)
                 .authorities(Set.of(ChefAuthorities.USER))
-                .password("some-user-password")
+                .password(passwordEncoder.encode("some-user-password"))
                 .build());
     }
 
@@ -81,7 +83,7 @@ public class IntegrationTest {
                 .credentialsNonExpired(true)
                 .enabled(true)
                 .authorities(Set.of(ChefAuthorities.ADMIN))
-                .password("some-admin-password")
+                .password(passwordEncoder.encode("some-admin-password"))
                 .build());
     }
 
