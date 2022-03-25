@@ -91,7 +91,6 @@ public class IntegrationTest {
         Optional<ChefUser> optionalChefUser = chefUserRepository.findChefUserById(userId);
         optionalChefUser.orElseThrow(() -> new RuntimeException("User not found!"));
         HashMap<String, Object> claims = new HashMap<>();
-        claims.put("name", userId);
-        return jwtUtilsService.createToken(claims, optionalChefUser.get().getUsername());
+        return jwtUtilsService.createToken(claims, optionalChefUser.get().getId());
     }
 }

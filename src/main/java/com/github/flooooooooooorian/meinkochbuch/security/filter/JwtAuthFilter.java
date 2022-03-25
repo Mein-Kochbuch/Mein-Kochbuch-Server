@@ -5,6 +5,7 @@ import com.github.flooooooooooorian.meinkochbuch.security.service.JwtUtilsServic
 import com.github.flooooooooooorian.meinkochbuch.security.service.UserSecurityService;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,6 +21,7 @@ import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtUtilsService jwtUtilsService;
@@ -34,6 +36,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 Claims claims = this.jwtUtilsService.parseClaim(token);
                 setSecurityContext(claims.getSubject());
             } catch (Exception e) {
+                log.error("invalid token", e);
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN, "invalid token");
             }
         }
@@ -41,7 +44,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     }
 
     private void setSecurityContext(String subject) {
-        ChefUser user = userSecurityService.loadUserByUsername(subject);
+        ChefUser user = userSecurityService.loadUserById(subject);
 
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(user, "", user.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(token);

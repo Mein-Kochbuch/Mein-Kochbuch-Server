@@ -63,12 +63,11 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad Credentials");
         }
         HashMap<String, Object> claims = new HashMap<>();
-        claims.put("name", ((ChefUser) auth.getPrincipal()).getId());
         return LoginJWTDto.builder()
                 .authorities(auth.getAuthorities().stream()
                         .map(ChefAuthorities.class::cast)
                         .collect(Collectors.toSet()))
-                .jwt(jwtUtilsService.createToken(claims, auth.getName()))
+                .jwt(jwtUtilsService.createToken(claims, ((ChefUser) auth.getPrincipal()).getId()))
                 .build();
     }
 }

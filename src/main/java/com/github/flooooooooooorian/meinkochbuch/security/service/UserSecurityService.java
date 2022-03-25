@@ -13,6 +13,11 @@ public class UserSecurityService implements UserDetailsService {
 
     private final ChefUserRepository userRepository;
 
+    public ChefUser loadUserById(String id) throws UsernameNotFoundException {
+        return userRepository.findChefUserById(id)
+                .orElseThrow(() -> new UsernameNotFoundException("User does not exist!"));
+    }
+
     @Override
     public ChefUser loadUserByUsername(String email) throws UsernameNotFoundException {
         return userRepository.findChefUserByUsername(email)

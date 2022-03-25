@@ -114,13 +114,12 @@ class UserServiceTest {
                 .build();
 
         HashMap<String, Object> claims = new HashMap<>();
-        claims.put("name", chefUser1.getId());
 
         UsernamePasswordAuthenticationToken usernamePasswordData = new UsernamePasswordAuthenticationToken(userLoginDto.getUsername(), userLoginDto.getPassword());
         TestingAuthenticationToken authenticationToken = new TestingAuthenticationToken(chefUser1, chefUser1.getPassword());
 
         when(authenticationManager.authenticate(usernamePasswordData)).thenReturn(authenticationToken);
-        when(jwtUtilsService.createToken(claims, chefUser1.getUsername())).thenReturn("test-jwt");
+        when(jwtUtilsService.createToken(claims, chefUser1.getId())).thenReturn("test-jwt");
 
         //WHEN
 
