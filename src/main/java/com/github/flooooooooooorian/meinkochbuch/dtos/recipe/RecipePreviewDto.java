@@ -7,8 +7,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -20,7 +18,7 @@ public class RecipePreviewDto {
 
     private String name;
     private ImageDto thumbnail;
-    private BigDecimal ratingAverage;
+    private double ratingAverage;
     private int ratingCount;
 
 }

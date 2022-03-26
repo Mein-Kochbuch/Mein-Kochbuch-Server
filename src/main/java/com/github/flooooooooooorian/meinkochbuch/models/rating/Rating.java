@@ -5,7 +5,6 @@ import com.github.flooooooooooorian.meinkochbuch.security.models.ChefUser;
 import lombok.*;
 
 import javax.persistence.*;
-import java.math.BigDecimal;
 
 @Getter
 @Setter
@@ -31,5 +30,5 @@ public class Rating {
             referencedColumnName = "id")
     private ChefUser user;
 
-    private BigDecimal value;
+    private double value;
 }

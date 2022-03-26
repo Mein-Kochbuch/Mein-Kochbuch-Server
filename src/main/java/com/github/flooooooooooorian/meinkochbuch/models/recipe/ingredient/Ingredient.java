@@ -6,7 +6,6 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import java.math.BigDecimal;
 
 @Getter
 @Setter
@@ -24,5 +23,5 @@ public class Ingredient {
     private BaseIngredient baseIngredient;
 
     private String text;
-    private BigDecimal amount;
+    private double amount;
 }

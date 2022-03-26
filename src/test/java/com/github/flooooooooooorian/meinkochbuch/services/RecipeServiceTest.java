@@ -18,7 +18,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -92,7 +91,7 @@ class RecipeServiceTest {
 
         //WHEN
 
-        List<Recipe> result = recipeService.getAllRecipes(Optional.empty());
+        List<Recipe> result = recipeService.getAllRecipes(null);
 
         //THEN
         assertThat(result, Matchers.containsInAnyOrder(r1));
@@ -142,7 +141,7 @@ class RecipeServiceTest {
 
         //WHEN
 
-        List<Recipe> result = recipeService.getAllRecipes(Optional.of(chefUser1));
+        List<Recipe> result = recipeService.getAllRecipes(chefUser1.getId());
 
         //THEN
         assertThat(result, Matchers.containsInAnyOrder(r1, r2));
@@ -280,7 +279,7 @@ class RecipeServiceTest {
 
         IngredientCreationDto ingredientCreationDto = IngredientCreationDto.builder()
                 .text("test-ingredient")
-                .amount(BigDecimal.valueOf(20))
+                .amount(20)
                 .build();
 
         RecipeCreationDto creationDto = RecipeCreationDto.builder()
@@ -310,7 +309,7 @@ class RecipeServiceTest {
         when(ingredientRepository.save(any())).thenReturn(Ingredient.builder()
                 .id("1")
                 .text("test-ingredient")
-                .amount(BigDecimal.valueOf(20))
+                .amount(20)
                 .build());
         when(idUtils.generateId()).thenReturn("uuid-1");
 

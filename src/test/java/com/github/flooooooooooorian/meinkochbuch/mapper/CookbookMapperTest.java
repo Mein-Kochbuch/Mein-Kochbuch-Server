@@ -11,7 +11,6 @@ import com.github.flooooooooooorian.meinkochbuch.models.image.Image;
 import com.github.flooooooooooorian.meinkochbuch.security.models.ChefUser;
 import org.junit.jupiter.api.Test;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -56,7 +55,7 @@ class CookbookMapperTest {
                         .id("1")
                         .name("test-name")
                         .build())
-                .ratingAverage(BigDecimal.valueOf(4))
+                .ratingAverage(4)
                 .build();
 
         assertEquals(expected, result);
@@ -105,7 +104,7 @@ class CookbookMapperTest {
                         .id("1")
                         .name("test-name")
                         .ratingCount(1)
-                        .ratingAverage(BigDecimal.valueOf(4))
+                        .ratingAverage(4)
                         .owner(ChefUserPreviewDto.builder()
                                 .id("1")
                                 .name("test-name")
@@ -114,7 +113,7 @@ class CookbookMapperTest {
                                 .id("1")
                                 .build())
                         .build()))
-                .ratingAverage(BigDecimal.valueOf(4))
+                .ratingAverage(4)
                 .build();
 
         assertEquals(expected, result);

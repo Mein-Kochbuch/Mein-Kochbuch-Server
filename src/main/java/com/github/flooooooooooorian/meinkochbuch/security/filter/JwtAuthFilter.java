@@ -46,7 +46,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private void setSecurityContext(String subject) {
         ChefUser user = userSecurityService.loadUserById(subject);
 
-        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(user, "", user.getAuthorities());
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(subject, "", user.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(token);
     }
 

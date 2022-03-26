@@ -10,7 +10,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @Data
@@ -30,7 +29,7 @@ public class RecipeDto {
     private List<ImageDto> images;
     private List<Ingredient> ingredients;
     private boolean privacy;
-    private BigDecimal ratingAverage;
+    private double ratingAverage;
     private int ratingCount;
     private List<Tag> tags;
 }

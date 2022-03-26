@@ -13,7 +13,6 @@ import com.github.flooooooooooorian.meinkochbuch.models.tag.Tag;
 import com.github.flooooooooooorian.meinkochbuch.security.models.ChefAuthorities;
 import com.github.flooooooooooorian.meinkochbuch.security.models.ChefUser;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.Instant;
 import java.util.List;
@@ -44,7 +43,7 @@ public class MapperUtils {
                     .build()))
             .ingredients(List.of(Ingredient.builder()
                     .id("1")
-                    .amount(BigDecimal.valueOf(20L))
+                    .amount(20)
                     .text("test-ingredient-test")
                     .baseIngredient(BaseIngredient.builder()
                             .id("1")
@@ -65,7 +64,7 @@ public class MapperUtils {
                     .build()))
             .ratings(List.of(Rating.builder()
                     .user(ChefUser.ofId("1"))
-                    .value(BigDecimal.valueOf(4L))
+                    .value(4)
                     .build()))
             .build();
 
