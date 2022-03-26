@@ -6,10 +6,8 @@ import com.github.flooooooooooorian.meinkochbuch.dtos.ingredient.IngredientCreat
 import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipeCreationDto;
 import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipeDto;
 import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipePreviewDto;
-import com.github.flooooooooooorian.meinkochbuch.models.recipe.Recipe;
 import com.github.flooooooooooorian.meinkochbuch.models.recipe.difficulty.Difficulty;
 import com.github.flooooooooooorian.meinkochbuch.models.recipe.ingredient.Ingredient;
-import com.github.flooooooooooorian.meinkochbuch.security.models.ChefUser;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -18,8 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
-import java.math.BigDecimal;
-import java.time.Instant;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -38,22 +34,6 @@ class RecipeControllerTest extends IntegrationTest {
         //GIVEN
         webClient = WebClient.create("http://localhost:" + port + "/api");
 
-        recipeRepository.save(Recipe.builder()
-                .id("test-recipe-id")
-                .createdAt(Instant.now())
-                .owner(ChefUser.ofId("some-user-id"))
-                .instruction("test-recipe-instructions")
-                .name("test-recipe-name")
-                .build());
-        recipeRepository.save(Recipe.builder()
-                .id("test-recipe-id-2")
-                .createdAt(Instant.now())
-                .owner(ChefUser.ofId("some-user-id"))
-                .instruction("test-recipe-instructions")
-                .name("test-recipe-name")
-                .privacy(true)
-                .build());
-
         //WHEN
         ResponseEntity<List<RecipePreviewDto>> result = webClient.get()
                 .uri("/recipes")
@@ -69,51 +49,32 @@ class RecipeControllerTest extends IntegrationTest {
                         .name("some-user-name")
                         .build())
                 .name("test-recipe-name")
-                .ratingAverage(BigDecimal.ZERO)
+                .ratingAverage(3)
+                .ratingCount(1)
+                .thumbnail(null)
+                .build();
+
+        RecipePreviewDto expected2 = RecipePreviewDto.builder()
+                .id("test-recipe-id-3")
+                .name("test-recipe-name")
+                .owner(ChefUserPreviewDto.builder()
+                        .id("some-admin-id")
+                        .name("some-admin-name")
+                        .build())
+                .ratingAverage(0)
                 .ratingCount(0)
                 .thumbnail(null)
                 .build();
 
         assertThat(result, notNullValue());
         assertThat(result.getStatusCode(), is(HttpStatus.OK));
-        assertThat(result.getBody(), containsInAnyOrder(expected1));
+        assertThat(result.getBody(), containsInAnyOrder(expected1, expected2));
     }
 
     @Test
     void getAllRecipesOwnAndPublic() {
         //GIVEN
         webClient = WebClient.create("http://localhost:" + port + "/api");
-
-        recipeRepository.save(Recipe.builder()
-                .id("test-recipe-id")
-                .createdAt(Instant.now())
-                .owner(ChefUser.ofId("some-user-id"))
-                .instruction("test-recipe-instructions")
-                .name("test-recipe-name")
-                .build());
-        recipeRepository.save(Recipe.builder()
-                .id("test-recipe-id-2")
-                .createdAt(Instant.now())
-                .owner(ChefUser.ofId("some-user-id"))
-                .instruction("test-recipe-instructions")
-                .name("test-recipe-name")
-                .privacy(true)
-                .build());
-        recipeRepository.save(Recipe.builder()
-                .id("test-recipe-id-3")
-                .createdAt(Instant.now())
-                .owner(ChefUser.ofId("some-admin-id"))
-                .instruction("test-recipe-instructions")
-                .name("test-recipe-name")
-                .build());
-        recipeRepository.save(Recipe.builder()
-                .id("test-recipe-id-4")
-                .createdAt(Instant.now())
-                .owner(ChefUser.ofId("some-admin-id"))
-                .instruction("test-recipe-instructions")
-                .name("test-recipe-name")
-                .privacy(true)
-                .build());
 
         //WHEN
         ResponseEntity<List<RecipePreviewDto>> result = webClient.get()
@@ -131,8 +92,8 @@ class RecipeControllerTest extends IntegrationTest {
                         .name("some-user-name")
                         .build())
                 .name("test-recipe-name")
-                .ratingAverage(BigDecimal.ZERO)
-                .ratingCount(0)
+                .ratingAverage(3)
+                .ratingCount(1)
                 .thumbnail(null)
                 .build();
 
@@ -143,7 +104,7 @@ class RecipeControllerTest extends IntegrationTest {
                         .name("some-user-name")
                         .build())
                 .name("test-recipe-name")
-                .ratingAverage(BigDecimal.ZERO)
+                .ratingAverage(0)
                 .ratingCount(0)
                 .thumbnail(null)
                 .build();
@@ -155,7 +116,7 @@ class RecipeControllerTest extends IntegrationTest {
                         .name("some-admin-name")
                         .build())
                 .name("test-recipe-name")
-                .ratingAverage(BigDecimal.ZERO)
+                .ratingAverage(0)
                 .ratingCount(0)
                 .thumbnail(null)
                 .build();
@@ -169,14 +130,6 @@ class RecipeControllerTest extends IntegrationTest {
     void getRecipeByIdAnonymousPublic() {
         //GIVEN
         webClient = WebClient.create("http://localhost:" + port + "/api");
-
-        recipeRepository.save(Recipe.builder()
-                .id("test-recipe-id")
-                .createdAt(Instant.now())
-                .owner(ChefUser.ofId("some-user-id"))
-                .instruction("test-recipe-instructions")
-                .name("test-recipe-name")
-                .build());
 
         //WHEN
         ResponseEntity<RecipeDto> result = webClient.get()
@@ -194,8 +147,8 @@ class RecipeControllerTest extends IntegrationTest {
                         .build())
                 .name("test-recipe-name")
                 .instruction("test-recipe-instructions")
-                .ratingAverage(BigDecimal.ZERO)
-                .ratingCount(0)
+                .ratingAverage(3)
+                .ratingCount(1)
                 .thumbnail(null)
                 .images(List.of())
                 .ingredients(List.of())
@@ -212,18 +165,9 @@ class RecipeControllerTest extends IntegrationTest {
         //GIVEN
         webClient = WebClient.create("http://localhost:" + port + "/api");
 
-        recipeRepository.save(Recipe.builder()
-                .id("test-recipe-id")
-                .createdAt(Instant.now())
-                .owner(ChefUser.ofId("some-user-id"))
-                .instruction("test-recipe-instructions")
-                .name("test-recipe-name")
-                .privacy(true)
-                .build());
-
         //WHEN
         ResponseEntity<RecipeDto> result = webClient.get()
-                .uri("/recipes/test-recipe-id")
+                .uri("/recipes/test-recipe-id-2")
                 .retrieve()
                 .onStatus(HttpStatus::isError, response -> Mono.empty())
                 .toEntity(RecipeDto.class)
@@ -242,7 +186,7 @@ class RecipeControllerTest extends IntegrationTest {
 
         //WHEN
         ResponseEntity<RecipeDto> result = webClient.get()
-                .uri("/recipes/test-recipe-id")
+                .uri("/recipes/test-recipe-id-not-found")
                 .retrieve()
                 .onStatus(HttpStatus::isError, response -> Mono.empty())
                 .toEntity(RecipeDto.class)
@@ -265,7 +209,7 @@ class RecipeControllerTest extends IntegrationTest {
                 .duration(40)
                 .ingredients(List.of(IngredientCreationDto.builder()
                         .text("test-ingredient-text")
-                        .amount(BigDecimal.valueOf(10))
+                        .amount(10)
                         .build()))
                 .portions(4)
                 .instruction("test-instructions")
@@ -297,7 +241,7 @@ class RecipeControllerTest extends IntegrationTest {
         assertThat(result.getBody().getOwner().getId(), is("some-user-id"));
         assertThat(result.getBody().getIngredients().stream().map(Ingredient::getText).toList(), is(recipeCreationDto.getIngredients().stream().map(IngredientCreationDto::getText).toList()));
         assertThat(result.getBody().getPortions(), is(recipeCreationDto.getPortions()));
-        assertThat(result.getBody().getRatingAverage(), is(BigDecimal.ZERO));
+        assertThat(result.getBody().getRatingAverage(), is(0.0));
         assertThat(result.getBody().getRatingCount(), is(0));
         assertThat(result.getBody().getTags(), empty());
         assertThat(result.getBody().getThumbnail(), nullValue());
@@ -315,7 +259,7 @@ class RecipeControllerTest extends IntegrationTest {
                 .duration(40)
                 .ingredients(List.of(IngredientCreationDto.builder()
                         .text("test-ingredient-text")
-                        .amount(BigDecimal.valueOf(10))
+                        .amount(10)
                         .build()))
                 .portions(4)
                 .instruction("test-instructions")

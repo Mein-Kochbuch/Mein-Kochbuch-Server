@@ -7,8 +7,6 @@ import com.github.flooooooooooorian.meinkochbuch.models.cookbook.Cookbook;
 import com.github.flooooooooooorian.meinkochbuch.models.cookbook.CookbookContent;
 import com.github.flooooooooooorian.meinkochbuch.models.recipe.Recipe;
 
-import java.math.BigDecimal;
-
 public interface CookbookMapper {
 
     static CookbookPreview cookbookToCookbookPreview(Cookbook cookbook) {
@@ -20,7 +18,7 @@ public interface CookbookMapper {
                 .ratingAverage(cookbook.getContents().stream()
                         .map(CookbookContent::getRecipe)
                         .map(Recipe::getRatingAverage)
-                        .reduce(BigDecimal.ZERO, BigDecimal::add))
+                        .reduce(0.0, Double::sum))
                 .build();
     }
 
@@ -40,7 +38,7 @@ public interface CookbookMapper {
                 .ratingAverage(cookbook.getContents().stream()
                         .map(CookbookContent::getRecipe)
                         .map(Recipe::getRatingAverage)
-                        .reduce(BigDecimal.ZERO, BigDecimal::add))
+                        .reduce(0.0, Double::sum))
                 .thumbnail(ImageMapper.imageToImageDto(cookbook.getThumbnail()))
                 .build();
     }

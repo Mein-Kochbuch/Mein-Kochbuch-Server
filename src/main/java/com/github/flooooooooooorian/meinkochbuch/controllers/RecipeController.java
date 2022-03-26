@@ -4,16 +4,15 @@ import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipeCreationDto;
 import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipeDto;
 import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipePreviewDto;
 import com.github.flooooooooooorian.meinkochbuch.mapper.RecipeMapper;
-import com.github.flooooooooooorian.meinkochbuch.security.models.ChefUser;
 import com.github.flooooooooooorian.meinkochbuch.security.utils.SecurityContextUtil;
 import com.github.flooooooooooorian.meinkochbuch.services.RecipeService;
 import lombok.RequiredArgsConstructor;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -26,9 +25,9 @@ public class RecipeController {
     private final SecurityContextUtil securityContextUtil;
 
     @GetMapping()
-    public List<RecipePreviewDto> getAllRecipes() {
+    public List<RecipePreviewDto> getAllRecipes(Principal principal) {
         LOG.debug("GET All Recipes");
-        return recipeService.getAllRecipes(securityContextUtil.getUser()).stream()
+        return recipeService.getAllRecipes(principal != null ? principal.getName() : null).stream()
                 .map(RecipeMapper::recipeToRecipePreviewDto)
                 .toList();
     }
@@ -40,9 +39,8 @@ public class RecipeController {
     }
 
     @PostMapping()
-    public RecipeDto addRecipe(@Valid @RequestBody RecipeCreationDto recipeCreationDto, Authentication auth) {
+    public RecipeDto addRecipe(@Valid @RequestBody RecipeCreationDto recipeCreationDto, Principal principal) {
         LOG.debug("GET Add Recipe");
-        ChefUser user = (ChefUser) auth.getPrincipal();
-        return RecipeMapper.recipeToRecipeDto(recipeService.addRecipe(recipeCreationDto, user.getId()));
+        return RecipeMapper.recipeToRecipeDto(recipeService.addRecipe(recipeCreationDto, principal.getName()));
     }
 }

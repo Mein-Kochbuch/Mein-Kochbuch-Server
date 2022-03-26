@@ -1,5 +1,8 @@
 package com.github.flooooooooooorian.meinkochbuch;
 
+import com.github.flooooooooooorian.meinkochbuch.models.rating.Rating;
+import com.github.flooooooooooorian.meinkochbuch.models.recipe.Recipe;
+import com.github.flooooooooooorian.meinkochbuch.repository.RatingRepository;
 import com.github.flooooooooooorian.meinkochbuch.repository.RecipeRepository;
 import com.github.flooooooooooorian.meinkochbuch.security.models.ChefAuthorities;
 import com.github.flooooooooooorian.meinkochbuch.security.models.ChefUser;
@@ -11,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.Set;
@@ -45,6 +49,9 @@ public class IntegrationTest {
     protected RecipeRepository recipeRepository;
 
     @Autowired
+    protected RatingRepository ratingRepository;
+
+    @Autowired
     protected PasswordEncoder passwordEncoder;
 
     @BeforeEach
@@ -52,11 +59,56 @@ public class IntegrationTest {
         clearData();
         initTestUser();
         initTestAdmin();
+        initTestRecipe();
+        initTestRating();
     }
 
     public void clearData() {
+        ratingRepository.deleteAll();
         recipeRepository.deleteAll();
         chefUserRepository.deleteAll();
+    }
+
+    private void initTestRating() {
+        ratingRepository.save(Rating.builder()
+                .value(3)
+                .user(ChefUser.ofId("some-user-id"))
+                .recipe(Recipe.ofId("test-recipe-id"))
+                .build());
+    }
+
+    private void initTestRecipe() {
+        recipeRepository.save(Recipe.builder()
+                .id("test-recipe-id")
+                .createdAt(Instant.now())
+                .owner(ChefUser.ofId("some-user-id"))
+                .instruction("test-recipe-instructions")
+                .name("test-recipe-name")
+                .build());
+        recipeRepository.save(Recipe.builder()
+                .id("test-recipe-id-2")
+                .createdAt(Instant.now())
+                .owner(ChefUser.ofId("some-user-id"))
+                .instruction("test-recipe-instructions")
+                .name("test-recipe-name")
+                .privacy(true)
+                .build());
+        recipeRepository.save(Recipe.builder()
+                .id("test-recipe-id-3")
+                .createdAt(Instant.now())
+                .owner(ChefUser.ofId("some-admin-id"))
+                .instruction("test-recipe-instructions")
+                .name("test-recipe-name")
+                .build());
+        recipeRepository.save(Recipe.builder()
+                .id("test-recipe-id-4")
+                .createdAt(Instant.now())
+                .owner(ChefUser.ofId("some-admin-id"))
+                .instruction("test-recipe-instructions")
+                .name("test-recipe-name")
+                .privacy(true)
+                .build());
+
     }
 
     private void initTestUser() {

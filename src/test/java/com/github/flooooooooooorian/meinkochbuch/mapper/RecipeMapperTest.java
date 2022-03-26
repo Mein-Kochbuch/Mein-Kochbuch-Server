@@ -13,7 +13,6 @@ import com.github.flooooooooooorian.meinkochbuch.security.models.ChefUser;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.Instant;
 import java.util.List;
@@ -39,7 +38,7 @@ class RecipeMapperTest {
                         .id("1")
                         .name("test-name")
                         .build())
-                .ratingAverage(BigDecimal.valueOf(4L))
+                .ratingAverage(4)
                 .ratingCount(1)
                 .thumbnail(ImageDto.builder()
                         .id("1")
@@ -80,7 +79,7 @@ class RecipeMapperTest {
                         .id("1")
                         .name("test-name")
                         .build())
-                .ratingAverage(BigDecimal.ZERO)
+                .ratingAverage(0)
                 .ratingCount(0)
                 .build();
         assertThat(result, Matchers.is(expected));
@@ -114,7 +113,7 @@ class RecipeMapperTest {
                         .build()))
                 .ingredients(List.of(Ingredient.builder()
                         .id("1")
-                        .amount(BigDecimal.valueOf(20L))
+                        .amount(20)
                         .text("test-ingredient-test")
                         .baseIngredient(BaseIngredient.builder()
                                 .id("1")
@@ -131,7 +130,7 @@ class RecipeMapperTest {
                         .name("test-tag")
                         .build()))
                 .ratingCount(1)
-                .ratingAverage(BigDecimal.valueOf(4L))
+                .ratingAverage(4)
                 .build();
 
 
@@ -196,7 +195,7 @@ class RecipeMapperTest {
                 .privacy(false)
                 .tags(List.of())
                 .ratingCount(0)
-                .ratingAverage(BigDecimal.ZERO)
+                .ratingAverage(0)
                 .build();
 
 

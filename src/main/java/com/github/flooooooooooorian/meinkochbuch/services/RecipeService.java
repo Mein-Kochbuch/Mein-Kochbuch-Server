@@ -29,11 +29,8 @@ public class RecipeService {
     private final IdUtils idUtils;
     private final TimeUtils timeUtils;
 
-    public List<Recipe> getAllRecipes(Optional<ChefUser> optionalChefUser) {
-        if (optionalChefUser.isPresent()) {
-            return recipeRepository.findAllByPrivacyIsFalseOrOwner_Id(optionalChefUser.get().getId());
-        }
-        return recipeRepository.findAllByPrivacyIsFalseOrOwner_Id(null);
+    public List<Recipe> getAllRecipes(String userId) {
+        return recipeRepository.findAllByPrivacyIsFalseOrOwner_Id(userId);
     }
 
     public Recipe getRecipeById(String recipeId, Optional<ChefUser> optionalChefUser) {

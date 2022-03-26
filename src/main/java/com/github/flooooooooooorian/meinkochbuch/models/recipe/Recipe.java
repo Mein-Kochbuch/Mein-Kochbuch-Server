@@ -11,9 +11,7 @@ import lombok.*;
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.math.RoundingMode;
 import java.time.Instant;
 import java.util.List;
 
@@ -64,17 +62,23 @@ public class Recipe {
     @OneToMany(mappedBy = "recipe")
     private List<Rating> ratings;
 
-    public BigDecimal getRatingAverage() {
+    public static Recipe ofId(String recipeId) {
+        return Recipe.builder()
+                .id(recipeId)
+                .build();
+    }
+
+    public double getRatingAverage() {
         if (this.getRatings() == null) {
-            return BigDecimal.ZERO;
+            return 0;
         }
         if (this.getRatings().isEmpty()) {
-            return BigDecimal.ZERO;
+            return 0;
         }
-        BigDecimal avgRating = BigDecimal.ZERO;
+        double avgRating = 0;
         for (Rating rating : this.getRatings()) {
-            avgRating = avgRating.add(rating.getValue());
+            avgRating = avgRating + rating.getValue();
         }
-        return avgRating.divide(BigDecimal.valueOf(this.ratings.size()), RoundingMode.UNNECESSARY);
+        return avgRating / this.ratings.size();
     }
 }
