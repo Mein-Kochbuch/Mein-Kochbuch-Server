@@ -1,14 +1,13 @@
 package com.github.flooooooooooorian.meinkochbuch.controllers;
 
+import com.github.flooooooooooorian.meinkochbuch.dtos.rating.CreateRatingDto;
 import com.github.flooooooooooorian.meinkochbuch.dtos.rating.RatingDto;
 import com.github.flooooooooooorian.meinkochbuch.mapper.RatingMapper;
 import com.github.flooooooooooorian.meinkochbuch.services.RatingService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.security.Principal;
 
 @RequiredArgsConstructor
@@ -23,4 +22,8 @@ public class RatingController {
         return RatingMapper.ratingToRatingDto(ratingService.getUsersRatingFromRecipe(principal.getName(), recipeId));
     }
 
+    @PutMapping("{recipeId}")
+    public RatingDto addRating(Principal principal, @RequestBody @Valid CreateRatingDto ratingDto, @PathVariable String recipeId) {
+        return RatingMapper.ratingToRatingDto(ratingService.addRating(principal.getName(), recipeId, ratingDto.getRating()));
+    }
 }

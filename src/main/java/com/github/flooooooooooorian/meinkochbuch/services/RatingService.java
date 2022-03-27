@@ -1,10 +1,12 @@
 package com.github.flooooooooooorian.meinkochbuch.services;
 
+import com.github.flooooooooooorian.meinkochbuch.exceptions.RatingFailedException;
 import com.github.flooooooooooorian.meinkochbuch.models.rating.Rating;
 import com.github.flooooooooooorian.meinkochbuch.models.recipe.Recipe;
 import com.github.flooooooooooorian.meinkochbuch.repository.RatingRepository;
 import com.github.flooooooooooorian.meinkochbuch.security.models.ChefUser;
 import lombok.RequiredArgsConstructor;
+import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,5 +22,17 @@ public class RatingService {
                         .value(0)
                         .recipe(Recipe.ofId(recipeId))
                         .build());
+    }
+
+    public Rating addRating(String userId, String recipeId, double rating) {
+        try {
+            return ratingRepository.save(Rating.builder()
+                    .recipe(Recipe.ofId(recipeId))
+                    .user(ChefUser.ofId(userId))
+                    .value(rating)
+                    .build());
+        } catch (JpaObjectRetrievalFailureException exception) {
+            throw new RatingFailedException("Rating failed!", exception);
+        }
     }
 }

@@ -12,8 +12,7 @@ import javax.validation.constraints.Min;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class RatingDto {
-    private String recipeId;
+public class CreateRatingDto {
 
     @Min(0)
     @Max(5)
