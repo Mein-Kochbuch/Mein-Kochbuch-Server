@@ -1,5 +1,6 @@
 package com.github.flooooooooooorian.meinkochbuch.controllers.exception;
 
+import com.github.flooooooooooorian.meinkochbuch.exceptions.RatingFailedException;
 import com.github.flooooooooooorian.meinkochbuch.exceptions.RecipeDoesNotExistException;
 import com.github.flooooooooooorian.meinkochbuch.exceptions.RecipePrivacyForbiddenException;
 import lombok.extern.slf4j.Slf4j;
@@ -50,6 +51,16 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
 
         return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(RatingFailedException.class)
+    public ResponseEntity<ApiError> handleRatingFailedException(RatingFailedException ex) {
+        log.error("Rating failed!", ex);
+
+        ApiError apiError = new ApiError("Rating failed!", ex.getMessage());
+
+        return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
+    }
+
 
     @ExceptionHandler(Throwable.class)
     public ResponseEntity<ApiError> handleUnknownException(Throwable ex) {
