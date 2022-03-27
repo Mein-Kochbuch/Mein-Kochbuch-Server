@@ -2,6 +2,7 @@ package com.github.flooooooooooorian.meinkochbuch.controllers.exception;
 
 import com.github.flooooooooooorian.meinkochbuch.exceptions.RatingFailedException;
 import com.github.flooooooooooorian.meinkochbuch.exceptions.RecipeDoesNotExistException;
+import com.github.flooooooooooorian.meinkochbuch.exceptions.RecipeEditForbiddenException;
 import com.github.flooooooooooorian.meinkochbuch.exceptions.RecipePrivacyForbiddenException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -61,6 +62,14 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(RecipeEditForbiddenException.class)
+    public ResponseEntity<ApiError> handleRecipeEditForbiddenException(RecipeEditForbiddenException ex) {
+        log.error("Recipe Edit forbidden! Not Owner of Recipe!", ex);
+
+        ApiError apiError = new ApiError("Recipe Edit forbidden! Not Owner of Recipe!", ex.getMessage());
+
+        return new ResponseEntity<>(apiError, HttpStatus.FORBIDDEN);
+    }
 
     @ExceptionHandler(Throwable.class)
     public ResponseEntity<ApiError> handleUnknownException(Throwable ex) {

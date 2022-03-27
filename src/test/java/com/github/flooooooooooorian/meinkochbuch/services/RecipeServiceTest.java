@@ -2,6 +2,7 @@ package com.github.flooooooooooorian.meinkochbuch.services;
 
 import com.github.flooooooooooorian.meinkochbuch.dtos.ingredient.IngredientCreationDto;
 import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipeCreationDto;
+import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipeEditDto;
 import com.github.flooooooooooorian.meinkochbuch.exceptions.RecipePrivacyForbiddenException;
 import com.github.flooooooooooorian.meinkochbuch.models.recipe.Recipe;
 import com.github.flooooooooooorian.meinkochbuch.models.recipe.difficulty.Difficulty;
@@ -25,8 +26,7 @@ import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class RecipeServiceTest {
@@ -264,6 +264,8 @@ class RecipeServiceTest {
     @Test
     void addRecipe() {
         //GIVEN
+        Instant now = Instant.now();
+
         ChefUser chefUser1 = ChefUser.builder()
                 .id("1")
                 .accountNonExpired(true)
@@ -306,11 +308,7 @@ class RecipeServiceTest {
                 .build();
 
         when(recipeRepository.save(any())).thenReturn(r1Result);
-        when(ingredientRepository.save(any())).thenReturn(Ingredient.builder()
-                .id("1")
-                .text("test-ingredient")
-                .amount(20)
-                .build());
+        when(timeUtils.now()).thenReturn(now);
         when(idUtils.generateId()).thenReturn("uuid-1");
 
         //WHEN
@@ -318,6 +316,250 @@ class RecipeServiceTest {
         Recipe result = recipeService.addRecipe(creationDto, chefUser1.getId());
 
         //THEN
+
+        assertThat(result.getId(), Matchers.is(r1Result.getId()));
+        assertThat(result.isPrivacy(), Matchers.is(r1Result.isPrivacy()));
+        assertThat(result.getOwner().getId(), Matchers.is(r1Result.getOwner().getId()));
+        assertThat(result.getCreatedAt(), Matchers.is(now));
+        assertThat(result.getName(), Matchers.is(r1Result.getName()));
+        assertThat(result.getDifficulty(), Matchers.is(r1Result.getDifficulty()));
+        assertThat(result.getDuration(), Matchers.is(r1Result.getDuration()));
+        assertThat(result.getInstruction(), Matchers.is(r1Result.getInstruction()));
+        assertThat(result.getPortions(), Matchers.is(r1Result.getPortions()));
+        assertThat(result.getThumbnail(), Matchers.is(r1Result.getThumbnail()));
+
+        if (result.getIngredients() != null) {
+            for (int i = 0; i < result.getIngredients().size(); i++) {
+                assertThat(result.getIngredients().get(i).getText(), Matchers.is(r1Result.getIngredients().get(i).getText()));
+            }
+        }
+
+        if (result.getImages() != null) {
+            for (int i = 0; i < result.getImages().size(); i++) {
+                assertThat(result.getImages().get(i).getId(), Matchers.is(r1Result.getImages().get(i).getId()));
+            }
+        }
+
+        if (result.getTaggings() != null) {
+            for (int i = 0; i < result.getTaggings().size(); i++) {
+                assertThat(result.getTaggings().get(i).getTag().getId(), Matchers.is(r1Result.getTaggings().get(i).getTag().getId()));
+            }
+        }
+    }
+
+    @Test
+    void changeRecipe_valid() {
+        //GIVEN
+        ChefUser chefUser1 = ChefUser.builder()
+                .id("1")
+                .accountNonExpired(true)
+                .accountNonLocked(true)
+                .authorities(Set.of())
+                .cookbooks(List.of())
+                .credentialsNonExpired(true)
+                .favoriteRecipes(List.of())
+                .enabled(true)
+                .name("my-name")
+                .recipes(List.of())
+                .build();
+
+        Ingredient ingredient1 = Ingredient.builder()
+                .id("1")
+                .text("test-ingredient")
+                .amount(20)
+                .build();
+
+        Recipe originalRecipe = Recipe.builder()
+                .privacy(false)
+                .name("test-name-old")
+                .portions(6)
+                .instruction("test-instructions-old")
+                .duration(20)
+                .difficulty(Difficulty.MEDIUM)
+                .ingredients(List.of(ingredient1))
+                .build();
+
+        Ingredient ingredient2 = Ingredient.builder()
+                .text("test-ingredient")
+                .amount(20)
+                .build();
+
+        RecipeEditDto recipeEditDto = RecipeEditDto.builder()
+                .privacy(true)
+                .name("test-name")
+                .portions(4)
+                .instruction("test-instructions")
+                .duration(40)
+                .difficulty(Difficulty.EXPERT)
+                .ingredients(List.of(ingredient1, ingredient2))
+                .build();
+
+        Ingredient ingredientResult1 = Ingredient.builder()
+                .id("14")
+                .text("test-ingredient")
+                .amount(20)
+                .build();
+
+        Ingredient ingredientResult2 = Ingredient.builder()
+                .id("15")
+                .text("test-ingredient")
+                .amount(20)
+                .build();
+
+        Recipe r1Result = Recipe.builder()
+                .id("1")
+                .owner(chefUser1)
+                .name("test-name")
+                .privacy(true)
+                .portions(4)
+                .instruction("test-instructions")
+                .duration(40)
+                .difficulty(Difficulty.EXPERT)
+                .createdAt(Instant.now())
+                .ingredients(List.of(ingredientResult1, ingredientResult2))
+                .build();
+
+        when(recipeRepository.findById("1")).thenReturn(Optional.ofNullable(originalRecipe));
+        when(recipeRepository.save(any())).thenReturn(r1Result);
+        when(idUtils.generateId()).thenReturn("14");
+        when(idUtils.generateId()).thenReturn("15");
+        doNothing().when(ingredientRepository).deleteById("1");
+
+        //WHEN
+
+        Recipe result = recipeService.changeRecipe("1", recipeEditDto, chefUser1.getId());
+
+        //THEN
+
+        assertThat(result.getId(), Matchers.is(r1Result.getId()));
+        assertThat(result.isPrivacy(), Matchers.is(r1Result.isPrivacy()));
+        assertThat(result.getOwner().getId(), Matchers.is(r1Result.getOwner().getId()));
+        assertThat(result.getName(), Matchers.is(r1Result.getName()));
+        assertThat(result.getDifficulty(), Matchers.is(r1Result.getDifficulty()));
+        assertThat(result.getDuration(), Matchers.is(r1Result.getDuration()));
+        assertThat(result.getInstruction(), Matchers.is(r1Result.getInstruction()));
+        assertThat(result.getPortions(), Matchers.is(r1Result.getPortions()));
+        assertThat(result.getThumbnail(), Matchers.is(r1Result.getThumbnail()));
+
+        if (result.getIngredients() != null) {
+            for (int i = 0; i < result.getIngredients().size(); i++) {
+                assertThat(result.getIngredients().get(i).getText(), Matchers.is(r1Result.getIngredients().get(i).getText()));
+            }
+        }
+
+        if (result.getImages() != null) {
+            for (int i = 0; i < result.getImages().size(); i++) {
+                assertThat(result.getImages().get(i).getId(), Matchers.is(r1Result.getImages().get(i).getId()));
+            }
+        }
+
+        if (result.getTaggings() != null) {
+            for (int i = 0; i < result.getTaggings().size(); i++) {
+                assertThat(result.getTaggings().get(i).getTag().getId(), Matchers.is(r1Result.getTaggings().get(i).getTag().getId()));
+            }
+        }
+    }
+
+    @Test
+    void changeRecipe_newRecipe() {
+        //GIVEN
+        ChefUser chefUser1 = ChefUser.builder()
+                .id("1")
+                .accountNonExpired(true)
+                .accountNonLocked(true)
+                .authorities(Set.of())
+                .cookbooks(List.of())
+                .credentialsNonExpired(true)
+                .favoriteRecipes(List.of())
+                .enabled(true)
+                .name("my-name")
+                .recipes(List.of())
+                .build();
+
+        Ingredient ingredient1 = Ingredient.builder()
+                .id("1")
+                .text("test-ingredient")
+                .amount(20)
+                .build();
+
+        Ingredient ingredient2 = Ingredient.builder()
+                .text("test-ingredient")
+                .amount(20)
+                .build();
+
+        RecipeEditDto recipeEditDto = RecipeEditDto.builder()
+                .privacy(true)
+                .name("test-name")
+                .portions(4)
+                .instruction("test-instructions")
+                .duration(40)
+                .difficulty(Difficulty.EXPERT)
+                .ingredients(List.of(ingredient1, ingredient2))
+                .build();
+
+        Ingredient ingredientResult1 = Ingredient.builder()
+                .id("14")
+                .text("test-ingredient")
+                .amount(20)
+                .build();
+
+        Ingredient ingredientResult2 = Ingredient.builder()
+                .id("15")
+                .text("test-ingredient")
+                .amount(20)
+                .build();
+
+        Recipe r1Result = Recipe.builder()
+                .id("1")
+                .owner(chefUser1)
+                .name("test-name")
+                .privacy(true)
+                .portions(4)
+                .instruction("test-instructions")
+                .duration(40)
+                .difficulty(Difficulty.EXPERT)
+                .createdAt(Instant.now())
+                .ingredients(List.of(ingredientResult1, ingredientResult2))
+                .build();
+
+        when(recipeRepository.findById("1")).thenReturn(Optional.empty());
+        when(recipeRepository.save(any())).thenReturn(r1Result);
+        when(idUtils.generateId()).thenReturn("14");
+        when(idUtils.generateId()).thenReturn("15");
+
+        //WHEN
+
+        Recipe result = recipeService.changeRecipe("1", recipeEditDto, chefUser1.getId());
+
+        //THEN
+
+        assertThat(result.getId(), Matchers.is(r1Result.getId()));
+        assertThat(result.isPrivacy(), Matchers.is(r1Result.isPrivacy()));
+        assertThat(result.getOwner().getId(), Matchers.is(r1Result.getOwner().getId()));
+        assertThat(result.getName(), Matchers.is(r1Result.getName()));
+        assertThat(result.getDifficulty(), Matchers.is(r1Result.getDifficulty()));
+        assertThat(result.getDuration(), Matchers.is(r1Result.getDuration()));
+        assertThat(result.getInstruction(), Matchers.is(r1Result.getInstruction()));
+        assertThat(result.getPortions(), Matchers.is(r1Result.getPortions()));
+        assertThat(result.getThumbnail(), Matchers.is(r1Result.getThumbnail()));
+
+        if (result.getIngredients() != null) {
+            for (int i = 0; i < result.getIngredients().size(); i++) {
+                assertThat(result.getIngredients().get(i).getText(), Matchers.is(r1Result.getIngredients().get(i).getText()));
+            }
+        }
+
+        if (result.getImages() != null) {
+            for (int i = 0; i < result.getImages().size(); i++) {
+                assertThat(result.getImages().get(i).getId(), Matchers.is(r1Result.getImages().get(i).getId()));
+            }
+        }
+
+        if (result.getTaggings() != null) {
+            for (int i = 0; i < result.getTaggings().size(); i++) {
+                assertThat(result.getTaggings().get(i).getTag().getId(), Matchers.is(r1Result.getTaggings().get(i).getTag().getId()));
+            }
+        }
 
         assertThat(result, Matchers.is(r1Result));
     }
