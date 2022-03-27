@@ -371,6 +371,7 @@ class RecipeServiceTest {
 
         Recipe originalRecipe = Recipe.builder()
                 .privacy(false)
+                .owner(chefUser1)
                 .name("test-name-old")
                 .portions(6)
                 .instruction("test-instructions-old")
