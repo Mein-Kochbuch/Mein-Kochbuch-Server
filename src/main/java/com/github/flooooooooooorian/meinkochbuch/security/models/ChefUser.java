@@ -54,16 +54,16 @@ public class ChefUser implements UserDetails {
     @Column(nullable = false)
     private String name;
 
-    @ManyToMany()
+    @ManyToMany(cascade = CascadeType.ALL)
     private List<Recipe> favoriteRecipes;
 
-    @OneToMany(mappedBy = "owner")
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
     private List<Recipe> recipes;
 
-    @OneToMany(mappedBy = "owner")
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
     private List<Cookbook> cookbooks;
 
-    @OneToMany(mappedBy = "owner")
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
     private List<Image> images;
 
     private Instant joinedAt;

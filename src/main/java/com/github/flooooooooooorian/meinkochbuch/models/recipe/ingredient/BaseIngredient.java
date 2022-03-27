@@ -15,9 +15,11 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 @Entity
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class BaseIngredient {
 
     @Id
+    @EqualsAndHashCode.Include
     private String id;
 
     private String name;

@@ -14,8 +14,10 @@ import javax.persistence.ManyToOne;
 @AllArgsConstructor
 @Builder
 @Entity
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Image {
     @Id
+    @EqualsAndHashCode.Include
     private String id;
 
     @ManyToOne
