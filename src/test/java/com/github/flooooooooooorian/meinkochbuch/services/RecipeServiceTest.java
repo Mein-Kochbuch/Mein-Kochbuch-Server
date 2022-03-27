@@ -14,10 +14,6 @@ import com.github.flooooooooooorian.meinkochbuch.services.utils.IdUtils;
 import com.github.flooooooooooorian.meinkochbuch.utils.TimeUtils;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.Instant;
 import java.util.List;
@@ -28,24 +24,14 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
 class RecipeServiceTest {
 
+    private final RecipeRepository recipeRepository = mock(RecipeRepository.class);
+    private final IngredientRepository ingredientRepository = mock(IngredientRepository.class);
+    private final IdUtils idUtils = mock(IdUtils.class);
+    private final TimeUtils timeUtils = mock(TimeUtils.class);
 
-    @Mock
-    private RecipeRepository recipeRepository;
-
-    @Mock
-    private IngredientRepository ingredientRepository;
-
-    @Mock
-    private IdUtils idUtils;
-
-    @Mock
-    private TimeUtils timeUtils;
-
-    @InjectMocks
-    private RecipeService recipeService;
+    private final RecipeService recipeService = new RecipeService(recipeRepository, ingredientRepository, idUtils, timeUtils);
 
     @Test
     void getAllRecipesWithOutUser() {
