@@ -14,8 +14,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 
+import javax.transaction.Transactional;
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -61,12 +63,22 @@ public class IntegrationTest {
         initTestAdmin();
         initTestRecipe();
         initTestRating();
+        initTestFavorites();
     }
 
+    @Transactional
     public void clearData() {
         ratingRepository.deleteAll();
-        recipeRepository.deleteAll();
         chefUserRepository.deleteAll();
+        recipeRepository.deleteAll();
+    }
+
+    private void initTestFavorites() {
+        ChefUser chefUserById = chefUserRepository.findChefUserById("some-user-id").get();
+        Recipe recipe = recipeRepository.findById("test-recipe-id").get();
+
+        chefUserById.setFavoriteRecipes(List.of(recipe));
+        chefUserRepository.save(chefUserById);
     }
 
     private void initTestRating() {

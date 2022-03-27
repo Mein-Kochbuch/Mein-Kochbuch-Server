@@ -21,9 +21,11 @@ import java.util.List;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Entity
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Recipe {
 
     @Id
+    @EqualsAndHashCode.Include
     private String id;
 
     @NotEmpty

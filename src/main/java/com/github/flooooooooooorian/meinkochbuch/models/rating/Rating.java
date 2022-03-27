@@ -13,11 +13,13 @@ import javax.persistence.*;
 @Builder
 @Entity
 @IdClass(RatingKey.class)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Rating {
 
 
     @Id
     @ManyToOne(fetch = FetchType.EAGER)
+    @EqualsAndHashCode.Include
     @JoinColumn(
             name = "recipe_id",
             referencedColumnName = "id")
@@ -25,6 +27,7 @@ public class Rating {
 
     @Id
     @ManyToOne(fetch = FetchType.EAGER)
+    @EqualsAndHashCode.Include
     @JoinColumn(
             name = "user_id",
             referencedColumnName = "id")

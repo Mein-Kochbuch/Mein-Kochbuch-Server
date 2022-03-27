@@ -13,9 +13,11 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Entity
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Cookbook {
 
     @Id
+    @EqualsAndHashCode.Include
     private String id;
 
     private String name;
