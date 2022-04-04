@@ -280,7 +280,7 @@ class RecipeServiceTest {
                 .ingredients(List.of(ingredientCreationDto))
                 .build();
 
-        Recipe r1Result = Recipe.builder()
+        Recipe expected = Recipe.builder()
                 .id("1")
                 .owner(chefUser1)
                 .name("test-name")
@@ -289,11 +289,11 @@ class RecipeServiceTest {
                 .instruction("test-instructions")
                 .duration(40)
                 .difficulty(Difficulty.EXPERT)
-                .createdAt(Instant.now())
+                .createdAt(now)
                 .ingredients(List.of())
                 .build();
 
-        when(recipeRepository.save(any())).thenReturn(r1Result);
+        when(recipeRepository.save(any())).thenReturn(expected);
         when(timeUtils.now()).thenReturn(now);
         when(idUtils.generateId()).thenReturn("uuid-1");
 
@@ -303,32 +303,32 @@ class RecipeServiceTest {
 
         //THEN
 
-        assertThat(result.getId(), Matchers.is(r1Result.getId()));
-        assertThat(result.isPrivacy(), Matchers.is(r1Result.isPrivacy()));
-        assertThat(result.getOwner().getId(), Matchers.is(r1Result.getOwner().getId()));
+        assertThat(result.getId(), Matchers.is(expected.getId()));
+        assertThat(result.isPrivacy(), Matchers.is(expected.isPrivacy()));
+        assertThat(result.getOwner().getId(), Matchers.is(expected.getOwner().getId()));
         assertThat(result.getCreatedAt(), Matchers.is(now));
-        assertThat(result.getName(), Matchers.is(r1Result.getName()));
-        assertThat(result.getDifficulty(), Matchers.is(r1Result.getDifficulty()));
-        assertThat(result.getDuration(), Matchers.is(r1Result.getDuration()));
-        assertThat(result.getInstruction(), Matchers.is(r1Result.getInstruction()));
-        assertThat(result.getPortions(), Matchers.is(r1Result.getPortions()));
-        assertThat(result.getThumbnail(), Matchers.is(r1Result.getThumbnail()));
+        assertThat(result.getName(), Matchers.is(expected.getName()));
+        assertThat(result.getDifficulty(), Matchers.is(expected.getDifficulty()));
+        assertThat(result.getDuration(), Matchers.is(expected.getDuration()));
+        assertThat(result.getInstruction(), Matchers.is(expected.getInstruction()));
+        assertThat(result.getPortions(), Matchers.is(expected.getPortions()));
+        assertThat(result.getThumbnail(), Matchers.is(expected.getThumbnail()));
 
         if (result.getIngredients() != null) {
             for (int i = 0; i < result.getIngredients().size(); i++) {
-                assertThat(result.getIngredients().get(i).getText(), Matchers.is(r1Result.getIngredients().get(i).getText()));
+                assertThat(result.getIngredients().get(i).getText(), Matchers.is(expected.getIngredients().get(i).getText()));
             }
         }
 
         if (result.getImages() != null) {
             for (int i = 0; i < result.getImages().size(); i++) {
-                assertThat(result.getImages().get(i).getId(), Matchers.is(r1Result.getImages().get(i).getId()));
+                assertThat(result.getImages().get(i).getId(), Matchers.is(expected.getImages().get(i).getId()));
             }
         }
 
         if (result.getTaggings() != null) {
             for (int i = 0; i < result.getTaggings().size(); i++) {
-                assertThat(result.getTaggings().get(i).getTag().getId(), Matchers.is(r1Result.getTaggings().get(i).getTag().getId()));
+                assertThat(result.getTaggings().get(i).getTag().getId(), Matchers.is(expected.getTaggings().get(i).getTag().getId()));
             }
         }
     }
