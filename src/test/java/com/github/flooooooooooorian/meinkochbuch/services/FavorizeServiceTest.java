@@ -17,9 +17,9 @@ import static org.mockito.Mockito.when;
 
 class FavorizeServiceTest {
 
-    private ChefUserRepository chefUserRepository = mock(ChefUserRepository.class);
-    private RecipeRepository recipeRepository = mock(RecipeRepository.class);
-    private FavorizeService favorizeService = new FavorizeService(chefUserRepository, recipeRepository);
+    private final ChefUserRepository chefUserRepository = mock(ChefUserRepository.class);
+    private final RecipeRepository recipeRepository = mock(RecipeRepository.class);
+    private final FavorizeService favorizeService = new FavorizeService(chefUserRepository, recipeRepository);
 
     @Test
     void favorizeRecipe_firstFavorite() {

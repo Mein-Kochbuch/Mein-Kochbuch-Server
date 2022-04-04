@@ -1,7 +1,10 @@
 package com.github.flooooooooooorian.meinkochbuch.services;
 
+import com.github.flooooooooooorian.meinkochbuch.dtos.ingredient.IngredientCreationDto;
 import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipeCreationDto;
+import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipeEditDto;
 import com.github.flooooooooooorian.meinkochbuch.exceptions.RecipeDoesNotExistException;
+import com.github.flooooooooooorian.meinkochbuch.exceptions.RecipeEditForbiddenException;
 import com.github.flooooooooooorian.meinkochbuch.exceptions.RecipePrivacyForbiddenException;
 import com.github.flooooooooooorian.meinkochbuch.models.recipe.Recipe;
 import com.github.flooooooooooorian.meinkochbuch.models.recipe.ingredient.Ingredient;
@@ -45,13 +48,13 @@ public class RecipeService {
     @Transactional
     public Recipe addRecipe(RecipeCreationDto recipeCreationDto, String userId) {
         List<Ingredient> ingredients = recipeCreationDto.getIngredients().stream()
-                .map(dto -> Ingredient.builder()
+                //.map(ingredientService::addIngredient)
+                .map(ingredientCreationDto -> Ingredient.builder()
                         .id(idUtils.generateId())
-                        .text(dto.getText())
-                        .amount(dto.getAmount())
-                        .baseIngredient(dto.getBaseIngredient())
+                        .text(ingredientCreationDto.getText())
+                        .baseIngredient(ingredientCreationDto.getBaseIngredient())
+                        .amount(ingredientCreationDto.getAmount())
                         .build())
-                .map(ingredientRepository::save)
                 .toList();
 
         Recipe recipeToAdd = Recipe.builder()
@@ -65,6 +68,64 @@ public class RecipeService {
                 .ingredients(ingredients)
                 .instruction(recipeCreationDto.getInstruction())
                 .portions(recipeCreationDto.getPortions())
+                .build();
+
+        return recipeRepository.save(recipeToAdd);
+    }
+
+    @Transactional
+    public Recipe changeRecipe(String recipeId, RecipeEditDto editRecipeDto, String userId) {
+        Optional<Recipe> optionalRecipe = recipeRepository.findById(recipeId);
+
+        if (optionalRecipe.isEmpty()) {
+            return addRecipe(RecipeCreationDto.builder()
+                            .privacy(editRecipeDto.isPrivacy())
+                            .instruction(editRecipeDto.getInstruction())
+                            .portions(editRecipeDto.getPortions())
+                            .duration(editRecipeDto.getDuration())
+                            .difficulty(editRecipeDto.getDifficulty())
+                            .name(editRecipeDto.getName())
+                            .ingredients(editRecipeDto.getIngredients().stream().map(ingredient -> IngredientCreationDto.builder()
+                                            .text(ingredient.getText())
+                                            .baseIngredient(ingredient.getBaseIngredient())
+                                            .amount(ingredient.getAmount())
+                                            .build())
+                                    .toList())
+                            .images(editRecipeDto.getImages())
+                            .tags(editRecipeDto.getTags())
+                            .thumbnail(editRecipeDto.getThumbnail())
+                            .build(),
+                    userId);
+        }
+
+        Recipe recipeToUpdate = optionalRecipe.get();
+
+        if (!recipeToUpdate.getOwner().getId().equals(userId)) {
+            throw new RecipeEditForbiddenException("Recipe Edit forbidden! Not Owner of Recipe!");
+        }
+
+        recipeToUpdate.getIngredients().stream()
+                .map(Ingredient::getId)
+                .forEach(ingredientRepository::deleteById);
+
+        List<Ingredient> ingredients = editRecipeDto.getIngredients().stream()
+                .map(ingredient -> {
+                    ingredient.setId(idUtils.generateId());
+                    return ingredient;
+                })
+                .toList();
+
+        Recipe recipeToAdd = Recipe.builder()
+                .id(recipeId)
+                .owner(ChefUser.ofId(userId))
+                .name(editRecipeDto.getName())
+                .createdAt(timeUtils.now())
+                .privacy(editRecipeDto.isPrivacy())
+                .difficulty(editRecipeDto.getDifficulty())
+                .duration(editRecipeDto.getDuration())
+                .ingredients(ingredients)
+                .instruction(editRecipeDto.getInstruction())
+                .portions(editRecipeDto.getPortions())
                 .build();
 
         return recipeRepository.save(recipeToAdd);

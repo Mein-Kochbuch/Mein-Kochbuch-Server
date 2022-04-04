@@ -1,8 +1,8 @@
 package com.github.flooooooooooorian.meinkochbuch.dtos.recipe;
 
 import com.github.flooooooooooorian.meinkochbuch.dtos.ImageDto;
-import com.github.flooooooooooorian.meinkochbuch.dtos.ingredient.IngredientCreationDto;
 import com.github.flooooooooooorian.meinkochbuch.models.recipe.difficulty.Difficulty;
+import com.github.flooooooooooorian.meinkochbuch.models.recipe.ingredient.Ingredient;
 import com.github.flooooooooooorian.meinkochbuch.models.tag.Tag;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,14 +15,14 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class RecipeCreationDto {
+public class RecipeEditDto {
 
     private String name;
     private String instruction;
     private int duration;
     private Difficulty difficulty;
     private int portions;
-    private List<IngredientCreationDto> ingredients;
+    private List<Ingredient> ingredients;
     private boolean privacy;
     private List<Tag> tags;
     private ImageDto thumbnail;

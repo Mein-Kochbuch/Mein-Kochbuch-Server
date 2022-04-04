@@ -2,13 +2,13 @@ package com.github.flooooooooooorian.meinkochbuch.controllers;
 
 import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipeCreationDto;
 import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipeDto;
+import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipeEditDto;
 import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipePreviewDto;
 import com.github.flooooooooooorian.meinkochbuch.mapper.RecipeMapper;
 import com.github.flooooooooooorian.meinkochbuch.security.utils.SecurityContextUtil;
 import com.github.flooooooooooorian.meinkochbuch.services.RecipeService;
 import lombok.RequiredArgsConstructor;
-import org.apache.juli.logging.Log;
-import org.apache.juli.logging.LogFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -18,15 +18,14 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/recipes")
 @RequiredArgsConstructor
+@Slf4j
 public class RecipeController {
-
-    private static final Log LOG = LogFactory.getLog(RecipeController.class);
     private final RecipeService recipeService;
     private final SecurityContextUtil securityContextUtil;
 
     @GetMapping()
     public List<RecipePreviewDto> getAllRecipes(Principal principal) {
-        LOG.debug("GET All Recipes");
+        log.debug("GET All Recipes");
         return recipeService.getAllRecipes(principal != null ? principal.getName() : null).stream()
                 .map(RecipeMapper::recipeToRecipePreviewDto)
                 .toList();
@@ -34,13 +33,19 @@ public class RecipeController {
 
     @GetMapping("{recipeId}")
     public RecipeDto getRecipeById(@PathVariable String recipeId) {
-        LOG.debug("GET Recipe: " + recipeId);
+        log.debug("GET Recipe: " + recipeId);
         return RecipeMapper.recipeToRecipeDto(recipeService.getRecipeById(recipeId, securityContextUtil.getUser()));
     }
 
     @PostMapping()
-    public RecipeDto addRecipe(@Valid @RequestBody RecipeCreationDto recipeCreationDto, Principal principal) {
-        LOG.debug("GET Add Recipe");
-        return RecipeMapper.recipeToRecipeDto(recipeService.addRecipe(recipeCreationDto, principal.getName()));
+    public RecipeDto addRecipe(@Valid @RequestBody RecipeCreationDto editRecipeDto, Principal principal) {
+        log.debug("GET Add Recipe");
+        return RecipeMapper.recipeToRecipeDto(recipeService.addRecipe(editRecipeDto, principal.getName()));
+    }
+
+    @PutMapping("{recipeId}")
+    public RecipeDto changeRecipe(@Valid @RequestBody RecipeEditDto editRecipeDto, @PathVariable String recipeId, Principal principal) {
+        log.debug("PUT Change Recipe");
+        return RecipeMapper.recipeToRecipeDto(recipeService.changeRecipe(recipeId, editRecipeDto, principal.getName()));
     }
 }

@@ -5,9 +5,11 @@ import com.github.flooooooooooorian.meinkochbuch.dtos.chefuser.ChefUserPreviewDt
 import com.github.flooooooooooorian.meinkochbuch.dtos.ingredient.IngredientCreationDto;
 import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipeCreationDto;
 import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipeDto;
+import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipeEditDto;
 import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipePreviewDto;
 import com.github.flooooooooooorian.meinkochbuch.models.recipe.difficulty.Difficulty;
 import com.github.flooooooooooorian.meinkochbuch.models.recipe.ingredient.Ingredient;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -203,7 +205,7 @@ class RecipeControllerTest extends IntegrationTest {
         //GIVEN
         webClient = WebClient.create("http://localhost:" + port + "/api");
 
-        RecipeCreationDto recipeCreationDto = RecipeCreationDto.builder()
+        RecipeCreationDto editRecipeDto = RecipeCreationDto.builder()
                 .name("test-recipe-name")
                 .difficulty(Difficulty.MEDIUM)
                 .duration(40)
@@ -221,7 +223,7 @@ class RecipeControllerTest extends IntegrationTest {
 
         ResponseEntity<RecipeDto> result = webClient.post()
                 .uri("/recipes")
-                .bodyValue(recipeCreationDto)
+                .bodyValue(editRecipeDto)
                 .header("Authorization", "Bearer " + getTokenByUserId("some-user-id"))
                 .retrieve()
                 .toEntity(RecipeDto.class)
@@ -233,19 +235,19 @@ class RecipeControllerTest extends IntegrationTest {
         assertThat(result.getBody(), notNullValue());
         assertThat(result.getStatusCode(), is(HttpStatus.OK));
         assertThat(result.getBody().getId(), notNullValue());
-        assertThat(result.getBody().getName(), is(recipeCreationDto.getName()));
-        assertThat(result.getBody().getInstruction(), is(recipeCreationDto.getInstruction()));
-        assertThat(result.getBody().getDifficulty(), is(recipeCreationDto.getDifficulty()));
-        assertThat(result.getBody().getDuration(), is(recipeCreationDto.getDuration()));
+        assertThat(result.getBody().getName(), is(editRecipeDto.getName()));
+        assertThat(result.getBody().getInstruction(), is(editRecipeDto.getInstruction()));
+        assertThat(result.getBody().getDifficulty(), is(editRecipeDto.getDifficulty()));
+        assertThat(result.getBody().getDuration(), is(editRecipeDto.getDuration()));
         assertThat(result.getBody().getImages(), empty());
         assertThat(result.getBody().getOwner().getId(), is("some-user-id"));
-        assertThat(result.getBody().getIngredients().stream().map(Ingredient::getText).toList(), is(recipeCreationDto.getIngredients().stream().map(IngredientCreationDto::getText).toList()));
-        assertThat(result.getBody().getPortions(), is(recipeCreationDto.getPortions()));
+        assertThat(result.getBody().getIngredients().stream().map(Ingredient::getText).toList(), is(editRecipeDto.getIngredients().stream().map(IngredientCreationDto::getText).toList()));
+        assertThat(result.getBody().getPortions(), is(editRecipeDto.getPortions()));
         assertThat(result.getBody().getRatingAverage(), is(0.0));
         assertThat(result.getBody().getRatingCount(), is(0));
         assertThat(result.getBody().getTags(), empty());
         assertThat(result.getBody().getThumbnail(), nullValue());
-        assertThat(result.getBody().isPrivacy(), is(recipeCreationDto.isPrivacy()));
+        assertThat(result.getBody().isPrivacy(), is(editRecipeDto.isPrivacy()));
     }
 
     @Test
@@ -280,5 +282,155 @@ class RecipeControllerTest extends IntegrationTest {
         //THEN
         assertThat(result, notNullValue());
         assertThat(result.getStatusCode(), is(HttpStatus.FORBIDDEN));
+    }
+
+    @Test
+    void changeRecipe_valid() {
+        //GIVEN
+        webClient = WebClient.create("http://localhost:" + port + "/api");
+
+        RecipeEditDto editRecipeDto = RecipeEditDto.builder()
+                .name("test-recipe-name")
+                .difficulty(Difficulty.MEDIUM)
+                .duration(40)
+                .ingredients(List.of(Ingredient.builder()
+                                .id("1")
+                                .text("test-ingredient-text")
+                                .amount(10)
+                                .build(),
+                        Ingredient.builder()
+                                .text("test-ingredient-text")
+                                .amount(10)
+                                .build()))
+                .portions(4)
+                .instruction("test-instructions")
+                .privacy(false)
+                .build();
+
+
+        //WHEN
+
+        ResponseEntity<RecipeDto> result = webClient.put()
+                .uri("/recipes/test-recipe-id")
+                .bodyValue(editRecipeDto)
+                .header("Authorization", "Bearer " + getTokenByUserId("some-user-id"))
+                .retrieve()
+                .toEntity(RecipeDto.class)
+                .block();
+
+        //THEN
+
+        assertThat(result, notNullValue());
+        assertThat(result.getBody(), notNullValue());
+        assertThat(result.getStatusCode(), is(HttpStatus.OK));
+        assertThat(result.getBody().getId(), notNullValue());
+        assertThat(result.getBody().getName(), is(editRecipeDto.getName()));
+        assertThat(result.getBody().getInstruction(), is(editRecipeDto.getInstruction()));
+        assertThat(result.getBody().getDifficulty(), is(editRecipeDto.getDifficulty()));
+        assertThat(result.getBody().getDuration(), is(editRecipeDto.getDuration()));
+        assertThat(result.getBody().getImages(), empty());
+        assertThat(result.getBody().getOwner().getId(), is("some-user-id"));
+        assertThat(result.getBody().getIngredients().stream().map(Ingredient::getText).toList(), is(editRecipeDto.getIngredients().stream().map(Ingredient::getText).toList()));
+        assertThat(result.getBody().getPortions(), is(editRecipeDto.getPortions()));
+        assertThat(result.getBody().getRatingAverage(), is(0.0));
+        assertThat(result.getBody().getRatingCount(), is(0));
+        assertThat(result.getBody().getTags(), empty());
+        assertThat(result.getBody().getThumbnail(), nullValue());
+        assertThat(result.getBody().isPrivacy(), is(editRecipeDto.isPrivacy()));
+    }
+
+    @Test
+    void changeRecipe_newRecipe() {
+        //GIVEN
+        webClient = WebClient.create("http://localhost:" + port + "/api");
+
+        RecipeEditDto editRecipeDto = RecipeEditDto.builder()
+                .name("test-recipe-name")
+                .difficulty(Difficulty.MEDIUM)
+                .duration(40)
+                .ingredients(List.of(Ingredient.builder()
+                                .id("1")
+                                .text("test-ingredient-text")
+                                .amount(10)
+                                .build(),
+                        Ingredient.builder()
+                                .text("test-ingredient-text")
+                                .amount(10)
+                                .build()))
+                .portions(4)
+                .instruction("test-instructions")
+                .privacy(false)
+                .build();
+
+
+        //WHEN
+
+        ResponseEntity<RecipeDto> result = webClient.put()
+                .uri("/recipes/test-recipe-id-15")
+                .bodyValue(editRecipeDto)
+                .header("Authorization", "Bearer " + getTokenByUserId("some-user-id"))
+                .retrieve()
+                .toEntity(RecipeDto.class)
+                .block();
+
+        //THEN
+
+        assertThat(result, notNullValue());
+        assertThat(result.getBody(), notNullValue());
+        assertThat(result.getStatusCode(), is(HttpStatus.OK));
+        assertThat(result.getBody().getId(), notNullValue());
+        assertThat(result.getBody().getName(), is(editRecipeDto.getName()));
+        assertThat(result.getBody().getInstruction(), is(editRecipeDto.getInstruction()));
+        assertThat(result.getBody().getDifficulty(), is(editRecipeDto.getDifficulty()));
+        assertThat(result.getBody().getDuration(), is(editRecipeDto.getDuration()));
+        assertThat(result.getBody().getImages(), empty());
+        assertThat(result.getBody().getOwner().getId(), is("some-user-id"));
+        assertThat(result.getBody().getIngredients().stream().map(Ingredient::getText).toList(), is(editRecipeDto.getIngredients().stream().map(Ingredient::getText).toList()));
+        assertThat(result.getBody().getPortions(), is(editRecipeDto.getPortions()));
+        assertThat(result.getBody().getRatingAverage(), is(0.0));
+        assertThat(result.getBody().getRatingCount(), is(0));
+        assertThat(result.getBody().getTags(), empty());
+        assertThat(result.getBody().getThumbnail(), nullValue());
+        assertThat(result.getBody().isPrivacy(), is(editRecipeDto.isPrivacy()));
+    }
+
+    @Test
+    void changeRecipe_notOwn() {
+        //GIVEN
+        webClient = WebClient.create("http://localhost:" + port + "/api");
+
+        RecipeEditDto editRecipeDto = RecipeEditDto.builder()
+                .name("test-recipe-name")
+                .difficulty(Difficulty.MEDIUM)
+                .duration(40)
+                .ingredients(List.of(Ingredient.builder()
+                                .id("1")
+                                .text("test-ingredient-text")
+                                .amount(10)
+                                .build(),
+                        Ingredient.builder()
+                                .text("test-ingredient-text")
+                                .amount(10)
+                                .build()))
+                .portions(4)
+                .instruction("test-instructions")
+                .privacy(false)
+                .build();
+
+
+        //WHEN
+
+        ResponseEntity<RecipeDto> result = webClient.put()
+                .uri("/recipes/test-recipe-id-2")
+                .bodyValue(editRecipeDto)
+                .header("Authorization", "Bearer " + getTokenByUserId("some-admin-id"))
+                .retrieve()
+                .onStatus(HttpStatus::isError, response -> Mono.empty())
+                .toEntity(RecipeDto.class)
+                .block();
+
+        //THEN
+        assertThat(result.getStatusCode(), Matchers.is(HttpStatus.FORBIDDEN));
+
     }
 }
