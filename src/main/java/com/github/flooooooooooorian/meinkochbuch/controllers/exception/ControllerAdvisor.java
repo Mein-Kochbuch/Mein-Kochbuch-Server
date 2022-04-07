@@ -1,9 +1,6 @@
 package com.github.flooooooooooorian.meinkochbuch.controllers.exception;
 
-import com.github.flooooooooooorian.meinkochbuch.exceptions.RatingFailedException;
-import com.github.flooooooooooorian.meinkochbuch.exceptions.RecipeDoesNotExistException;
-import com.github.flooooooooooorian.meinkochbuch.exceptions.RecipeEditForbiddenException;
-import com.github.flooooooooooorian.meinkochbuch.exceptions.RecipePrivacyForbiddenException;
+import com.github.flooooooooooorian.meinkochbuch.exceptions.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +16,9 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(RecipeDoesNotExistException.class)
     public ResponseEntity<ApiError> handleNoSuchElementException(RecipeDoesNotExistException ex) {
-        log.error("Resource not found!", ex);
+        log.error("Recipe not found!", ex);
 
-        ApiError apiError = new ApiError("Resource not found!", ex.getMessage());
+        ApiError apiError = new ApiError("Recipe not found!", ex.getMessage());
 
         return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);
     }
@@ -31,6 +28,24 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
         log.error("Access to Recipe denied!", ex);
 
         ApiError apiError = new ApiError("Access to Recipe denied!", ex.getMessage());
+
+        return new ResponseEntity<>(apiError, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(CookbookDoesNotExist.class)
+    public ResponseEntity<ApiError> handleCookbookDoesNotExist(CookbookDoesNotExist ex) {
+        log.error("Cookbook not found!", ex);
+
+        ApiError apiError = new ApiError("Cookbook not found!", ex.getMessage());
+
+        return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(CookPrivacyForbiddenException.class)
+    public ResponseEntity<ApiError> handleCookPrivacyForbiddenException(CookPrivacyForbiddenException ex) {
+        log.error("Access to Cookbook denied!", ex);
+
+        ApiError apiError = new ApiError("Access to Cookbook denied!", ex.getMessage());
 
         return new ResponseEntity<>(apiError, HttpStatus.FORBIDDEN);
     }
