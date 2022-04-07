@@ -1,7 +1,10 @@
 package com.github.flooooooooooorian.meinkochbuch;
 
+import com.github.flooooooooooorian.meinkochbuch.models.cookbook.Cookbook;
+import com.github.flooooooooooorian.meinkochbuch.models.cookbook.CookbookContent;
 import com.github.flooooooooooorian.meinkochbuch.models.rating.Rating;
 import com.github.flooooooooooorian.meinkochbuch.models.recipe.Recipe;
+import com.github.flooooooooooorian.meinkochbuch.repository.CookbookRepository;
 import com.github.flooooooooooorian.meinkochbuch.repository.RatingRepository;
 import com.github.flooooooooooorian.meinkochbuch.repository.RecipeRepository;
 import com.github.flooooooooooorian.meinkochbuch.security.models.ChefAuthorities;
@@ -54,6 +57,9 @@ public class IntegrationTest {
     protected RatingRepository ratingRepository;
 
     @Autowired
+    protected CookbookRepository cookbookRepository;
+
+    @Autowired
     protected PasswordEncoder passwordEncoder;
 
     @BeforeEach
@@ -64,10 +70,12 @@ public class IntegrationTest {
         initTestRecipe();
         initTestRating();
         initTestFavorites();
+        initCookbooks();
     }
 
     @Transactional
     public void clearData() {
+        cookbookRepository.deleteAll();
         ratingRepository.deleteAll();
         chefUserRepository.deleteAll();
         recipeRepository.deleteAll();
@@ -148,6 +156,52 @@ public class IntegrationTest {
                 .enabled(true)
                 .authorities(Set.of(ChefAuthorities.ADMIN))
                 .password(passwordEncoder.encode("some-admin-password"))
+                .build());
+    }
+
+    private void initCookbooks() {
+        cookbookRepository.save(Cookbook.builder()
+                .id("test-cookbook-id-1")
+                .name("test-cookbook-name-1")
+                .privacy(false)
+                .owner(ChefUser.ofId("some-user-id"))
+                .contents(List.of(CookbookContent.builder()
+                        .recipe(Recipe.ofId("test-recipe-id"))
+                        .cookbook(Cookbook.ofId("test-cookbook-id-1"))
+                        .build()))
+                .build());
+
+        cookbookRepository.save(Cookbook.builder()
+                .id("test-cookbook-id-2")
+                .name("test-cookbook-name-2")
+                .privacy(true)
+                .owner(ChefUser.ofId("some-user-id"))
+                .contents(List.of(CookbookContent.builder()
+                        .recipe(Recipe.ofId("test-recipe-id"))
+                        .cookbook(Cookbook.ofId("test-cookbook-id-2"))
+                        .build()))
+                .build());
+
+        cookbookRepository.save(Cookbook.builder()
+                .id("test-cookbook-id-3")
+                .name("test-cookbook-name-3")
+                .privacy(false)
+                .owner(ChefUser.ofId("some-admin-id"))
+                .contents(List.of(CookbookContent.builder()
+                        .recipe(Recipe.ofId("test-recipe-id"))
+                        .cookbook(Cookbook.ofId("test-cookbook-id-3"))
+                        .build()))
+                .build());
+
+        cookbookRepository.save(Cookbook.builder()
+                .id("test-cookbook-id-4")
+                .name("test-cookbook-name-4")
+                .privacy(true)
+                .owner(ChefUser.ofId("some-admin-id"))
+                .contents(List.of(CookbookContent.builder()
+                        .recipe(Recipe.ofId("test-recipe-id"))
+                        .cookbook(Cookbook.ofId("test-cookbook-id-4"))
+                        .build()))
                 .build());
     }
 
