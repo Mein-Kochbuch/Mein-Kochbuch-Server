@@ -1,18 +1,24 @@
 package com.github.flooooooooooorian.meinkochbuch.services;
 
+import com.github.flooooooooooorian.meinkochbuch.exceptions.CookPrivacyForbiddenException;
+import com.github.flooooooooooorian.meinkochbuch.exceptions.CookbookDoesNotExist;
 import com.github.flooooooooooorian.meinkochbuch.models.cookbook.Cookbook;
 import com.github.flooooooooooorian.meinkochbuch.models.cookbook.CookbookContent;
 import com.github.flooooooooooorian.meinkochbuch.models.recipe.Recipe;
 import com.github.flooooooooooorian.meinkochbuch.models.recipe.difficulty.Difficulty;
 import com.github.flooooooooooorian.meinkochbuch.repository.CookbookRepository;
 import com.github.flooooooooooorian.meinkochbuch.security.models.ChefUser;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -66,7 +72,7 @@ class CookbookServiceTest {
     }
 
     @Test
-    void getAllRecipesAndOwnRecipes() {
+    void getAllCookbooksAndOwnCookbooks() {
         //GIVEN
         ChefUser chefUser1 = ChefUser.builder()
                 .id("test-user-id")
@@ -126,4 +132,116 @@ class CookbookServiceTest {
         //THEN
         assertThat(result, containsInAnyOrder(expected, expected2));
     }
+
+    @Test
+    void findCookbookById() {
+        //GIVEN
+        ChefUser chefUser1 = ChefUser.builder()
+                .id("1")
+                .accountNonExpired(true)
+                .accountNonLocked(true)
+                .authorities(Set.of())
+                .cookbooks(List.of())
+                .credentialsNonExpired(true)
+                .favoriteRecipes(List.of())
+                .enabled(true)
+                .name("my-name")
+                .recipes(List.of())
+                .build();
+
+        Cookbook cookbook = Cookbook.builder()
+                .id("1")
+                .owner(chefUser1)
+                .privacy(false)
+                .name("test-cookbook-name")
+                .build();
+
+        when(cookbookRepository.findById("1")).thenReturn(Optional.ofNullable(cookbook));
+
+        //WHEN
+
+        Cookbook result = cookbookService.findCookbookById("1", Optional.empty());
+
+        //THEN
+
+        assertThat(result, Matchers.is(cookbook));
+    }
+
+    @Test
+    void findCookbookByIdAnonymousDenied() {
+        //GIVEN
+        ChefUser chefUser1 = ChefUser.builder()
+                .id("1")
+                .accountNonExpired(true)
+                .accountNonLocked(true)
+                .authorities(Set.of())
+                .cookbooks(List.of())
+                .credentialsNonExpired(true)
+                .favoriteRecipes(List.of())
+                .enabled(true)
+                .name("my-name")
+                .recipes(List.of())
+                .build();
+
+        Cookbook cookbook = Cookbook.builder()
+                .id("1")
+                .owner(chefUser1)
+                .privacy(true)
+                .name("test-cookbook-name")
+                .build();
+
+        when(cookbookRepository.findById("1")).thenReturn(Optional.ofNullable(cookbook));
+
+        //WHEN
+        //THEN
+
+        assertThrows(CookPrivacyForbiddenException.class, () -> cookbookService.findCookbookById("1", Optional.empty()));
+    }
+
+    @Test
+    void findCookbookByIdNonExisting() {
+        //GIVEN
+
+        when(cookbookRepository.findById("1")).thenReturn(Optional.empty());
+
+        //WHEN
+        //THEN
+
+        assertThrows(CookbookDoesNotExist.class, () -> cookbookService.findCookbookById("1", Optional.empty()));
+    }
+
+    @Test
+    void findCookbookByIdUserAllowed() {
+        //GIVEN
+        ChefUser chefUser1 = ChefUser.builder()
+                .id("1")
+                .accountNonExpired(true)
+                .accountNonLocked(true)
+                .authorities(Set.of())
+                .cookbooks(List.of())
+                .credentialsNonExpired(true)
+                .favoriteRecipes(List.of())
+                .enabled(true)
+                .name("my-name")
+                .recipes(List.of())
+                .build();
+
+        Cookbook cookbook = Cookbook.builder()
+                .id("1")
+                .owner(chefUser1)
+                .privacy(true)
+                .name("test-cookbook-name")
+                .build();
+
+        when(cookbookRepository.findById("1")).thenReturn(Optional.ofNullable(cookbook));
+
+        //WHEN
+
+        Cookbook result = cookbookService.findCookbookById("1", Optional.of(chefUser1.getId()));
+
+        //THEN
+
+        assertThat(result, Matchers.is(cookbook));
+    }
+
 }
