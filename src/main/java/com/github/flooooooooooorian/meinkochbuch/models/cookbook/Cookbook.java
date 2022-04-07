@@ -23,7 +23,7 @@ public class Cookbook {
     private String name;
     private boolean privacy;
 
-    @OneToMany(mappedBy = "cookbook")
+    @OneToMany(mappedBy = "cookbook", cascade = CascadeType.ALL)
     private List<CookbookContent> contents;
 
     @ManyToOne()
@@ -33,4 +33,10 @@ public class Cookbook {
 
     @OneToOne()
     private Image thumbnail;
+
+    public static Cookbook ofId(String id) {
+        return Cookbook.builder()
+                .id(id)
+                .build();
+    }
 }
