@@ -15,10 +15,7 @@ public interface CookbookMapper {
                 .name(cookbook.getName())
                 .owner(ChefUserMapper.chefUserToChefUserPreviewDto(cookbook.getOwner()))
                 .thumbnail(ImageMapper.imageToImageDto(cookbook.getThumbnail()))
-                .ratingAverage(cookbook.getContents().stream()
-                        .map(CookbookContent::getRecipe)
-                        .map(Recipe::getRatingAverage)
-                        .reduce(0.0, Double::sum))
+                .ratingAverage(cookbook.getAverageRating())
                 .build();
     }
 

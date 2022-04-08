@@ -130,4 +130,8 @@ public class RecipeService {
 
         return recipeRepository.save(recipeToAdd);
     }
+
+    public List<Recipe> getAllRecipesByIds(List<String> ids) {
+        return recipeRepository.findAllByIdIn(ids);
+    }
 }

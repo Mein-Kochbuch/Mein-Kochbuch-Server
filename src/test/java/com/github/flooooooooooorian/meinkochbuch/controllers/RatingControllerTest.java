@@ -30,7 +30,7 @@ class RatingControllerTest extends IntegrationTest {
         //WHEN
 
         ResponseEntity<RatingDto> result = webClient.get()
-                .uri("/ratings/test-recipe-id")
+                .uri("/ratings/test-recipe-id-1")
                 .header("Authorization", "Bearer " + getTokenByUserId("some-user-id"))
                 .retrieve()
                 .toEntity(RatingDto.class)
@@ -38,7 +38,7 @@ class RatingControllerTest extends IntegrationTest {
 
         //THEN
         RatingDto expected = RatingDto.builder()
-                .recipeId("test-recipe-id")
+                .recipeId("test-recipe-id-1")
                 .rating(3)
                 .build();
 
@@ -80,7 +80,7 @@ class RatingControllerTest extends IntegrationTest {
         //WHEN
 
         ResponseEntity<RatingDto> result = webClient.get()
-                .uri("/ratings/test-recipe-id")
+                .uri("/ratings/test-recipe-id-1")
                 .retrieve()
                 .onStatus(HttpStatus::isError, response -> Mono.empty())
                 .toEntity(RatingDto.class)
@@ -133,7 +133,7 @@ class RatingControllerTest extends IntegrationTest {
                 .build();
 
         ResponseEntity<RatingDto> result = webClient.put()
-                .uri("/ratings/test-recipe-id")
+                .uri("/ratings/test-recipe-id-1")
                 .bodyValue(ratingDto)
                 .header("Authorization", "Bearer " + getTokenByUserId("some-user-id"))
                 .retrieve()
@@ -144,7 +144,7 @@ class RatingControllerTest extends IntegrationTest {
 
         RatingDto expected = RatingDto.builder()
                 .rating(5)
-                .recipeId("test-recipe-id")
+                .recipeId("test-recipe-id-1")
                 .build();
 
         assertThat(result, Matchers.notNullValue());

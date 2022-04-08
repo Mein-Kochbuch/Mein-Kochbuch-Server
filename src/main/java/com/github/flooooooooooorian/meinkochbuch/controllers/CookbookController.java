@@ -1,15 +1,14 @@
 package com.github.flooooooooooorian.meinkochbuch.controllers;
 
+import com.github.flooooooooooorian.meinkochbuch.dtos.cookbook.CookbookCreationDto;
 import com.github.flooooooooooorian.meinkochbuch.dtos.cookbook.CookbookDto;
 import com.github.flooooooooooorian.meinkochbuch.dtos.cookbook.CookbookPreview;
 import com.github.flooooooooooorian.meinkochbuch.mapper.CookbookMapper;
 import com.github.flooooooooooorian.meinkochbuch.services.CookbookService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
@@ -31,5 +30,10 @@ public class CookbookController {
     @GetMapping("{id}")
     public CookbookDto getCookbookById(@PathVariable String id, Principal principal) {
         return CookbookMapper.cookbookToCookbookDto(cookbookService.findCookbookById(id, principal != null ? Optional.ofNullable(principal.getName()) : Optional.empty()));
+    }
+
+    @PostMapping
+    public CookbookDto createCookbook(@Valid @RequestBody CookbookCreationDto cookbookCreationDto, Principal principal) {
+        return CookbookMapper.cookbookToCookbookDto(cookbookService.addCookbook(cookbookCreationDto, principal.getName()));
     }
 }

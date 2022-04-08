@@ -2,12 +2,16 @@ package com.github.flooooooooooorian.meinkochbuch.controllers;
 
 import com.github.flooooooooooorian.meinkochbuch.IntegrationTest;
 import com.github.flooooooooooorian.meinkochbuch.dtos.chefuser.ChefUserPreviewDto;
+import com.github.flooooooooooorian.meinkochbuch.dtos.cookbook.CookbookCreationDto;
 import com.github.flooooooooooorian.meinkochbuch.dtos.cookbook.CookbookDto;
 import com.github.flooooooooooorian.meinkochbuch.dtos.cookbook.CookbookPreview;
 import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipePreviewDto;
+import com.github.flooooooooooorian.meinkochbuch.services.utils.IdUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -17,12 +21,16 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class CookbookControllerTest extends IntegrationTest {
 
     @LocalServerPort
     private int port;
+
+    @MockBean
+    private IdUtils idUtils;
 
     private WebClient webClient;
 
@@ -136,7 +144,7 @@ class CookbookControllerTest extends IntegrationTest {
                         .build())
                 .name("test-cookbook-name-1")
                 .recipes(List.of(RecipePreviewDto.builder()
-                        .id("test-recipe-id")
+                        .id("test-recipe-id-1")
                         .owner(ChefUserPreviewDto.builder()
                                 .id("some-user-id")
                                 .name("some-user-name")
@@ -192,4 +200,121 @@ class CookbookControllerTest extends IntegrationTest {
         assertThat(result.getStatusCode(), is(HttpStatus.NOT_FOUND));
     }
 
+    @Test
+    void createCookbookOnlyPublic() {
+        //GIVEN
+        webClient = WebClient.create("http://localhost:" + port + "/api");
+
+        when(idUtils.generateId()).thenReturn("test-cookbook-id");
+
+        CookbookCreationDto cookbookCreationDto = CookbookCreationDto.builder()
+                .privacy(false)
+                .name("test-cookbook-name")
+                .recipeIds(List.of("test-recipe-id-1", "test-recipe-id-3"))
+                .build();
+
+        //WHEN
+
+        CookbookDto actual = webClient.post()
+                .uri("/cookbooks")
+                .header(HttpHeaders.AUTHORIZATION, getTokenByUserId("some-user-id"))
+                .bodyValue(cookbookCreationDto)
+                .retrieve()
+                .toEntity(CookbookDto.class)
+                .block()
+                .getBody();
+
+        //THEN
+        CookbookDto expected = CookbookDto.builder()
+                .id("test-cookbook-id")
+                .name("test-cookbook-name")
+                .owner(ChefUserPreviewDto.builder()
+                        .name("some-user-name")
+                        .id("some-user-id")
+                        .build())
+                .recipes(List.of(RecipePreviewDto.builder()
+                                .id("test-recipe-id-1")
+                                .name("test-recipe-name")
+                                .ratingCount(1)
+                                .ratingAverage(3)
+                                .owner(ChefUserPreviewDto.builder()
+                                        .name("some-user-name")
+                                        .id("some-user-id")
+                                        .build())
+                                .build(),
+                        RecipePreviewDto.builder()
+                                .id("test-recipe-id-3")
+                                .name("test-recipe-name")
+                                .ratingCount(0)
+                                .ratingAverage(0)
+                                .owner(ChefUserPreviewDto.builder()
+                                        .name("some-admin-name")
+                                        .id("some-admin-id")
+                                        .build())
+                                .build()))
+                .privacy(false)
+                .ratingAverage(3)
+                .build();
+
+        assertThat(actual, is(expected));
+    }
+
+    @Test
+    void createCookbookWithPrivacy() {
+        //GIVEN
+        webClient = WebClient.create("http://localhost:" + port + "/api");
+
+        when(idUtils.generateId()).thenReturn("test-cookbook-id");
+
+        CookbookCreationDto cookbookCreationDto = CookbookCreationDto.builder()
+                .privacy(false)
+                .name("test-cookbook-name")
+                .recipeIds(List.of("test-recipe-id-1", "test-recipe-id-2"))
+                .build();
+
+        //WHEN
+
+        CookbookDto actual = webClient.post()
+                .uri("/cookbooks")
+                .header(HttpHeaders.AUTHORIZATION, getTokenByUserId("some-user-id"))
+                .bodyValue(cookbookCreationDto)
+                .retrieve()
+                .toEntity(CookbookDto.class)
+                .block()
+                .getBody();
+
+        //THEN
+        CookbookDto expected = CookbookDto.builder()
+                .id("test-cookbook-id")
+                .name("test-cookbook-name")
+                .owner(ChefUserPreviewDto.builder()
+                        .name("some-user-name")
+                        .id("some-user-id")
+                        .build())
+                .recipes(List.of(RecipePreviewDto.builder()
+                                .id("test-recipe-id-1")
+                                .name("test-recipe-name")
+                                .ratingCount(1)
+                                .ratingAverage(3)
+                                .owner(ChefUserPreviewDto.builder()
+                                        .name("some-user-name")
+                                        .id("some-user-id")
+                                        .build())
+                                .build(),
+                        RecipePreviewDto.builder()
+                                .id("test-recipe-id-2")
+                                .name("test-recipe-name")
+                                .ratingCount(0)
+                                .ratingAverage(0)
+                                .owner(ChefUserPreviewDto.builder()
+                                        .name("some-user-name")
+                                        .id("some-user-id")
+                                        .build())
+                                .build()))
+                .privacy(true)
+                .ratingAverage(3)
+                .build();
+
+        assertThat(actual, is(expected));
+    }
 }
