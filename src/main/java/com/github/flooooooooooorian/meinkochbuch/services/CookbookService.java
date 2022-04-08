@@ -5,6 +5,7 @@ import com.github.flooooooooooorian.meinkochbuch.exceptions.CookPrivacyForbidden
 import com.github.flooooooooooorian.meinkochbuch.exceptions.CookbookDoesNotExist;
 import com.github.flooooooooooorian.meinkochbuch.models.cookbook.Cookbook;
 import com.github.flooooooooooorian.meinkochbuch.models.cookbook.CookbookContent;
+import com.github.flooooooooooorian.meinkochbuch.models.image.Image;
 import com.github.flooooooooooorian.meinkochbuch.models.recipe.Recipe;
 import com.github.flooooooooooorian.meinkochbuch.repository.CookbookRepository;
 import com.github.flooooooooooorian.meinkochbuch.security.models.ChefUser;
@@ -42,10 +43,18 @@ public class CookbookService {
 
         boolean privacy = cookbookCreationDto.isPrivacy();
 
+        List<Recipe> recipes = recipeService.getAllRecipesByIds(cookbookCreationDto.getRecipeIds());
+
         if (!privacy) {
-            privacy = recipeService.getAllRecipesByIds(cookbookCreationDto.getRecipeIds()).stream()
+            privacy = recipes.stream()
                     .anyMatch(Recipe::isPrivacy);
         }
+
+        Image thumbnail = recipes.stream()
+                .filter(recipe -> recipe.getThumbnail() != null)
+                .max((r1, r2) -> r1.getRatingAverage() >= r2.getRatingAverage() ? 1 : -1)
+                .orElseGet(Recipe::new)
+                .getThumbnail();
 
         String generateId = idUtils.generateId();
         Cookbook newCookbook = Cookbook.builder()
@@ -59,12 +68,9 @@ public class CookbookService {
                                 .recipe(Recipe.ofId(id))
                                 .build())
                         .toList())
-                //TODO add CookbookThumbnail
-                .thumbnail(null)
+                .thumbnail(thumbnail)
                 .build();
 
         return cookbookRepository.save(newCookbook);
-//        cookbook.setContents()
-//                .toList());
     }
 }
