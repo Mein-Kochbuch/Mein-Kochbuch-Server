@@ -4,6 +4,7 @@ import com.github.flooooooooooorian.meinkochbuch.exceptions.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -82,6 +83,15 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
         log.error("Recipe Edit forbidden! Not Owner of Recipe!", ex);
 
         ApiError apiError = new ApiError("Recipe Edit forbidden! Not Owner of Recipe!", ex.getMessage());
+
+        return new ResponseEntity<>(apiError, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiError> handleAccessDeniedException(AccessDeniedException ex) {
+        log.error("Access denied!", ex);
+
+        ApiError apiError = new ApiError("Access denied!", ex.getMessage());
 
         return new ResponseEntity<>(apiError, HttpStatus.FORBIDDEN);
     }

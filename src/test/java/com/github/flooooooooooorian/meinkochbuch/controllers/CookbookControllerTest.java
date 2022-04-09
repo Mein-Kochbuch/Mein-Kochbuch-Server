@@ -317,4 +317,76 @@ class CookbookControllerTest extends IntegrationTest {
 
         assertThat(actual, is(expected));
     }
+
+    @Test
+    void editCookbook() {
+        //GIVEN
+        webClient = WebClient.create("http://localhost:" + port + "/api");
+
+        CookbookCreationDto cookbookCreationDto = CookbookCreationDto.builder()
+                .name("test-cookbook-name-1-new")
+                .privacy(true)
+                .recipeIds(List.of("test-recipe-id-3"))
+                .build();
+        //WHEN
+        CookbookDto actual = webClient.put()
+                .uri("/cookbooks/test-cookbook-id-1")
+                .bodyValue(cookbookCreationDto)
+                .header(HttpHeaders.AUTHORIZATION, getTokenByUserId("some-user-id"))
+                .retrieve()
+                .toEntity(CookbookDto.class)
+                .block()
+                .getBody();
+
+
+        //THEN
+        CookbookDto expected = CookbookDto.builder()
+                .id("test-cookbook-id-1")
+                .name(cookbookCreationDto.getName())
+                .owner(ChefUserPreviewDto.builder()
+                        .id("some-user-id")
+                        .name("some-user-name")
+                        .build())
+                .ratingAverage(0)
+                .privacy(true)
+                .recipes(List.of(RecipePreviewDto.builder()
+                                .id("test-recipe-id-3")
+                                .name("test-recipe-name")
+                                .ratingCount(0)
+                                .ratingAverage(0)
+                                .owner(ChefUserPreviewDto.builder()
+                                        .name("some-admin-name")
+                                        .id("some-admin-id")
+                                        .build())
+                        .build()))
+                .build();
+
+        assertThat(actual, is(expected));
+    }
+
+    @Test
+    void editCookbookAccessDenied() {
+        //GIVEN
+        webClient = WebClient.create("http://localhost:" + port + "/api");
+
+        CookbookCreationDto cookbookCreationDto = CookbookCreationDto.builder()
+                .name("test-cookbook-name-1-new")
+                .privacy(true)
+                .recipeIds(List.of("test-recipe-id-3"))
+                .build();
+        //WHEN
+        ResponseEntity<CookbookDto> actual = webClient.put()
+                .uri("/cookbooks/test-cookbook-id-1")
+                .bodyValue(cookbookCreationDto)
+                .header(HttpHeaders.AUTHORIZATION, getTokenByUserId("some-admin-id"))
+                .retrieve()
+                .onStatus(HttpStatus::isError, clientResponse -> Mono.empty())
+                .toEntity(CookbookDto.class)
+                .block();
+
+
+        //THEN
+        assertThat(actual.getStatusCode(), is(HttpStatus.FORBIDDEN));
+
+    }
 }
