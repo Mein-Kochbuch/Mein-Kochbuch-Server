@@ -10,11 +10,13 @@ import com.github.flooooooooooorian.meinkochbuch.repository.CookbookRepository;
 import com.github.flooooooooooorian.meinkochbuch.security.models.ChefUser;
 import com.github.flooooooooooorian.meinkochbuch.services.utils.IdUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -64,5 +66,33 @@ public class CookbookService {
                 .build();
 
         return cookbookRepository.save(newCookbook);
+    }
+
+    public Cookbook editCookbookById(String cookbookId, CookbookCreationDto cookbookCreationDto, String userId) {
+        Cookbook cookbook = cookbookRepository.findById(cookbookId).orElseThrow(() -> new CookbookDoesNotExist("Cookbook with id: " + cookbookId + " does not exists."));
+        if (!cookbook.getOwner().getId().equals(userId)) {
+            throw new AccessDeniedException("You have no access to Cookbook " + cookbookId);
+        }
+
+        cookbook.setName(cookbookCreationDto.getName());
+
+        boolean privacy = cookbookCreationDto.isPrivacy();
+
+        if (!privacy) {
+            privacy = recipeService.getAllRecipesByIds(cookbookCreationDto.getRecipeIds()).stream()
+                    .anyMatch(Recipe::isPrivacy);
+        }
+
+        cookbook.setPrivacy(privacy);
+        cookbook.setContents(cookbookCreationDto.getRecipeIds().stream()
+                .map(recipeId -> CookbookContent.builder()
+                        .recipe(Recipe.ofId(recipeId))
+                        .cookbook(Cookbook.ofId(cookbook.getId()))
+                        .build())
+                .collect(Collectors.toList()));
+
+        //TODO Change Cookbook Thumbnail
+
+        return cookbookRepository.save(cookbook);
     }
 }

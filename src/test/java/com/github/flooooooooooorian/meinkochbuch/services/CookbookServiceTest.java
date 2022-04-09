@@ -13,6 +13,7 @@ import com.github.flooooooooooorian.meinkochbuch.services.utils.IdUtils;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.springframework.security.access.AccessDeniedException;
 
 import java.time.Instant;
 import java.util.List;
@@ -387,5 +388,152 @@ class CookbookServiceTest {
         assertThat(argumentCaptor.getValue().getContents().get(0).getRecipe().getId(), is("test-recipe-id-1"));
         assertThat(argumentCaptor.getValue().getContents().get(0).getCookbook().getId(), is("test-id"));
         assertThat(actual.getAverageRating(), is(0.0));
+    }
+
+    @Test
+    void editCookbookById() {
+        //GIVEN
+        ChefUser chefUser = ChefUser.ofId("test-user-id");
+        Cookbook cookbookToChange = Cookbook.builder()
+                .id("test-cookbook-id-1")
+                .name("test-cookbook-name")
+                .privacy(false)
+                .owner(chefUser)
+                .contents(List.of(CookbookContent.builder()
+                        .recipe(Recipe.ofId("test-recipe-id"))
+                        .cookbook(Cookbook.ofId("test-cookbook-id"))
+                        .build()))
+                .build();
+        CookbookCreationDto cookbookCreationDto = CookbookCreationDto.builder()
+                .name("test-cookbook-name-new")
+                .privacy(true)
+                .recipeIds(List.of("test-recipe-id-2"))
+                .build();
+
+        Cookbook expected = Cookbook.builder()
+                .id("test-cookbook-id-1")
+                .owner(chefUser)
+                .name("test-cookbook-name-new")
+                .privacy(true)
+                .contents(List.of(CookbookContent.builder()
+                        .recipe(Recipe.ofId("test-recipe-id-2"))
+                        .cookbook(Cookbook.ofId("test-cookbook-id"))
+                        .build()))
+                .build();
+
+        when(cookbookRepository.findById("test-cookbook-id-1")).thenReturn(Optional.ofNullable(cookbookToChange));
+        when(recipeService.getAllRecipesByIds(List.of("test-recipe-id-2"))).thenReturn(List.of(Recipe.ofId("test-recipe-id-2")));
+        when(cookbookRepository.save(argumentCaptor.capture())).thenReturn(expected);
+
+        //WHEN
+        Cookbook actual = cookbookService.editCookbookById("test-cookbook-id-1", cookbookCreationDto, "test-user-id");
+
+        //THEN
+
+        assertThat(actual, is(expected));
+
+        assertThat(argumentCaptor.getValue().getId(), is(expected.getId()));
+        assertThat(argumentCaptor.getValue().getName(), is(expected.getName()));
+        assertThat(argumentCaptor.getValue().getOwner(), is(expected.getOwner()));
+        assertThat(argumentCaptor.getValue().isPrivacy(), is(expected.isPrivacy()));
+        assertThat(argumentCaptor.getValue().getAverageRating(), is(expected.getAverageRating()));
+        assertThat(argumentCaptor.getValue().getThumbnail(), is(expected.getThumbnail()));
+        assertThat(argumentCaptor.getValue().getContents().size(), is(expected.getContents().size()));
+        assertThat(argumentCaptor.getValue().getContents().get(0).getRecipe().getId(), is(expected.getContents().get(0).getRecipe().getId()));
+    }
+
+    @Test
+    void editCookbookByIdWithPrivateRecipes() {
+        //GIVEN
+        ChefUser chefUser = ChefUser.ofId("test-user-id");
+        Cookbook cookbookToChange = Cookbook.builder()
+                .id("test-cookbook-id-1")
+                .name("test-cookbook-name")
+                .privacy(false)
+                .owner(chefUser)
+                .contents(List.of(CookbookContent.builder()
+                        .recipe(Recipe.ofId("test-recipe-id"))
+                        .cookbook(Cookbook.ofId("test-cookbook-id"))
+                        .build()))
+                .build();
+        CookbookCreationDto cookbookCreationDto = CookbookCreationDto.builder()
+                .name("test-cookbook-name-new")
+                .privacy(false)
+                .recipeIds(List.of("test-recipe-id-2"))
+                .build();
+
+        Cookbook expected = Cookbook.builder()
+                .id("test-cookbook-id-1")
+                .owner(chefUser)
+                .name("test-cookbook-name-new")
+                .privacy(true)
+                .contents(List.of(CookbookContent.builder()
+                        .recipe(Recipe.ofId("test-recipe-id-2"))
+                        .cookbook(Cookbook.ofId("test-cookbook-id"))
+                        .build()))
+                .build();
+
+        when(cookbookRepository.findById("test-cookbook-id-1")).thenReturn(Optional.ofNullable(cookbookToChange));
+        when(recipeService.getAllRecipesByIds(List.of("test-recipe-id-2"))).thenReturn(List.of(Recipe.builder()
+                .id("test-recipe-id-2")
+                .privacy(true)
+                .build()));
+        when(cookbookRepository.save(argumentCaptor.capture())).thenReturn(expected);
+
+        //WHEN
+        Cookbook actual = cookbookService.editCookbookById("test-cookbook-id-1", cookbookCreationDto, "test-user-id");
+
+        //THEN
+
+        assertThat(actual, is(expected));
+
+        assertThat(argumentCaptor.getValue().getId(), is(expected.getId()));
+        assertThat(argumentCaptor.getValue().getName(), is(expected.getName()));
+        assertThat(argumentCaptor.getValue().getOwner(), is(expected.getOwner()));
+        assertThat(argumentCaptor.getValue().isPrivacy(), is(expected.isPrivacy()));
+        assertThat(argumentCaptor.getValue().getAverageRating(), is(expected.getAverageRating()));
+        assertThat(argumentCaptor.getValue().getThumbnail(), is(expected.getThumbnail()));
+        assertThat(argumentCaptor.getValue().getContents().size(), is(expected.getContents().size()));
+        assertThat(argumentCaptor.getValue().getContents().get(0).getRecipe().getId(), is(expected.getContents().get(0).getRecipe().getId()));
+    }
+
+    @Test
+    void editCookbookByIdAccessDenied() {
+        //GIVEN
+        ChefUser chefUser = ChefUser.ofId("test-user-id");
+        Cookbook cookbookToChange = Cookbook.builder()
+                .id("test-cookbook-id-1")
+                .name("test-cookbook-name")
+                .privacy(false)
+                .owner(chefUser)
+                .contents(List.of(CookbookContent.builder()
+                        .recipe(Recipe.ofId("test-recipe-id"))
+                        .cookbook(Cookbook.ofId("test-cookbook-id"))
+                        .build()))
+                .build();
+        CookbookCreationDto cookbookCreationDto = CookbookCreationDto.builder()
+                .name("test-cookbook-name-new")
+                .privacy(true)
+                .recipeIds(List.of("test-recipe-id-2"))
+                .build();
+
+        Cookbook expected = Cookbook.builder()
+                .id("test-cookbook-id-1")
+                .owner(chefUser)
+                .name("test-cookbook-name-new")
+                .privacy(true)
+                .contents(List.of(CookbookContent.builder()
+                        .recipe(Recipe.ofId("test-recipe-id-2"))
+                        .cookbook(Cookbook.ofId("test-cookbook-id"))
+                        .build()))
+                .build();
+
+        when(cookbookRepository.findById("test-cookbook-id-1")).thenReturn(Optional.ofNullable(cookbookToChange));
+        when(recipeService.getAllRecipesByIds(List.of("test-recipe-id-2"))).thenReturn(List.of(Recipe.ofId("test-recipe-id-2")));
+        when(cookbookRepository.save(argumentCaptor.capture())).thenReturn(expected);
+
+        //WHEN
+        //THEN
+        assertThrows(AccessDeniedException.class, () -> cookbookService.editCookbookById("test-cookbook-id-1", cookbookCreationDto, "test-user-id-other"));
     }
 }

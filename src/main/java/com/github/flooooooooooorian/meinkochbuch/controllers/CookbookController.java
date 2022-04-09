@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
@@ -35,5 +36,10 @@ public class CookbookController {
     @PostMapping
     public CookbookDto createCookbook(@Valid @RequestBody CookbookCreationDto cookbookCreationDto, Principal principal) {
         return CookbookMapper.cookbookToCookbookDto(cookbookService.addCookbook(cookbookCreationDto, principal.getName()));
+    }
+
+    @PutMapping("{cookbookId}")
+    public CookbookDto editCookbook(@PathVariable @NotEmpty String cookbookId, @RequestBody CookbookCreationDto cookbookCreationDto, Principal principal) {
+        return CookbookMapper.cookbookToCookbookDto(cookbookService.editCookbookById(cookbookId, cookbookCreationDto, principal.getName()));
     }
 }
