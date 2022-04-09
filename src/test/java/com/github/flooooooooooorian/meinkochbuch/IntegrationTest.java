@@ -83,7 +83,7 @@ public class IntegrationTest {
 
     private void initTestFavorites() {
         ChefUser chefUserById = chefUserRepository.findChefUserById("some-user-id").get();
-        Recipe recipe = recipeRepository.findById("test-recipe-id").get();
+        Recipe recipe = recipeRepository.findById("test-recipe-id-1").get();
 
         chefUserById.setFavoriteRecipes(List.of(recipe));
         chefUserRepository.save(chefUserById);
@@ -93,13 +93,13 @@ public class IntegrationTest {
         ratingRepository.save(Rating.builder()
                 .value(3)
                 .user(ChefUser.ofId("some-user-id"))
-                .recipe(Recipe.ofId("test-recipe-id"))
+                .recipe(Recipe.ofId("test-recipe-id-1"))
                 .build());
     }
 
     private void initTestRecipe() {
         recipeRepository.save(Recipe.builder()
-                .id("test-recipe-id")
+                .id("test-recipe-id-1")
                 .createdAt(Instant.now())
                 .owner(ChefUser.ofId("some-user-id"))
                 .instruction("test-recipe-instructions")
@@ -166,7 +166,7 @@ public class IntegrationTest {
                 .privacy(false)
                 .owner(ChefUser.ofId("some-user-id"))
                 .contents(List.of(CookbookContent.builder()
-                        .recipe(Recipe.ofId("test-recipe-id"))
+                        .recipe(Recipe.ofId("test-recipe-id-1"))
                         .cookbook(Cookbook.ofId("test-cookbook-id-1"))
                         .build()))
                 .build());
@@ -177,7 +177,7 @@ public class IntegrationTest {
                 .privacy(true)
                 .owner(ChefUser.ofId("some-user-id"))
                 .contents(List.of(CookbookContent.builder()
-                        .recipe(Recipe.ofId("test-recipe-id"))
+                        .recipe(Recipe.ofId("test-recipe-id-1"))
                         .cookbook(Cookbook.ofId("test-cookbook-id-2"))
                         .build()))
                 .build());
@@ -188,7 +188,7 @@ public class IntegrationTest {
                 .privacy(false)
                 .owner(ChefUser.ofId("some-admin-id"))
                 .contents(List.of(CookbookContent.builder()
-                        .recipe(Recipe.ofId("test-recipe-id"))
+                        .recipe(Recipe.ofId("test-recipe-id-1"))
                         .cookbook(Cookbook.ofId("test-cookbook-id-3"))
                         .build()))
                 .build());
@@ -199,7 +199,7 @@ public class IntegrationTest {
                 .privacy(true)
                 .owner(ChefUser.ofId("some-admin-id"))
                 .contents(List.of(CookbookContent.builder()
-                        .recipe(Recipe.ofId("test-recipe-id"))
+                        .recipe(Recipe.ofId("test-recipe-id-1"))
                         .cookbook(Cookbook.ofId("test-cookbook-id-4"))
                         .build()))
                 .build());

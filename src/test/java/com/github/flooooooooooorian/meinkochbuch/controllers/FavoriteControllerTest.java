@@ -27,7 +27,7 @@ class FavoriteControllerTest extends IntegrationTest {
         //WHEN
 
         ResponseEntity<Boolean> result = webClient.post()
-                .uri("/favorites/test-recipe-id")
+                .uri("/favorites/test-recipe-id-1")
                 .header("Authorization", "Bearer " + getTokenByUserId("some-admin-id"))
                 .retrieve()
                 .toEntity(Boolean.class)
@@ -67,7 +67,7 @@ class FavoriteControllerTest extends IntegrationTest {
         //WHEN
 
         ResponseEntity<Boolean> result = webClient.post()
-                .uri("/favorites/test-recipe-id")
+                .uri("/favorites/test-recipe-id-1")
                 .header("Authorization", "Bearer " + getTokenByUserId("some-user-id"))
                 .retrieve()
                 .toEntity(Boolean.class)

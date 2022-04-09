@@ -45,7 +45,7 @@ class RecipeControllerTest extends IntegrationTest {
 
         //THEN
         RecipePreviewDto expected1 = RecipePreviewDto.builder()
-                .id("test-recipe-id")
+                .id("test-recipe-id-1")
                 .owner(ChefUserPreviewDto.builder()
                         .id("some-user-id")
                         .name("some-user-name")
@@ -88,7 +88,7 @@ class RecipeControllerTest extends IntegrationTest {
 
         //THEN
         RecipePreviewDto expected1 = RecipePreviewDto.builder()
-                .id("test-recipe-id")
+                .id("test-recipe-id-1")
                 .owner(ChefUserPreviewDto.builder()
                         .id("some-user-id")
                         .name("some-user-name")
@@ -135,14 +135,14 @@ class RecipeControllerTest extends IntegrationTest {
 
         //WHEN
         ResponseEntity<RecipeDto> result = webClient.get()
-                .uri("/recipes/test-recipe-id")
+                .uri("/recipes/test-recipe-id-1")
                 .retrieve()
                 .toEntity(RecipeDto.class)
                 .block();
 
         //THEN
         RecipeDto expected = RecipeDto.builder()
-                .id("test-recipe-id")
+                .id("test-recipe-id-1")
                 .owner(ChefUserPreviewDto.builder()
                         .id("some-user-id")
                         .name("some-user-name")
@@ -311,7 +311,7 @@ class RecipeControllerTest extends IntegrationTest {
         //WHEN
 
         ResponseEntity<RecipeDto> result = webClient.put()
-                .uri("/recipes/test-recipe-id")
+                .uri("/recipes/test-recipe-id-1")
                 .bodyValue(editRecipeDto)
                 .header("Authorization", "Bearer " + getTokenByUserId("some-user-id"))
                 .retrieve()

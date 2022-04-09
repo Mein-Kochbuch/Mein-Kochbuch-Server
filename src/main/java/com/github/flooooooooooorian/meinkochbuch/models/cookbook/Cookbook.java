@@ -34,6 +34,14 @@ public class Cookbook {
     @OneToOne()
     private Image thumbnail;
 
+    public double getAverageRating() {
+        return this.contents.stream()
+                .map(cookbookContent -> cookbookContent.getRecipe().getRatingAverage())
+                .mapToDouble(Double::doubleValue)
+                .sum()
+                / this.contents.size();
+    }
+
     public static Cookbook ofId(String id) {
         return Cookbook.builder()
                 .id(id)
