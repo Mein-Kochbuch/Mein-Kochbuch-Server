@@ -64,7 +64,5 @@ public class CookbookService {
                 .build();
 
         return cookbookRepository.save(newCookbook);
-//        cookbook.setContents()
-//                .toList());
     }
 }

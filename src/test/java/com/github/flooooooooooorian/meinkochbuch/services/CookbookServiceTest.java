@@ -295,4 +295,97 @@ class CookbookServiceTest {
         assertThat(argumentCaptor.getValue().getContents().get(0).getCookbook().getId(), is("test-id"));
         assertThat(actual.getAverageRating(), is(0.0));
     }
+
+    @Test
+    void addCookbookPrivacy() {
+        //GIVEN
+        CookbookCreationDto cookbookCreationDto = CookbookCreationDto.builder()
+                .name("test-name")
+                .privacy(true)
+                .recipeIds(List.of("test-recipe-id-1"))
+                .build();
+
+        Cookbook cookbook = Cookbook.builder()
+                .id("test-id")
+                .owner(ChefUser.ofId("test-user-id"))
+                .name("test-name")
+                .privacy(true)
+                .thumbnail(null)
+                .contents(List.of(CookbookContent.builder()
+                        .recipe(Recipe.ofId("test-recipe-id-1"))
+                        .cookbook(Cookbook.ofId("test-id"))
+                        .build()))
+                .build();
+
+        when(cookbookRepository.save(argumentCaptor.capture())).thenReturn(cookbook);
+        when(recipeService.getAllRecipesByIds(cookbookCreationDto.getRecipeIds())).thenReturn(cookbook.getContents().stream()
+                .map(CookbookContent::getRecipe)
+                .toList());
+        when(idUtils.generateId()).thenReturn("test-id");
+
+        //WHEN
+
+        Cookbook actual = cookbookService.addCookbook(cookbookCreationDto, "test-user-id");
+
+        //THEN
+
+        assertThat(actual, is(cookbook));
+        assertThat(argumentCaptor.getValue().getId(), is("test-id"));
+        assertThat(argumentCaptor.getValue().getName(), is("test-name"));
+        assertThat(argumentCaptor.getValue().getOwner().getId(), is("test-user-id"));
+        assertThat(argumentCaptor.getValue().isPrivacy(), is(true));
+        assertThat(argumentCaptor.getValue().getThumbnail(), nullValue());
+        assertThat(argumentCaptor.getValue().getContents().size(), is(1));
+        assertThat(argumentCaptor.getValue().getContents().get(0).getRecipe().getId(), is("test-recipe-id-1"));
+        assertThat(argumentCaptor.getValue().getContents().get(0).getCookbook().getId(), is("test-id"));
+        assertThat(actual.getAverageRating(), is(0.0));
+    }
+
+    @Test
+    void addCookbookWithPrivateRecipes() {
+        //GIVEN
+        CookbookCreationDto cookbookCreationDto = CookbookCreationDto.builder()
+                .name("test-name")
+                .privacy(false)
+                .recipeIds(List.of("test-recipe-id-1"))
+                .build();
+
+        Cookbook cookbook = Cookbook.builder()
+                .id("test-id")
+                .owner(ChefUser.ofId("test-user-id"))
+                .name("test-name")
+                .privacy(true)
+                .thumbnail(null)
+                .contents(List.of(CookbookContent.builder()
+                        .recipe(Recipe.builder()
+                                .id("test-recipe-id-1")
+                                .privacy(true)
+                                .build())
+                        .cookbook(Cookbook.ofId("test-id"))
+                        .build()))
+                .build();
+
+        when(cookbookRepository.save(argumentCaptor.capture())).thenReturn(cookbook);
+        when(recipeService.getAllRecipesByIds(cookbookCreationDto.getRecipeIds())).thenReturn(cookbook.getContents().stream()
+                .map(CookbookContent::getRecipe)
+                .toList());
+        when(idUtils.generateId()).thenReturn("test-id");
+
+        //WHEN
+
+        Cookbook actual = cookbookService.addCookbook(cookbookCreationDto, "test-user-id");
+
+        //THEN
+
+        assertThat(actual, is(cookbook));
+        assertThat(argumentCaptor.getValue().getId(), is("test-id"));
+        assertThat(argumentCaptor.getValue().getName(), is("test-name"));
+        assertThat(argumentCaptor.getValue().getOwner().getId(), is("test-user-id"));
+        assertThat(argumentCaptor.getValue().isPrivacy(), is(true));
+        assertThat(argumentCaptor.getValue().getThumbnail(), nullValue());
+        assertThat(argumentCaptor.getValue().getContents().size(), is(1));
+        assertThat(argumentCaptor.getValue().getContents().get(0).getRecipe().getId(), is("test-recipe-id-1"));
+        assertThat(argumentCaptor.getValue().getContents().get(0).getCookbook().getId(), is("test-id"));
+        assertThat(actual.getAverageRating(), is(0.0));
+    }
 }
