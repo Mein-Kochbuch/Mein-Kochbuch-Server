@@ -38,7 +38,6 @@ public class UserService {
                     .filter(recipe -> !recipe.isPrivacy())
                     .toList());
 
-            chefUser.setFavoriteRecipes(List.of());
             chefUser.setCookbooks(chefUser.getCookbooks().stream()
                     .filter(cookbook -> !cookbook.isPrivacy())
                     .toList());
