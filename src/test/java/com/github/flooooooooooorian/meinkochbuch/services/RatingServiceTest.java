@@ -21,8 +21,9 @@ import static org.mockito.Mockito.when;
 class RatingServiceTest {
 
     private final RatingRepository ratingRepository = mock(RatingRepository.class);
+    private final RecipeService recipeService = mock(RecipeService.class);
 
-    private final RatingService ratingService = new RatingService(ratingRepository);
+    private final RatingService ratingService = new RatingService(ratingRepository, recipeService);
 
     @Test
     void getUsersRatingFromRecipe_whenValid_returnValidRating() {

@@ -12,8 +12,10 @@ import com.github.flooooooooooorian.meinkochbuch.repository.RecipeRepository;
 import com.github.flooooooooooorian.meinkochbuch.security.models.ChefUser;
 import com.github.flooooooooooorian.meinkochbuch.services.utils.IdUtils;
 import com.github.flooooooooooorian.meinkochbuch.utils.TimeUtils;
+import com.github.flooooooooooorian.meinkochbuch.utils.sorting.RecipeSorting;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.Sort;
 
 import java.time.Instant;
 import java.util.List;
@@ -73,11 +75,11 @@ class RecipeServiceTest {
                 .ingredients(List.of())
                 .build();
 
-        when(recipeRepository.findAllByPrivacyIsFalseOrOwner_Id(null)).thenReturn(List.of(r1));
+        when(recipeRepository.findAllByPrivacyIsFalseOrOwner_Id(null, Sort.by(RecipeSorting.RELEVANCE.value).descending())).thenReturn(List.of(r1));
 
         //WHEN
 
-        List<Recipe> result = recipeService.getAllRecipes(null);
+        List<Recipe> result = recipeService.getAllRecipes(null, RecipeSorting.RELEVANCE);
 
         //THEN
         assertThat(result, Matchers.containsInAnyOrder(r1));
@@ -123,11 +125,11 @@ class RecipeServiceTest {
                 .ingredients(List.of())
                 .build();
 
-        when(recipeRepository.findAllByPrivacyIsFalseOrOwner_Id("1")).thenReturn(List.of(r1, r2));
+        when(recipeRepository.findAllByPrivacyIsFalseOrOwner_Id("1", Sort.by(RecipeSorting.RELEVANCE.value).descending())).thenReturn(List.of(r1, r2));
 
         //WHEN
 
-        List<Recipe> result = recipeService.getAllRecipes(chefUser1.getId());
+        List<Recipe> result = recipeService.getAllRecipes(chefUser1.getId(), RecipeSorting.RELEVANCE);
 
         //THEN
         assertThat(result, Matchers.containsInAnyOrder(r1, r2));

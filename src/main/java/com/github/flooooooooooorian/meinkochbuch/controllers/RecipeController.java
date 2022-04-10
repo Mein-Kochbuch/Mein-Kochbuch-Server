@@ -7,6 +7,7 @@ import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipePreviewDto;
 import com.github.flooooooooooorian.meinkochbuch.mapper.RecipeMapper;
 import com.github.flooooooooooorian.meinkochbuch.security.utils.SecurityContextUtil;
 import com.github.flooooooooooorian.meinkochbuch.services.RecipeService;
+import com.github.flooooooooooorian.meinkochbuch.utils.sorting.RecipeSorting;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/recipes")
@@ -24,9 +26,9 @@ public class RecipeController {
     private final SecurityContextUtil securityContextUtil;
 
     @GetMapping()
-    public List<RecipePreviewDto> getAllRecipes(Principal principal) {
+    public List<RecipePreviewDto> getAllRecipes(Principal principal, @RequestParam Optional<RecipeSorting> sort) {
         log.debug("GET All Recipes");
-        return recipeService.getAllRecipes(principal != null ? principal.getName() : null).stream()
+        return recipeService.getAllRecipes(principal != null ? principal.getName() : null, sort.orElse(RecipeSorting.RELEVANCE)).stream()
                 .map(RecipeMapper::recipeToRecipePreviewDto)
                 .toList();
     }
