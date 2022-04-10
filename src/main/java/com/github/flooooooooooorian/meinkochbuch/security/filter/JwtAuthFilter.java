@@ -2,7 +2,7 @@ package com.github.flooooooooooorian.meinkochbuch.security.filter;
 
 import com.github.flooooooooooorian.meinkochbuch.security.models.ChefUser;
 import com.github.flooooooooooorian.meinkochbuch.security.service.JwtUtilsService;
-import com.github.flooooooooooorian.meinkochbuch.security.service.UserSecurityService;
+import com.github.flooooooooooorian.meinkochbuch.security.service.ChefUserDetailsService;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +25,7 @@ import java.io.IOException;
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtUtilsService jwtUtilsService;
-    private final UserSecurityService userSecurityService;
+    private final ChefUserDetailsService userSecurityService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
