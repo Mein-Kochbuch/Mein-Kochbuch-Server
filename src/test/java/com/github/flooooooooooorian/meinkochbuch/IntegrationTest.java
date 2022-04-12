@@ -18,6 +18,7 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 
 import javax.transaction.Transactional;
+import java.math.BigInteger;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
@@ -91,9 +92,19 @@ public class IntegrationTest {
 
     private void initTestRating() {
         ratingRepository.save(Rating.builder()
-                .value(3)
+                .value(2)
                 .user(ChefUser.ofId("some-user-id"))
                 .recipe(Recipe.ofId("test-recipe-id-1"))
+                .build());
+        ratingRepository.save(Rating.builder()
+                .value(5)
+                .user(ChefUser.ofId("some-user-id"))
+                .recipe(Recipe.ofId("test-recipe-id-3"))
+                .build());
+        ratingRepository.save(Rating.builder()
+                .value(4)
+                .user(ChefUser.ofId("some-admin-id"))
+                .recipe(Recipe.ofId("test-recipe-id-3"))
                 .build());
     }
 
@@ -104,6 +115,7 @@ public class IntegrationTest {
                 .owner(ChefUser.ofId("some-user-id"))
                 .instruction("test-recipe-instructions")
                 .name("test-recipe-name")
+                .relevance(BigInteger.valueOf(-1))
                 .build());
         recipeRepository.save(Recipe.builder()
                 .id("test-recipe-id-2")
@@ -119,6 +131,7 @@ public class IntegrationTest {
                 .owner(ChefUser.ofId("some-admin-id"))
                 .instruction("test-recipe-instructions")
                 .name("test-recipe-name")
+                .relevance(BigInteger.TWO)
                 .build());
         recipeRepository.save(Recipe.builder()
                 .id("test-recipe-id-4")

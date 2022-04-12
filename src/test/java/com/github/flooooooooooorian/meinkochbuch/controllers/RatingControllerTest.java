@@ -39,7 +39,7 @@ class RatingControllerTest extends IntegrationTest {
         //THEN
         RatingDto expected = RatingDto.builder()
                 .recipeId("test-recipe-id-1")
-                .rating(3)
+                .rating(2)
                 .build();
 
         assertThat(result, Matchers.notNullValue());

@@ -51,7 +51,7 @@ class RecipeControllerTest extends IntegrationTest {
                         .name("some-user-name")
                         .build())
                 .name("test-recipe-name")
-                .ratingAverage(3)
+                .ratingAverage(2)
                 .ratingCount(1)
                 .thumbnail(null)
                 .build();
@@ -63,8 +63,8 @@ class RecipeControllerTest extends IntegrationTest {
                         .id("some-admin-id")
                         .name("some-admin-name")
                         .build())
-                .ratingAverage(0)
-                .ratingCount(0)
+                .ratingAverage(4.5)
+                .ratingCount(2)
                 .thumbnail(null)
                 .build();
 
@@ -94,7 +94,7 @@ class RecipeControllerTest extends IntegrationTest {
                         .name("some-user-name")
                         .build())
                 .name("test-recipe-name")
-                .ratingAverage(3)
+                .ratingAverage(2)
                 .ratingCount(1)
                 .thumbnail(null)
                 .build();
@@ -118,8 +118,8 @@ class RecipeControllerTest extends IntegrationTest {
                         .name("some-admin-name")
                         .build())
                 .name("test-recipe-name")
-                .ratingAverage(0)
-                .ratingCount(0)
+                .ratingAverage(4.5)
+                .ratingCount(2)
                 .thumbnail(null)
                 .build();
 
@@ -149,7 +149,7 @@ class RecipeControllerTest extends IntegrationTest {
                         .build())
                 .name("test-recipe-name")
                 .instruction("test-recipe-instructions")
-                .ratingAverage(3)
+                .ratingAverage(2)
                 .ratingCount(1)
                 .thumbnail(null)
                 .images(List.of())
