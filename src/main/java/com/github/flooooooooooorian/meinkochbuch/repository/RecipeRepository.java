@@ -9,8 +9,6 @@ import java.util.Optional;
 
 public interface RecipeRepository extends JpaRepository<Recipe, String> {
 
-    List<Recipe> findAll();
-
     List<Recipe> findAllByPrivacyIsFalseOrOwner_Id(String userId, Sort sort);
 
     List<Recipe> findAllByIdIn(List<String> ids);

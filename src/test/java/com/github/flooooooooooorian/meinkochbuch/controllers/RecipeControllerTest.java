@@ -51,7 +51,7 @@ class RecipeControllerTest extends IntegrationTest {
                         .name("some-user-name")
                         .build())
                 .name("test-recipe-name")
-                .ratingAverage(2)
+                .ratingAverage(3)
                 .ratingCount(1)
                 .thumbnail(null)
                 .build();
@@ -94,7 +94,7 @@ class RecipeControllerTest extends IntegrationTest {
                         .name("some-user-name")
                         .build())
                 .name("test-recipe-name")
-                .ratingAverage(2)
+                .ratingAverage(3)
                 .ratingCount(1)
                 .thumbnail(null)
                 .build();
@@ -149,7 +149,7 @@ class RecipeControllerTest extends IntegrationTest {
                         .build())
                 .name("test-recipe-name")
                 .instruction("test-recipe-instructions")
-                .ratingAverage(2)
+                .ratingAverage(3)
                 .ratingCount(1)
                 .thumbnail(null)
                 .images(List.of())

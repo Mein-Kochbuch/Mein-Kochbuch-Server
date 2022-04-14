@@ -151,7 +151,7 @@ public class RecipeService {
         }
 
         if (recipe.getRatings() != null) {
-            relevance = relevance.add(BigInteger.valueOf((long) ((recipe.getRatingAverage() - 3) * recipe.getRatings().size())));
+            relevance = relevance.add(BigInteger.valueOf((long) ((recipe.getAverageRating() - 3) * recipe.getRatings().size())));
         }
 
         return relevance;

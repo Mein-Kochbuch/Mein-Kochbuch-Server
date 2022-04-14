@@ -92,7 +92,7 @@ public class IntegrationTest {
 
     private void initTestRating() {
         ratingRepository.save(Rating.builder()
-                .value(2)
+                .value(3)
                 .user(ChefUser.ofId("some-user-id"))
                 .recipe(Recipe.ofId("test-recipe-id-1"))
                 .build());
@@ -115,6 +115,7 @@ public class IntegrationTest {
                 .owner(ChefUser.ofId("some-user-id"))
                 .instruction("test-recipe-instructions")
                 .name("test-recipe-name")
+                .averageRating(3)
                 .relevance(BigInteger.valueOf(-1))
                 .build());
         recipeRepository.save(Recipe.builder()
@@ -131,7 +132,8 @@ public class IntegrationTest {
                 .owner(ChefUser.ofId("some-admin-id"))
                 .instruction("test-recipe-instructions")
                 .name("test-recipe-name")
-                .relevance(BigInteger.TWO)
+                .averageRating(4.5)
+                .relevance(BigInteger.valueOf(1))
                 .build());
         recipeRepository.save(Recipe.builder()
                 .id("test-recipe-id-4")

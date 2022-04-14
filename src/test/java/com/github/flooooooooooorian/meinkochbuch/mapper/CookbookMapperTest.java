@@ -34,12 +34,17 @@ class CookbookMapperTest {
                         .build())
                 .build();
 
-        CookbookContent cookbookContent = CookbookContent.builder()
+        CookbookContent cookbookContent1 = CookbookContent.builder()
                 .recipe(MapperUtils.exampleRecipe)
                 .cookbook(cookbook)
                 .build();
 
-        cookbook.setContents(List.of(cookbookContent));
+        CookbookContent cookbookContent2 = CookbookContent.builder()
+                .recipe(MapperUtils.exampleRecipePrivate)
+                .cookbook(cookbook)
+                .build();
+
+        cookbook.setContents(List.of(cookbookContent1, cookbookContent2));
 
         //WHEN
         CookbookPreview result = CookbookMapper.cookbookToCookbookPreview(cookbook);
@@ -78,12 +83,17 @@ class CookbookMapperTest {
                         .build())
                 .build();
 
-        CookbookContent cookbookContent = CookbookContent.builder()
+        CookbookContent cookbookContent1 = CookbookContent.builder()
                 .recipe(MapperUtils.exampleRecipe)
                 .cookbook(cookbook)
                 .build();
 
-        cookbook.setContents(List.of(cookbookContent));
+        CookbookContent cookbookContent2 = CookbookContent.builder()
+                .recipe(MapperUtils.exampleRecipePrivate)
+                .cookbook(cookbook)
+                .build();
+
+        cookbook.setContents(List.of(cookbookContent1, cookbookContent2));
 
         //WHEN
         CookbookDto result = CookbookMapper.cookbookToCookbookDto(cookbook);
@@ -101,18 +111,31 @@ class CookbookMapperTest {
                         .build())
                 .privacy(false)
                 .recipes(List.of(RecipePreviewDto.builder()
-                        .id("1")
-                        .name("test-name")
-                        .ratingCount(1)
-                        .ratingAverage(4)
-                        .owner(ChefUserPreviewDto.builder()
                                 .id("1")
                                 .name("test-name")
-                                .build())
-                        .thumbnail(ImageDto.builder()
-                                .id("1")
-                                .build())
-                        .build()))
+                                .ratingCount(1)
+                                .ratingAverage(4)
+                                .owner(ChefUserPreviewDto.builder()
+                                        .id("1")
+                                        .name("test-name")
+                                        .build())
+                                .thumbnail(ImageDto.builder()
+                                        .id("1")
+                                        .build())
+                                .build(),
+                        RecipePreviewDto.builder()
+                                .id("2")
+                                .name("test-name")
+                                .ratingCount(2)
+                                .ratingAverage(4)
+                                .owner(ChefUserPreviewDto.builder()
+                                        .id("1")
+                                        .name("test-name")
+                                        .build())
+                                .thumbnail(ImageDto.builder()
+                                        .id("1")
+                                        .build())
+                                .build()))
                 .ratingAverage(4)
                 .build();
 

@@ -55,7 +55,7 @@ class CookbookControllerTest extends IntegrationTest {
                         .name("some-user-name")
                         .id("some-user-id")
                         .build())
-                .ratingAverage(2)
+                .ratingAverage(3)
                 .build();
 
         CookbookPreview expected2 = CookbookPreview.builder()
@@ -65,7 +65,7 @@ class CookbookControllerTest extends IntegrationTest {
                         .name("some-admin-name")
                         .id("some-admin-id")
                         .build())
-                .ratingAverage(2)
+                .ratingAverage(3)
                 .build();
 
         assertThat(result, notNullValue());
@@ -105,7 +105,7 @@ class CookbookControllerTest extends IntegrationTest {
                         .name("some-admin-name")
                         .id("some-admin-id")
                         .build())
-                .ratingAverage(2)
+                .ratingAverage(3)
                 .build();
 
         CookbookPreview expected3 = CookbookPreview.builder()
@@ -115,7 +115,7 @@ class CookbookControllerTest extends IntegrationTest {
                         .name("some-user-name")
                         .id("some-user-id")
                         .build())
-                .ratingAverage(2)
+                .ratingAverage(3)
                 .build();
 
         assertThat(result, notNullValue());
@@ -153,7 +153,7 @@ class CookbookControllerTest extends IntegrationTest {
                         .ratingAverage(3)
                         .ratingCount(1)
                         .build()))
-                .ratingAverage(2)
+                .ratingAverage(3)
                 .thumbnail(null)
                 .build();
 
@@ -236,7 +236,7 @@ class CookbookControllerTest extends IntegrationTest {
                                 .id("test-recipe-id-1")
                                 .name("test-recipe-name")
                                 .ratingCount(1)
-                                .ratingAverage(2)
+                                .ratingAverage(3)
                                 .owner(ChefUserPreviewDto.builder()
                                         .name("some-user-name")
                                         .id("some-user-id")
@@ -253,7 +253,7 @@ class CookbookControllerTest extends IntegrationTest {
                                         .build())
                                 .build()))
                 .privacy(false)
-                .ratingAverage(3.25)
+                .ratingAverage(4)
                 .build();
 
         assertThat(actual, is(expected));
@@ -312,7 +312,7 @@ class CookbookControllerTest extends IntegrationTest {
                                         .build())
                                 .build()))
                 .privacy(true)
-                .ratingAverage(1.5)
+                .ratingAverage(3)
                 .build();
 
         assertThat(actual, is(expected));
