@@ -71,18 +71,4 @@ public class Recipe {
                 .id(recipeId)
                 .build();
     }
-
-    public void recalculateAverageRating() {
-        if (this.getRatings() == null) {
-            this.averageRating = 0;
-        }
-        if (this.getRatings().isEmpty()) {
-            this.averageRating = 0;
-        }
-        double avgRating = 0;
-        for (Rating rating : this.getRatings()) {
-            avgRating = avgRating + rating.getValue();
-        }
-        this.averageRating = avgRating / this.ratings.size();
-    }
 }

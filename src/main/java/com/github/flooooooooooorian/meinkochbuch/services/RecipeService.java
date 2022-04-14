@@ -6,6 +6,7 @@ import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipeEditDto;
 import com.github.flooooooooooorian.meinkochbuch.exceptions.RecipeDoesNotExistException;
 import com.github.flooooooooooorian.meinkochbuch.exceptions.RecipeEditForbiddenException;
 import com.github.flooooooooooorian.meinkochbuch.exceptions.RecipePrivacyForbiddenException;
+import com.github.flooooooooooorian.meinkochbuch.models.rating.Rating;
 import com.github.flooooooooooorian.meinkochbuch.models.recipe.Recipe;
 import com.github.flooooooooooorian.meinkochbuch.models.recipe.ingredient.Ingredient;
 import com.github.flooooooooooorian.meinkochbuch.repository.IngredientRepository;
@@ -143,7 +144,7 @@ public class RecipeService {
         return recipeRepository.findAllByIdIn(ids);
     }
 
-    public BigInteger calculateRelevance(Recipe recipe) {
+    private BigInteger calculateRelevance(Recipe recipe) {
         BigInteger relevance = BigInteger.ZERO;
 
         if (recipe.getImages() != null) {
@@ -157,10 +158,24 @@ public class RecipeService {
         return relevance;
     }
 
+    private double calculateAverageRating(Recipe recipe) {
+        if (recipe.getRatings() == null || recipe.getRatings().isEmpty()) {
+            return 0.0;
+        } else {
+            double avgRating = 0;
+            for (Rating rating : recipe.getRatings()) {
+                avgRating = avgRating + rating.getValue();
+            }
+            return avgRating / recipe.getRatings().size();
+        }
+    }
+
     public void recalculateRecipe(String recipeId) {
         Recipe recipe = recipeRepository.findById(recipeId).orElseThrow(() -> new RecipeDoesNotExistException("Recipe with id: " + recipeId + " does not exists!"));
 
+        recipe.setAverageRating(calculateAverageRating(recipe));
         recipe.setRelevance(calculateRelevance(recipe));
+
 
         recipeRepository.save(recipe);
     }
