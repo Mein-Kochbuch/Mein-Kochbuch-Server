@@ -50,7 +50,7 @@ class RecipeControllerTest extends IntegrationTest {
                         .id("some-user-id")
                         .name("some-user-name")
                         .build())
-                .name("test-recipe-name")
+                .name("test-recipe-name-A")
                 .ratingAverage(3)
                 .ratingCount(1)
                 .thumbnail(null)
@@ -58,7 +58,7 @@ class RecipeControllerTest extends IntegrationTest {
 
         RecipePreviewDto expected2 = RecipePreviewDto.builder()
                 .id("test-recipe-id-3")
-                .name("test-recipe-name")
+                .name("test-recipe-name-C")
                 .owner(ChefUserPreviewDto.builder()
                         .id("some-admin-id")
                         .name("some-admin-name")
@@ -93,7 +93,7 @@ class RecipeControllerTest extends IntegrationTest {
                         .id("some-user-id")
                         .name("some-user-name")
                         .build())
-                .name("test-recipe-name")
+                .name("test-recipe-name-A")
                 .ratingAverage(3)
                 .ratingCount(1)
                 .thumbnail(null)
@@ -105,7 +105,7 @@ class RecipeControllerTest extends IntegrationTest {
                         .id("some-user-id")
                         .name("some-user-name")
                         .build())
-                .name("test-recipe-name")
+                .name("test-recipe-name-B")
                 .ratingAverage(0)
                 .ratingCount(0)
                 .thumbnail(null)
@@ -117,7 +117,7 @@ class RecipeControllerTest extends IntegrationTest {
                         .id("some-admin-id")
                         .name("some-admin-name")
                         .build())
-                .name("test-recipe-name")
+                .name("test-recipe-name-C")
                 .ratingAverage(4.5)
                 .ratingCount(2)
                 .thumbnail(null)
@@ -126,6 +126,86 @@ class RecipeControllerTest extends IntegrationTest {
         assertThat(result, notNullValue());
         assertThat(result.getStatusCode(), is(HttpStatus.OK));
         assertThat(result.getBody(), containsInAnyOrder(expected1, expected2, expected3));
+    }
+
+    @Test
+    void getAllRecipesSortDefault() {
+        //GIVEN
+        webClient = WebClient.create("http://localhost:" + port + "/api");
+
+        //WHEN
+
+        ResponseEntity<List<RecipePreviewDto>> result = webClient.get()
+                .uri("/recipes")
+                .retrieve()
+                .toEntityList(RecipePreviewDto.class)
+                .block();
+        //THEN
+        RecipePreviewDto expected1 = RecipePreviewDto.builder()
+                .id("test-recipe-id-3")
+                .owner(ChefUserPreviewDto.builder()
+                        .id("some-admin-id")
+                        .name("some-admin-name")
+                        .build())
+                .name("test-recipe-name-C")
+                .ratingAverage(4.5)
+                .ratingCount(2)
+                .build();
+
+        RecipePreviewDto expected2 = RecipePreviewDto.builder()
+                .id("test-recipe-id-1")
+                .owner(ChefUserPreviewDto.builder()
+                        .name("some-user-name")
+                        .id("some-user-id")
+                        .build())
+                .name("test-recipe-name-A")
+                .ratingCount(1)
+                .ratingAverage(3)
+                .build();
+
+        assertThat(result, notNullValue());
+        assertThat(result.getStatusCode(), is(HttpStatus.OK));
+        assertThat(result.getBody(), Matchers.contains(expected1, expected2));
+    }
+
+    @Test
+    void getAllRecipesSortCustom() {
+        //GIVEN
+        webClient = WebClient.create("http://localhost:" + port + "/api");
+
+        //WHEN
+
+        ResponseEntity<List<RecipePreviewDto>> result = webClient.get()
+                .uri("/recipes?sort=ALPHABETICALLY_ASC")
+                .retrieve()
+                .toEntityList(RecipePreviewDto.class)
+                .block();
+        //THEN
+        RecipePreviewDto expected1 = RecipePreviewDto.builder()
+                .id("test-recipe-id-3")
+                .owner(ChefUserPreviewDto.builder()
+                        .id("some-admin-id")
+                        .name("some-admin-name")
+                        .build())
+                .name("test-recipe-name-C")
+                .ratingAverage(4.5)
+                .ratingCount(2)
+                .build();
+
+        RecipePreviewDto expected2 = RecipePreviewDto.builder()
+                .id("test-recipe-id-1")
+                .owner(ChefUserPreviewDto.builder()
+                        .name("some-user-name")
+                        .id("some-user-id")
+                        .build())
+                .name("test-recipe-name-A")
+                .ratingCount(1)
+                .ratingAverage(3)
+                .build();
+
+        assertThat(result, notNullValue());
+        assertThat(result.getStatusCode(), is(HttpStatus.OK));
+        assertThat(result.getBody(), Matchers.contains(expected2, expected1));
     }
 
     @Test
@@ -147,7 +227,7 @@ class RecipeControllerTest extends IntegrationTest {
                         .id("some-user-id")
                         .name("some-user-name")
                         .build())
-                .name("test-recipe-name")
+                .name("test-recipe-name-A")
                 .instruction("test-recipe-instructions")
                 .ratingAverage(3)
                 .ratingCount(1)

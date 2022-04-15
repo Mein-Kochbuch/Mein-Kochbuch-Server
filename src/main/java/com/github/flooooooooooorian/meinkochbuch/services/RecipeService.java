@@ -18,7 +18,6 @@ import com.github.flooooooooooorian.meinkochbuch.utils.sorting.RecipeSorting;
 import lombok.RequiredArgsConstructor;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -36,9 +35,8 @@ public class RecipeService {
     private final IdUtils idUtils;
     private final TimeUtils timeUtils;
 
-    public List<Recipe> getAllRecipes(String userId, RecipeSorting recipeSorting) {
-        Sort sort = Sort.by(recipeSorting.value).descending();
-        return recipeRepository.findAllByPrivacyIsFalseOrOwner_Id(userId, sort);
+    public List<Recipe> getAllRecipes(String userId, Optional<RecipeSorting> recipeSorting) {
+        return recipeRepository.findAllByPrivacyIsFalseOrOwner_Id(userId, recipeSorting.orElse(RecipeSorting.RELEVANCE).sortValue);
     }
 
     public Recipe getRecipeById(String recipeId, Optional<ChefUser> optionalChefUser) {

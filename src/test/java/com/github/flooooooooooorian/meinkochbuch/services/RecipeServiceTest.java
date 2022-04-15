@@ -21,7 +21,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Sort;
 
 import java.math.BigInteger;
 import java.time.Instant;
@@ -86,11 +85,11 @@ class RecipeServiceTest {
                 .ingredients(List.of())
                 .build();
 
-        when(recipeRepository.findAllByPrivacyIsFalseOrOwner_Id(null, Sort.by(RecipeSorting.RELEVANCE.value).descending())).thenReturn(List.of(r1));
+        when(recipeRepository.findAllByPrivacyIsFalseOrOwner_Id(null, RecipeSorting.RELEVANCE.sortValue)).thenReturn(List.of(r1));
 
         //WHEN
 
-        List<Recipe> result = recipeService.getAllRecipes(null, RecipeSorting.RELEVANCE);
+        List<Recipe> result = recipeService.getAllRecipes(null, Optional.of(RecipeSorting.RELEVANCE));
 
         //THEN
         assertThat(result, Matchers.containsInAnyOrder(r1));
@@ -136,14 +135,138 @@ class RecipeServiceTest {
                 .ingredients(List.of())
                 .build();
 
-        when(recipeRepository.findAllByPrivacyIsFalseOrOwner_Id("1", Sort.by(RecipeSorting.RELEVANCE.value).descending())).thenReturn(List.of(r1, r2));
+        when(recipeRepository.findAllByPrivacyIsFalseOrOwner_Id("1", RecipeSorting.RELEVANCE.sortValue)).thenReturn(List.of(r1, r2));
 
         //WHEN
 
-        List<Recipe> result = recipeService.getAllRecipes(chefUser1.getId(), RecipeSorting.RELEVANCE);
+        List<Recipe> result = recipeService.getAllRecipes(chefUser1.getId(), Optional.of(RecipeSorting.RELEVANCE));
 
         //THEN
         assertThat(result, Matchers.containsInAnyOrder(r1, r2));
+    }
+
+
+    @Test
+    void getAllRecipesSortDefault() {
+        //GIVEN
+        ChefUser chefUser1 = ChefUser.ofId("1");
+
+        Recipe r1 = Recipe.builder()
+                .id("1")
+                .name("A")
+                .relevance(BigInteger.valueOf(3))
+                .averageRating(2)
+                .owner(chefUser1)
+                .privacy(false)
+                .portions(4)
+                .instruction("test-instructions")
+                .duration(40)
+                .difficulty(Difficulty.EXPERT)
+                .createdAt(Instant.now())
+                .ingredients(List.of())
+                .build();
+
+        Recipe r2 = Recipe.builder()
+                .id("2")
+                .name("B")
+                .relevance(BigInteger.valueOf(1))
+                .averageRating(3)
+                .owner(chefUser1)
+                .privacy(false)
+                .portions(4)
+                .instruction("test-instructions")
+                .duration(40)
+                .difficulty(Difficulty.EXPERT)
+                .createdAt(Instant.now())
+                .ingredients(List.of())
+                .build();
+
+        Recipe r3 = Recipe.builder()
+                .id("3")
+                .name("C")
+                .averageRating(1)
+                .relevance(BigInteger.valueOf(2))
+                .owner(chefUser1)
+                .privacy(false)
+                .portions(4)
+                .instruction("test-instructions")
+                .duration(40)
+                .difficulty(Difficulty.EXPERT)
+                .createdAt(Instant.now())
+                .ingredients(List.of())
+                .build();
+
+        when(recipeRepository.findAllByPrivacyIsFalseOrOwner_Id(null, RecipeSorting.RELEVANCE.sortValue)).thenReturn(List.of(r2, r3, r1));
+
+        //WHEN
+
+        List<Recipe> result = recipeService.getAllRecipes(null, Optional.empty());
+
+        //THEN
+
+        verify(recipeRepository).findAllByPrivacyIsFalseOrOwner_Id(null, RecipeSorting.RELEVANCE.sortValue);
+        assertThat(result, Matchers.contains(r2, r3, r1));
+    }
+
+    @Test
+    void getAllRecipesSortCustom() {
+        //GIVEN
+        ChefUser chefUser1 = ChefUser.ofId("1");
+
+        Recipe r1 = Recipe.builder()
+                .id("1")
+                .name("A")
+                .relevance(BigInteger.valueOf(3))
+                .averageRating(2)
+                .owner(chefUser1)
+                .privacy(false)
+                .portions(4)
+                .instruction("test-instructions")
+                .duration(40)
+                .difficulty(Difficulty.EXPERT)
+                .createdAt(Instant.now())
+                .ingredients(List.of())
+                .build();
+
+        Recipe r2 = Recipe.builder()
+                .id("2")
+                .name("B")
+                .relevance(BigInteger.valueOf(1))
+                .averageRating(3)
+                .owner(chefUser1)
+                .privacy(false)
+                .portions(4)
+                .instruction("test-instructions")
+                .duration(40)
+                .difficulty(Difficulty.EXPERT)
+                .createdAt(Instant.now())
+                .ingredients(List.of())
+                .build();
+
+        Recipe r3 = Recipe.builder()
+                .id("3")
+                .name("C")
+                .averageRating(1)
+                .relevance(BigInteger.valueOf(2))
+                .owner(chefUser1)
+                .privacy(false)
+                .portions(4)
+                .instruction("test-instructions")
+                .duration(40)
+                .difficulty(Difficulty.EXPERT)
+                .createdAt(Instant.now())
+                .ingredients(List.of())
+                .build();
+
+        when(recipeRepository.findAllByPrivacyIsFalseOrOwner_Id(null, RecipeSorting.RATING.sortValue)).thenReturn(List.of(r2, r1, r3));
+
+        //WHEN
+
+        List<Recipe> result = recipeService.getAllRecipes(null, Optional.of(RecipeSorting.RATING));
+
+        //THEN
+        verify(recipeRepository).findAllByPrivacyIsFalseOrOwner_Id(null, RecipeSorting.RATING.sortValue);
+        assertThat(result, Matchers.contains(r2, r1, r3));
     }
 
     @Test

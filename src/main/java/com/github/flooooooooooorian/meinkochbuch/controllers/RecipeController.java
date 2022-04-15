@@ -28,7 +28,7 @@ public class RecipeController {
     @GetMapping()
     public List<RecipePreviewDto> getAllRecipes(Principal principal, @RequestParam Optional<RecipeSorting> sort) {
         log.debug("GET All Recipes");
-        return recipeService.getAllRecipes(principal != null ? principal.getName() : null, sort.orElse(RecipeSorting.RELEVANCE)).stream()
+        return recipeService.getAllRecipes(principal != null ? principal.getName() : null, sort).stream()
                 .map(RecipeMapper::recipeToRecipePreviewDto)
                 .toList();
     }
