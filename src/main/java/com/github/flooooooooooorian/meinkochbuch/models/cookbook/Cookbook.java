@@ -1,11 +1,13 @@
 package com.github.flooooooooooorian.meinkochbuch.models.cookbook;
 
 import com.github.flooooooooooorian.meinkochbuch.models.image.Image;
+import com.github.flooooooooooorian.meinkochbuch.models.rating.Rating;
 import com.github.flooooooooooorian.meinkochbuch.security.models.ChefUser;
 import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.stream.Stream;
 
 @Getter
 @Setter
@@ -35,11 +37,33 @@ public class Cookbook {
     private Image thumbnail;
 
     public double getAverageRating() {
-        return this.contents.stream()
-                .map(cookbookContent -> cookbookContent.getRecipe().getRatingAverage())
+        double ratingSum = this.contents.stream()
+                .flatMap(cookbookContent -> {
+                    if (cookbookContent.getRecipe().getRatings() == null) {
+                        return Stream.empty();
+                    } else {
+                        return cookbookContent.getRecipe().getRatings().stream()
+                                .map(Rating::getValue);
+                    }
+                })
                 .mapToDouble(Double::doubleValue)
-                .sum()
-                / this.contents.size();
+                .sum();
+
+        int ratingCount = this.contents.stream()
+                .map(cookbookContent -> {
+                    if (cookbookContent.getRecipe().getRatings() == null) {
+                        return 0;
+                    } else {
+                        return cookbookContent.getRecipe().getRatings().size();
+                    }
+                })
+                .mapToInt(Integer::intValue)
+                .sum();
+
+        if (ratingCount == 0) {
+            return 0;
+        }
+        return ratingSum / ratingCount;
     }
 
     public static Cookbook ofId(String id) {

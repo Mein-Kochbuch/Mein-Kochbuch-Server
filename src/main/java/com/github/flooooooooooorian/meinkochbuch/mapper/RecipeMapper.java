@@ -14,7 +14,7 @@ public interface RecipeMapper {
                 .id(recipe.getId())
                 .owner(ChefUserMapper.chefUserToChefUserPreviewDto(recipe.getOwner()))
                 .name(recipe.getName())
-                .ratingAverage(recipe.getRatingAverage())
+                .ratingAverage(recipe.getAverageRating())
                 .ratingCount(recipe.getRatings() != null
                         ? recipe.getRatings().size()
                         : 0)
@@ -40,12 +40,12 @@ public interface RecipeMapper {
                         ? recipe.getIngredients()
                         : List.of())
                 .privacy(recipe.isPrivacy())
-                .ratingAverage(recipe.getRatingAverage())
+                .ratingAverage(recipe.getAverageRating())
                 .ratingCount(recipe.getRatings() != null ? recipe.getRatings().size() : 0)
                 .tags(recipe.getTaggings() != null
                         ? recipe.getTaggings().stream().map(RecipeTagging::getTag).toList()
                         : List.of())
-                .ratingAverage(recipe.getRatingAverage())
+                .ratingAverage(recipe.getAverageRating())
                 .thumbnail(recipe.getThumbnail() != null
                         ? ImageMapper.imageToImageDto(recipe.getThumbnail())
                         : null)

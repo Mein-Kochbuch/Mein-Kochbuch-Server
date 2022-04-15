@@ -9,11 +9,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+
 @Service
 @RequiredArgsConstructor
 public class RatingService {
 
     private final RatingRepository ratingRepository;
+    private final RecipeService recipeService;
 
     public Rating getUsersRatingFromRecipe(String userId, String recipeId) {
         return ratingRepository.findByUser_IdAndRecipe_Id(userId, recipeId)
@@ -24,13 +27,16 @@ public class RatingService {
                         .build());
     }
 
+    @Transactional
     public Rating addRating(String userId, String recipeId, double rating) {
         try {
-            return ratingRepository.save(Rating.builder()
+            Rating newRating = ratingRepository.save(Rating.builder()
                     .recipe(Recipe.ofId(recipeId))
                     .user(ChefUser.ofId(userId))
                     .value(rating)
                     .build());
+            recipeService.recalculateRecipe(recipeId);
+            return newRating;
         } catch (JpaObjectRetrievalFailureException exception) {
             throw new RatingFailedException("Rating failed!", exception);
         }
