@@ -100,14 +100,14 @@ class UserControllerTest extends IntegrationTest {
         ChefUserProfileDto expected = ChefUserProfileDto.builder()
                 .id("some-admin-id")
                 .cookbooks(List.of(CookbookPreview.builder()
-                                .id("test-cookbook-id-3")
-                                .name("test-cookbook-name-3")
-                                .owner(ChefUserPreviewDto.builder()
-                                        .id("some-admin-id")
-                                        .name("some-admin-name")
-                                        .build())
-                                .ratingAverage(3)
-                                .build()))
+                        .id("test-cookbook-id-3")
+                        .name("test-cookbook-name-3")
+                        .owner(ChefUserPreviewDto.builder()
+                                .id("some-admin-id")
+                                .name("some-admin-name")
+                                .build())
+                        .ratingAverage(3)
+                        .build()))
                 .name("some-admin-name")
                 .recipes(List.of(RecipePreviewDto.builder()
                         .id("test-recipe-id-3")
@@ -118,7 +118,49 @@ class UserControllerTest extends IntegrationTest {
                                 .build())
                         .ratingAverage(4.5)
                         .ratingCount(2)
-                                .build()))
+                        .build()))
+                .build();
+
+        assertThat(actual, is(expected));
+    }
+
+    @Test
+    void getUserProfileByIdAnonymousOther() {
+        //GIVEN
+
+        //WHEN
+        ChefUserProfileDto actual = webTestClient.get()
+                .uri("/api/user/some-admin-id")
+                .exchange()
+                .expectStatus().is2xxSuccessful()
+                .expectBody(ChefUserProfileDto.class)
+                .returnResult()
+                .getResponseBody();
+
+        //THEN
+
+        ChefUserProfileDto expected = ChefUserProfileDto.builder()
+                .id("some-admin-id")
+                .cookbooks(List.of(CookbookPreview.builder()
+                        .id("test-cookbook-id-3")
+                        .name("test-cookbook-name-3")
+                        .owner(ChefUserPreviewDto.builder()
+                                .id("some-admin-id")
+                                .name("some-admin-name")
+                                .build())
+                        .ratingAverage(3)
+                        .build()))
+                .name("some-admin-name")
+                .recipes(List.of(RecipePreviewDto.builder()
+                        .id("test-recipe-id-3")
+                        .name("test-recipe-name-C")
+                        .owner(ChefUserPreviewDto.builder()
+                                .id("some-admin-id")
+                                .name("some-admin-name")
+                                .build())
+                        .ratingAverage(4.5)
+                        .ratingCount(2)
+                        .build()))
                 .build();
 
         assertThat(actual, is(expected));

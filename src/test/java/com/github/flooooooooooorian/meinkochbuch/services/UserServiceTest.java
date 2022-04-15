@@ -3,28 +3,15 @@ package com.github.flooooooooooorian.meinkochbuch.services;
 import com.github.flooooooooooorian.meinkochbuch.exceptions.UserDoesNotExistsException;
 import com.github.flooooooooooorian.meinkochbuch.models.cookbook.Cookbook;
 import com.github.flooooooooooorian.meinkochbuch.models.recipe.Recipe;
-import com.github.flooooooooooorian.meinkochbuch.security.dtos.LoginJWTDto;
-import com.github.flooooooooooorian.meinkochbuch.security.dtos.UserLoginDto;
-import com.github.flooooooooooorian.meinkochbuch.security.models.ChefAuthorities;
 import com.github.flooooooooooorian.meinkochbuch.security.models.ChefUser;
 import com.github.flooooooooooorian.meinkochbuch.security.repository.ChefUserRepository;
-import com.github.flooooooooooorian.meinkochbuch.security.service.JwtUtilsService;
-import com.github.flooooooooooorian.meinkochbuch.services.utils.IdUtils;
-import com.github.flooooooooooorian.meinkochbuch.utils.TimeUtils;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.authentication.*;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.time.Instant;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -99,6 +86,58 @@ class UserServiceTest {
         //WHEN
 
         ChefUser result = userService.getUserById("1", Optional.of("2"));
+
+        //THEN
+
+        ChefUser expected = ChefUser.builder()
+                .id("1")
+                .accountNonExpired(true)
+                .accountNonLocked(true)
+                .authorities(Set.of())
+                .cookbooks(List.of(Cookbook.ofId("1")))
+                .credentialsNonExpired(true)
+                .favoriteRecipes(List.of())
+                .enabled(true)
+                .name("my-name")
+                .recipes(List.of(Recipe.ofId("1")))
+                .build();
+
+        assertThat(result.getId(), Matchers.is(expected.getId()));
+        assertThat(result.getName(), Matchers.is(expected.getName()));
+        assertThat(result.getCookbooks(), Matchers.is(expected.getCookbooks()));
+        assertThat(result.getRecipes(), Matchers.is(expected.getRecipes()));
+    }
+
+    @Test
+    void getUserByIdAnonymousOther() {
+        //GIVEN
+        ChefUser chefUser1 = ChefUser.builder()
+                .id("1")
+                .accountNonExpired(true)
+                .accountNonLocked(true)
+                .authorities(Set.of())
+                .cookbooks(List.of(Cookbook.ofId("1"),
+                        Cookbook.builder()
+                                .id("2")
+                                .privacy(true)
+                                .build()))
+                .credentialsNonExpired(true)
+                .favoriteRecipes(List.of())
+                .enabled(true)
+                .name("my-name")
+                .recipes(List.of(
+                        Recipe.ofId("1"),
+                        Recipe.builder()
+                                .id("2")
+                                .privacy(true)
+                                .build()))
+                .build();
+
+        when(chefUserRepository.findChefUserById("1")).thenReturn(Optional.of(chefUser1));
+
+        //WHEN
+
+        ChefUser result = userService.getUserById("1", Optional.empty());
 
         //THEN
 
