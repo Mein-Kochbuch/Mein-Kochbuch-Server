@@ -15,8 +15,6 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class UserControllerTest extends IntegrationTest {
@@ -62,7 +60,7 @@ class UserControllerTest extends IntegrationTest {
                 .name("some-user-name")
                 .recipes(List.of(RecipePreviewDto.builder()
                                 .id("test-recipe-id-1")
-                                .name("test-recipe-name")
+                                .name("test-recipe-name-A")
                                 .owner(ChefUserPreviewDto.builder()
                                         .id("some-user-id")
                                         .name("some-user-name")
@@ -72,7 +70,7 @@ class UserControllerTest extends IntegrationTest {
                                 .build(),
                         RecipePreviewDto.builder()
                                 .id("test-recipe-id-2")
-                                .name("test-recipe-name")
+                                .name("test-recipe-name-B")
                                 .owner(ChefUserPreviewDto.builder()
                                         .id("some-user-id")
                                         .name("some-user-name")
@@ -112,14 +110,14 @@ class UserControllerTest extends IntegrationTest {
                                 .build()))
                 .name("some-admin-name")
                 .recipes(List.of(RecipePreviewDto.builder()
-                                .id("test-recipe-id-3")
-                                .name("test-recipe-name")
-                                .owner(ChefUserPreviewDto.builder()
-                                        .id("some-admin-id")
-                                        .name("some-admin-name")
-                                        .build())
-                                .ratingAverage(0)
-                                .ratingCount(0)
+                        .id("test-recipe-id-3")
+                        .name("test-recipe-name-C")
+                        .owner(ChefUserPreviewDto.builder()
+                                .id("some-admin-id")
+                                .name("some-admin-name")
+                                .build())
+                        .ratingAverage(4.5)
+                        .ratingCount(2)
                                 .build()))
                 .build();
 
