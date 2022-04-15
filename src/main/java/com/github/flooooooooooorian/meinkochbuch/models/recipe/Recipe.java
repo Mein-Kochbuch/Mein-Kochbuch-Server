@@ -64,23 +64,11 @@ public class Recipe {
     @OneToMany(mappedBy = "recipe")
     private List<Rating> ratings;
 
+    private double averageRating;
+
     public static Recipe ofId(String recipeId) {
         return Recipe.builder()
                 .id(recipeId)
                 .build();
-    }
-
-    public double getRatingAverage() {
-        if (this.getRatings() == null) {
-            return 0;
-        }
-        if (this.getRatings().isEmpty()) {
-            return 0;
-        }
-        double avgRating = 0;
-        for (Rating rating : this.getRatings()) {
-            avgRating = avgRating + rating.getValue();
-        }
-        return avgRating / this.ratings.size();
     }
 }

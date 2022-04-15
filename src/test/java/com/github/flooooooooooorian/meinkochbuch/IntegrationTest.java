@@ -18,6 +18,7 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 
 import javax.transaction.Transactional;
+import java.math.BigInteger;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
@@ -95,37 +96,51 @@ public class IntegrationTest {
                 .user(ChefUser.ofId("some-user-id"))
                 .recipe(Recipe.ofId("test-recipe-id-1"))
                 .build());
+        ratingRepository.save(Rating.builder()
+                .value(5)
+                .user(ChefUser.ofId("some-user-id"))
+                .recipe(Recipe.ofId("test-recipe-id-3"))
+                .build());
+        ratingRepository.save(Rating.builder()
+                .value(4)
+                .user(ChefUser.ofId("some-admin-id"))
+                .recipe(Recipe.ofId("test-recipe-id-3"))
+                .build());
     }
 
     private void initTestRecipe() {
         recipeRepository.save(Recipe.builder()
                 .id("test-recipe-id-1")
+                .name("test-recipe-name-A")
                 .createdAt(Instant.now())
                 .owner(ChefUser.ofId("some-user-id"))
                 .instruction("test-recipe-instructions")
-                .name("test-recipe-name")
+                .averageRating(3)
+                .relevance(BigInteger.valueOf(-1))
                 .build());
         recipeRepository.save(Recipe.builder()
                 .id("test-recipe-id-2")
+                .name("test-recipe-name-B")
                 .createdAt(Instant.now())
                 .owner(ChefUser.ofId("some-user-id"))
                 .instruction("test-recipe-instructions")
-                .name("test-recipe-name")
                 .privacy(true)
                 .build());
         recipeRepository.save(Recipe.builder()
                 .id("test-recipe-id-3")
+                .name("test-recipe-name-C")
                 .createdAt(Instant.now())
                 .owner(ChefUser.ofId("some-admin-id"))
                 .instruction("test-recipe-instructions")
-                .name("test-recipe-name")
+                .averageRating(4.5)
+                .relevance(BigInteger.valueOf(1))
                 .build());
         recipeRepository.save(Recipe.builder()
                 .id("test-recipe-id-4")
+                .name("test-recipe-name-D")
                 .createdAt(Instant.now())
                 .owner(ChefUser.ofId("some-admin-id"))
                 .instruction("test-recipe-instructions")
-                .name("test-recipe-name")
                 .privacy(true)
                 .build());
 

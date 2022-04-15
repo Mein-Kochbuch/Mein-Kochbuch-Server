@@ -87,7 +87,11 @@ CREATE TABLE IF NOT EXISTS recipe
     portions     int4                     not null,
     privacy      boolean                  not null,
     relevance    numeric(19, 2),
-    owner_id     VARCHAR(200) REFERENCES chef_user (id),
+    average_rating double precision,
+    owner_id VARCHAR
+(
+    200
+) REFERENCES chef_user (id),
     thumbnail_id VARCHAR(200) REFERENCES image (id),
     primary key (id)
 );
@@ -128,8 +132,14 @@ CREATE TABLE IF NOT EXISTS ingredient
 
 CREATE TABLE IF NOT EXISTS rating
 (
-    value     numeric(19, 2),
-    recipe_id VARCHAR(200) REFERENCES recipe (id),
+    value
+    double
+    precision,
+    recipe_id
+    VARCHAR
+(
+    200
+) REFERENCES recipe (id),
     user_id   VARCHAR(200) REFERENCES chef_user (id),
     primary key (recipe_id, user_id)
 );

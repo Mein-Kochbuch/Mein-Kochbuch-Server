@@ -35,7 +35,7 @@ class CookbookControllerTest extends IntegrationTest {
     private WebClient webClient;
 
     @Test
-    void getAllRecipesAnonymous() {
+    void getAllCookbooksAnonymous() {
         //GIVEN
         webClient = WebClient.create("http://localhost:" + port + "/api");
 
@@ -149,7 +149,7 @@ class CookbookControllerTest extends IntegrationTest {
                                 .id("some-user-id")
                                 .name("some-user-name")
                                 .build())
-                        .name("test-recipe-name")
+                        .name("test-recipe-name-A")
                         .ratingAverage(3)
                         .ratingCount(1)
                         .build()))
@@ -234,7 +234,7 @@ class CookbookControllerTest extends IntegrationTest {
                         .build())
                 .recipes(List.of(RecipePreviewDto.builder()
                                 .id("test-recipe-id-1")
-                                .name("test-recipe-name")
+                                .name("test-recipe-name-A")
                                 .ratingCount(1)
                                 .ratingAverage(3)
                                 .owner(ChefUserPreviewDto.builder()
@@ -244,16 +244,16 @@ class CookbookControllerTest extends IntegrationTest {
                                 .build(),
                         RecipePreviewDto.builder()
                                 .id("test-recipe-id-3")
-                                .name("test-recipe-name")
-                                .ratingCount(0)
-                                .ratingAverage(0)
+                                .name("test-recipe-name-C")
+                                .ratingCount(2)
+                                .ratingAverage(4.5)
                                 .owner(ChefUserPreviewDto.builder()
                                         .name("some-admin-name")
                                         .id("some-admin-id")
                                         .build())
                                 .build()))
                 .privacy(false)
-                .ratingAverage(3)
+                .ratingAverage(4)
                 .build();
 
         assertThat(actual, is(expected));
@@ -293,7 +293,7 @@ class CookbookControllerTest extends IntegrationTest {
                         .build())
                 .recipes(List.of(RecipePreviewDto.builder()
                                 .id("test-recipe-id-1")
-                                .name("test-recipe-name")
+                                .name("test-recipe-name-A")
                                 .ratingCount(1)
                                 .ratingAverage(3)
                                 .owner(ChefUserPreviewDto.builder()
@@ -303,7 +303,7 @@ class CookbookControllerTest extends IntegrationTest {
                                 .build(),
                         RecipePreviewDto.builder()
                                 .id("test-recipe-id-2")
-                                .name("test-recipe-name")
+                                .name("test-recipe-name-B")
                                 .ratingCount(0)
                                 .ratingAverage(0)
                                 .owner(ChefUserPreviewDto.builder()
@@ -347,13 +347,13 @@ class CookbookControllerTest extends IntegrationTest {
                         .id("some-user-id")
                         .name("some-user-name")
                         .build())
-                .ratingAverage(0)
+                .ratingAverage(4.5)
                 .privacy(true)
                 .recipes(List.of(RecipePreviewDto.builder()
-                                .id("test-recipe-id-3")
-                                .name("test-recipe-name")
-                                .ratingCount(0)
-                                .ratingAverage(0)
+                        .id("test-recipe-id-3")
+                        .name("test-recipe-name-C")
+                        .ratingCount(2)
+                        .ratingAverage(4.5)
                                 .owner(ChefUserPreviewDto.builder()
                                         .name("some-admin-name")
                                         .id("some-admin-id")
