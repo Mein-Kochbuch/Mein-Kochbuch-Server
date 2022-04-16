@@ -1,7 +1,7 @@
 package com.github.flooooooooooorian.meinkochbuch.security.config;
 
 import com.github.flooooooooooorian.meinkochbuch.security.filter.JwtAuthFilter;
-import com.github.flooooooooooorian.meinkochbuch.security.service.UserSecurityService;
+import com.github.flooooooooooorian.meinkochbuch.security.service.ChefUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
@@ -19,7 +19,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final UserSecurityService userService;
+    private final ChefUserDetailsService userService;
     private final JwtAuthFilter jwtAuthFilter;
 
     @Override
