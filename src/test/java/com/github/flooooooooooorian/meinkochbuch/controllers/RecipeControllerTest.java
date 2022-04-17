@@ -209,6 +209,64 @@ class RecipeControllerTest extends IntegrationTest {
     }
 
     @Test
+    void getAllRecipesDefaultPage() {
+        //GIVEN
+        webClient = WebClient.create("http://localhost:" + port + "/api");
+
+        //WHEN
+
+        ResponseEntity<List<RecipePreviewDto>> result = webClient.get()
+                .uri("/recipes")
+                .retrieve()
+                .toEntityList(RecipePreviewDto.class)
+                .block();
+        //THEN
+        RecipePreviewDto expected1 = RecipePreviewDto.builder()
+                .id("test-recipe-id-3")
+                .owner(ChefUserPreviewDto.builder()
+                        .id("some-admin-id")
+                        .name("some-admin-name")
+                        .build())
+                .name("test-recipe-name-C")
+                .ratingAverage(4.5)
+                .ratingCount(2)
+                .build();
+
+        RecipePreviewDto expected2 = RecipePreviewDto.builder()
+                .id("test-recipe-id-1")
+                .owner(ChefUserPreviewDto.builder()
+                        .name("some-user-name")
+                        .id("some-user-id")
+                        .build())
+                .name("test-recipe-name-A")
+                .ratingCount(1)
+                .ratingAverage(3)
+                .build();
+
+        assertThat(result, notNullValue());
+        assertThat(result.getStatusCode(), is(HttpStatus.OK));
+        assertThat(result.getBody(), containsInAnyOrder(expected1, expected2));
+    }
+
+    @Test
+    void getAllRecipesSecondPage() {
+        //GIVEN
+        webClient = WebClient.create("http://localhost:" + port + "/api");
+
+        //WHEN
+
+        ResponseEntity<List<RecipePreviewDto>> result = webClient.get()
+                .uri("/recipes?page=1")
+                .retrieve()
+                .toEntityList(RecipePreviewDto.class)
+                .block();
+        //THEN
+        assertThat(result, notNullValue());
+        assertThat(result.getStatusCode(), is(HttpStatus.OK));
+        assertThat(result.getBody(), empty());
+    }
+
+    @Test
     void getRecipeByIdAnonymousPublic() {
         //GIVEN
         webClient = WebClient.create("http://localhost:" + port + "/api");

@@ -59,6 +59,14 @@ class UserControllerTest extends IntegrationTest {
                                 .build()))
                 .name("some-user-name")
                 .recipes(List.of(RecipePreviewDto.builder()
+                                .id("test-recipe-id-2")
+                                .name("test-recipe-name-B")
+                                .owner(ChefUserPreviewDto.builder()
+                                        .id("some-user-id")
+                                        .name("some-user-name")
+                                        .build())
+                                .build(),
+                        RecipePreviewDto.builder()
                                 .id("test-recipe-id-1")
                                 .name("test-recipe-name-A")
                                 .owner(ChefUserPreviewDto.builder()
@@ -67,15 +75,8 @@ class UserControllerTest extends IntegrationTest {
                                         .build())
                                 .ratingAverage(3)
                                 .ratingCount(1)
-                                .build(),
-                        RecipePreviewDto.builder()
-                                .id("test-recipe-id-2")
-                                .name("test-recipe-name-B")
-                                .owner(ChefUserPreviewDto.builder()
-                                        .id("some-user-id")
-                                        .name("some-user-name")
-                                        .build())
-                                .build()))
+                                .build()
+                ))
                 .build();
 
         assertThat(actual, is(expected));
