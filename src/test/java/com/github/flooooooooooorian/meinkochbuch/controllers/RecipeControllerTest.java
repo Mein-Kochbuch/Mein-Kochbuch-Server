@@ -1,6 +1,7 @@
 package com.github.flooooooooooorian.meinkochbuch.controllers;
 
 import com.github.flooooooooooorian.meinkochbuch.IntegrationTest;
+import com.github.flooooooooooorian.meinkochbuch.controllers.responses.RecipeListResponse;
 import com.github.flooooooooooorian.meinkochbuch.dtos.chefuser.ChefUserPreviewDto;
 import com.github.flooooooooooorian.meinkochbuch.dtos.ingredient.IngredientCreationDto;
 import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipeCreationDto;
@@ -37,10 +38,10 @@ class RecipeControllerTest extends IntegrationTest {
         webClient = WebClient.create("http://localhost:" + port + "/api");
 
         //WHEN
-        ResponseEntity<List<RecipePreviewDto>> result = webClient.get()
+        ResponseEntity<RecipeListResponse> result = webClient.get()
                 .uri("/recipes")
                 .retrieve()
-                .toEntityList(RecipePreviewDto.class)
+                .toEntity(RecipeListResponse.class)
                 .block();
 
         //THEN
@@ -70,7 +71,7 @@ class RecipeControllerTest extends IntegrationTest {
 
         assertThat(result, notNullValue());
         assertThat(result.getStatusCode(), is(HttpStatus.OK));
-        assertThat(result.getBody(), containsInAnyOrder(expected1, expected2));
+        assertThat(result.getBody().getResults(), containsInAnyOrder(expected1, expected2));
     }
 
     @Test
@@ -79,11 +80,11 @@ class RecipeControllerTest extends IntegrationTest {
         webClient = WebClient.create("http://localhost:" + port + "/api");
 
         //WHEN
-        ResponseEntity<List<RecipePreviewDto>> result = webClient.get()
+        ResponseEntity<RecipeListResponse> result = webClient.get()
                 .uri("/recipes")
                 .header("Authorization", "Bearer " + getTokenByUserId("some-user-id"))
                 .retrieve()
-                .toEntityList(RecipePreviewDto.class)
+                .toEntity(RecipeListResponse.class)
                 .block();
 
         //THEN
@@ -125,7 +126,7 @@ class RecipeControllerTest extends IntegrationTest {
 
         assertThat(result, notNullValue());
         assertThat(result.getStatusCode(), is(HttpStatus.OK));
-        assertThat(result.getBody(), containsInAnyOrder(expected1, expected2, expected3));
+        assertThat(result.getBody().getResults(), containsInAnyOrder(expected1, expected2, expected3));
     }
 
     @Test
@@ -135,10 +136,10 @@ class RecipeControllerTest extends IntegrationTest {
 
         //WHEN
 
-        ResponseEntity<List<RecipePreviewDto>> result = webClient.get()
+        ResponseEntity<RecipeListResponse> result = webClient.get()
                 .uri("/recipes")
                 .retrieve()
-                .toEntityList(RecipePreviewDto.class)
+                .toEntity(RecipeListResponse.class)
                 .block();
         //THEN
         RecipePreviewDto expected1 = RecipePreviewDto.builder()
@@ -165,7 +166,7 @@ class RecipeControllerTest extends IntegrationTest {
 
         assertThat(result, notNullValue());
         assertThat(result.getStatusCode(), is(HttpStatus.OK));
-        assertThat(result.getBody(), Matchers.contains(expected1, expected2));
+        assertThat(result.getBody().getResults(), Matchers.contains(expected1, expected2));
     }
 
     @Test
@@ -175,10 +176,10 @@ class RecipeControllerTest extends IntegrationTest {
 
         //WHEN
 
-        ResponseEntity<List<RecipePreviewDto>> result = webClient.get()
+        ResponseEntity<RecipeListResponse> result = webClient.get()
                 .uri("/recipes?sort=ALPHABETICALLY_ASC")
                 .retrieve()
-                .toEntityList(RecipePreviewDto.class)
+                .toEntity(RecipeListResponse.class)
                 .block();
         //THEN
         RecipePreviewDto expected1 = RecipePreviewDto.builder()
@@ -205,7 +206,65 @@ class RecipeControllerTest extends IntegrationTest {
 
         assertThat(result, notNullValue());
         assertThat(result.getStatusCode(), is(HttpStatus.OK));
-        assertThat(result.getBody(), Matchers.contains(expected2, expected1));
+        assertThat(result.getBody().getResults(), Matchers.contains(expected2, expected1));
+    }
+
+    @Test
+    void getAllRecipesDefaultPage() {
+        //GIVEN
+        webClient = WebClient.create("http://localhost:" + port + "/api");
+
+        //WHEN
+
+        ResponseEntity<RecipeListResponse> result = webClient.get()
+                .uri("/recipes")
+                .retrieve()
+                .toEntity(RecipeListResponse.class)
+                .block();
+        //THEN
+        RecipePreviewDto expected1 = RecipePreviewDto.builder()
+                .id("test-recipe-id-3")
+                .owner(ChefUserPreviewDto.builder()
+                        .id("some-admin-id")
+                        .name("some-admin-name")
+                        .build())
+                .name("test-recipe-name-C")
+                .ratingAverage(4.5)
+                .ratingCount(2)
+                .build();
+
+        RecipePreviewDto expected2 = RecipePreviewDto.builder()
+                .id("test-recipe-id-1")
+                .owner(ChefUserPreviewDto.builder()
+                        .name("some-user-name")
+                        .id("some-user-id")
+                        .build())
+                .name("test-recipe-name-A")
+                .ratingCount(1)
+                .ratingAverage(3)
+                .build();
+
+        assertThat(result, notNullValue());
+        assertThat(result.getStatusCode(), is(HttpStatus.OK));
+        assertThat(result.getBody().getResults(), containsInAnyOrder(expected1, expected2));
+    }
+
+    @Test
+    void getAllRecipesSecondPage() {
+        //GIVEN
+        webClient = WebClient.create("http://localhost:" + port + "/api");
+
+        //WHEN
+
+        ResponseEntity<RecipeListResponse> result = webClient.get()
+                .uri("/recipes?page=1")
+                .retrieve()
+                .toEntity(RecipeListResponse.class)
+                .block();
+        //THEN
+        assertThat(result, notNullValue());
+        assertThat(result.getStatusCode(), is(HttpStatus.OK));
+        assertThat(result.getBody().getResults(), empty());
     }
 
     @Test

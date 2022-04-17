@@ -75,7 +75,8 @@ class UserControllerTest extends IntegrationTest {
                                         .id("some-user-id")
                                         .name("some-user-name")
                                         .build())
-                                .build()))
+                                .build()
+                ))
                 .build();
 
         assertThat(actual, is(expected));

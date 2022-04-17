@@ -1,5 +1,6 @@
 package com.github.flooooooooooorian.meinkochbuch.services;
 
+import com.github.flooooooooooorian.meinkochbuch.controllers.recipes.RecipesFilterParams;
 import com.github.flooooooooooorian.meinkochbuch.dtos.ingredient.IngredientCreationDto;
 import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipeCreationDto;
 import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipeEditDto;
@@ -14,10 +15,10 @@ import com.github.flooooooooooorian.meinkochbuch.repository.RecipeRepository;
 import com.github.flooooooooooorian.meinkochbuch.security.models.ChefUser;
 import com.github.flooooooooooorian.meinkochbuch.services.utils.IdUtils;
 import com.github.flooooooooooorian.meinkochbuch.utils.TimeUtils;
-import com.github.flooooooooooorian.meinkochbuch.utils.sorting.RecipeSorting;
 import lombok.RequiredArgsConstructor;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -35,8 +36,8 @@ public class RecipeService {
     private final IdUtils idUtils;
     private final TimeUtils timeUtils;
 
-    public List<Recipe> getAllRecipes(String userId, Optional<RecipeSorting> recipeSorting) {
-        return recipeRepository.findAllByPrivacyIsFalseOrOwner_Id(userId, recipeSorting.orElse(RecipeSorting.RELEVANCE).sortValue);
+    public List<Recipe> getAllRecipes(String userId, RecipesFilterParams params) {
+        return recipeRepository.findAllByPrivacyIsFalseOrOwner_Id(userId, PageRequest.of(params.getPage(), RecipesFilterParams.PAGE_SIZE, params.getSort().sortValue));
     }
 
     public Recipe getRecipeById(String recipeId, Optional<ChefUser> optionalChefUser) {
@@ -136,6 +137,10 @@ public class RecipeService {
                 .build();
 
         return recipeRepository.save(recipeToAdd);
+    }
+
+    public int recipeCount(Optional<String> optionalUserId) {
+        return recipeRepository.countAllByPrivacyIsFalseOrOwner_Id(optionalUserId.orElse(null));
     }
 
     public List<Recipe> getAllRecipesByIds(List<String> ids) {
