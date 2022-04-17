@@ -55,12 +55,15 @@ public class ChefUser implements UserDetails {
     private String name;
 
     @ManyToMany(cascade = CascadeType.ALL)
+    @OrderBy("name")
     private List<Recipe> favoriteRecipes;
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
+    @OrderBy("relevance")
     private List<Recipe> recipes;
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
+    @OrderBy("name")
     private List<Cookbook> cookbooks;
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
