@@ -3,6 +3,8 @@ package com.github.flooooooooooorian.meinkochbuch.security.models;
 import com.github.flooooooooooorian.meinkochbuch.models.cookbook.Cookbook;
 import com.github.flooooooooooorian.meinkochbuch.models.image.Image;
 import com.github.flooooooooooorian.meinkochbuch.models.recipe.Recipe;
+import com.github.flooooooooooorian.meinkochbuch.security.models.oauth.OAuthApple;
+import com.github.flooooooooooorian.meinkochbuch.security.models.oauth.OAuthGoogle;
 import lombok.*;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -70,6 +72,13 @@ public class ChefUser implements UserDetails {
     private List<Image> images;
 
     private Instant joinedAt;
+    private Instant lastLogin;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    private OAuthApple OAuthApple;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    private OAuthGoogle OAuthGoogle;
 
     public static ChefUser ofId(String userId) {
         return ChefUser.builder().id(userId).build();

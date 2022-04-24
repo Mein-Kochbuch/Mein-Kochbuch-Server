@@ -11,7 +11,7 @@ import javax.persistence.Id;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class OAuthDataGoogle {
+public class OAuthGoogle {
     @Id
     private String id;
 }
