@@ -1,7 +1,6 @@
 package com.github.flooooooooooorian.meinkochbuch.migration.services;
 
 import com.github.flooooooooooorian.meinkochbuch.migration.models.GlobalZutat;
-import com.github.flooooooooooorian.meinkochbuch.migration.models.Kochbuchuser;
 import com.github.flooooooooooorian.meinkochbuch.models.recipe.ingredient.BaseIngredient;
 import com.github.flooooooooooorian.meinkochbuch.repository.BaseIngredientRepository;
 import lombok.AllArgsConstructor;
@@ -14,7 +13,7 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 @Slf4j
-public class BaseIngredientMigration {
+public class BaseIngredientMigrationService {
 
     private final BaseIngredientRepository baseIngredientRepository;
 
