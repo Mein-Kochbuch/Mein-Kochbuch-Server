@@ -45,7 +45,7 @@ public class Recipe {
     private Difficulty difficulty;
     private int portions;
 
-    @OneToOne()
+    @OneToOne(cascade = CascadeType.ALL)
     private Image thumbnail;
 
     @OneToMany(mappedBy = "owner")

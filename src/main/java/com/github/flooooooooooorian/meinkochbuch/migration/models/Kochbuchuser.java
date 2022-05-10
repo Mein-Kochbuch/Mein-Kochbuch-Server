@@ -1,7 +1,8 @@
 package com.github.flooooooooooorian.meinkochbuch.migration.models;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.github.flooooooooooorian.meinkochbuch.migration.services.MultiDateDeserializer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,7 +20,7 @@ public class Kochbuchuser {
     private String password;
 
     @JsonProperty("last_login")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSSSSS", timezone = "UTC")
+    @JsonDeserialize(using = MultiDateDeserializer.class)
     private Instant lastLogin;
 
     @JsonProperty("is_superuser")
@@ -35,7 +36,7 @@ public class Kochbuchuser {
     private boolean isActive;
 
     @JsonProperty("date_joined")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSSSSS", timezone = "UTC")
+    @JsonDeserialize(using = MultiDateDeserializer.class)
     private Instant dateJoined;
 
     private String email;

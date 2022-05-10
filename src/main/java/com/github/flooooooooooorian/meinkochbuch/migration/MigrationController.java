@@ -2,9 +2,11 @@ package com.github.flooooooooooorian.meinkochbuch.migration;
 
 import com.github.flooooooooooorian.meinkochbuch.migration.models.GlobalZutat;
 import com.github.flooooooooooorian.meinkochbuch.migration.models.Kochbuchuser;
+import com.github.flooooooooooorian.meinkochbuch.migration.models.Rezept;
 import com.github.flooooooooooorian.meinkochbuch.migration.models.Zutat;
 import com.github.flooooooooooorian.meinkochbuch.migration.services.BaseIngredientMigrationService;
 import com.github.flooooooooooorian.meinkochbuch.migration.services.IngredientMigrationService;
+import com.github.flooooooooooorian.meinkochbuch.migration.services.RecipeMigrationService;
 import com.github.flooooooooooorian.meinkochbuch.migration.services.UserMigration;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,6 +24,7 @@ public class MigrationController {
     private final UserMigration userMigration;
     private final BaseIngredientMigrationService baseIngredientMigrationService;
     private final IngredientMigrationService ingredientMigrationService;
+    private final RecipeMigrationService recipeMigrationService;
 
     @PostMapping("users")
     public MigrationResponse migrateUsers(@RequestBody List<Kochbuchuser> kochbuchuserList) {
@@ -44,6 +47,14 @@ public class MigrationController {
         return MigrationResponse.builder()
                 .total(zutats.size())
                 .successful(ingredientMigrationService.migrateIngredients(zutats))
+                .build();
+    }
+
+    @PostMapping("recipes")
+    public MigrationResponse migrateRecipes(@RequestBody List<Rezept> rezepts) {
+        return MigrationResponse.builder()
+                .total(rezepts.size())
+                .successful(recipeMigrationService.migrateRecipes(rezepts))
                 .build();
     }
 }
