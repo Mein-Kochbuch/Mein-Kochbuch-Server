@@ -32,8 +32,13 @@ public class IngredientMigrationService {
                 .id(String.valueOf(zutat.getId()))
                 .baseIngredient(zutat.getGlobalZutat() != null ? BaseIngredient.ofId(String.valueOf(zutat.getGlobalZutat().getId())) : null)
                 .amount(zutat.getMenge())
-                .text(zutat.getName())
+                .text(zutat.getZutat())
                 .build();
+
+        if (ingredientRepository.existsById(String.valueOf(zutat.getId()))) {
+            log.warn("MIGRATION Ingredient already exists!");
+            return false;
+        }
 
         try {
             ingredientRepository.save(ingredient);

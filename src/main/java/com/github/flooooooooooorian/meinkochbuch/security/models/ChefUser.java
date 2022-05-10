@@ -11,7 +11,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
 import java.time.Instant;
 import java.util.List;
 import java.util.Set;
@@ -28,8 +27,6 @@ public class ChefUser implements UserDetails {
     @Column(nullable = false)
     private String id;
 
-    @NotEmpty
-    @Size(min = 8)
     private String password;
 
     @Email

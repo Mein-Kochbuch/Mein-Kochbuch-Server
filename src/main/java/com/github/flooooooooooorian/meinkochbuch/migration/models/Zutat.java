@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class Zutat {
 
     private int id;
-    private String name;
+    private String zutat;
     private float menge;
     private GlobalZutat globalZutat;
 }

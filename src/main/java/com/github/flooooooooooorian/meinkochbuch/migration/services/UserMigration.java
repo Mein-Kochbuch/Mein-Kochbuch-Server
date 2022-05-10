@@ -57,6 +57,11 @@ public class UserMigration {
             migratedUser.setAuthorities(Set.of(ChefAuthorities.ADMIN));
         }
 
+        if (chefUserRepository.existsById(migratedUser.getId())) {
+            log.warn("MIGRATION User already exists!");
+            return false;
+        }
+
         try {
             chefUserRepository.save(migratedUser);
         } catch (IllegalArgumentException ex) {

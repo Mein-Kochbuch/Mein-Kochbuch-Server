@@ -24,17 +24,26 @@ public class MigrationController {
     private final IngredientMigrationService ingredientMigrationService;
 
     @PostMapping("users")
-    public int migrateUsers(@RequestBody List<Kochbuchuser> kochbuchuserList) {
-        return userMigration.migrateUsers(kochbuchuserList);
+    public MigrationResponse migrateUsers(@RequestBody List<Kochbuchuser> kochbuchuserList) {
+        return MigrationResponse.builder()
+                .total(kochbuchuserList.size())
+                .successful(userMigration.migrateUsers(kochbuchuserList))
+                .build();
     }
 
     @PostMapping("baseingredients")
-    public int migrateBaseIngredients(@RequestBody List<GlobalZutat> globalZutats) {
-        return baseIngredientMigrationService.migrateBaseIngredients(globalZutats);
+    public MigrationResponse migrateBaseIngredients(@RequestBody List<GlobalZutat> globalZutats) {
+        return MigrationResponse.builder()
+                .total(globalZutats.size())
+                .successful(baseIngredientMigrationService.migrateBaseIngredients(globalZutats))
+                .build();
     }
 
     @PostMapping("ingredients")
-    public int migrateIngredients(@RequestBody List<Zutat> zutats) {
-        return ingredientMigrationService.migrateIngredients(zutats);
+    public MigrationResponse migrateIngredients(@RequestBody List<Zutat> zutats) {
+        return MigrationResponse.builder()
+                .total(zutats.size())
+                .successful(ingredientMigrationService.migrateIngredients(zutats))
+                .build();
     }
 }

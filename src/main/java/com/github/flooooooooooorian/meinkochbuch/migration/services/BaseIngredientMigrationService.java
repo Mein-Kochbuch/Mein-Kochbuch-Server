@@ -33,13 +33,18 @@ public class BaseIngredientMigrationService {
                 .id(String.valueOf(globalZutat.getId()))
                 .name(globalZutat.getName())
                 .singular(globalZutat.getSingular())
-                .synonyms(new HashSet<>(globalZutat.getSynonyms()))
-                .children(new HashSet<>(globalZutat.getChildren().stream()
+                .synonyms(globalZutat.getSynonyms() != null ? new HashSet<>(globalZutat.getSynonyms()) : null)
+                .children(globalZutat.getChildren() != null ? new HashSet<>(globalZutat.getChildren().stream()
                         .map(GlobalZutat::getId)
                         .map(String::valueOf)
                         .map(BaseIngredient::ofId)
-                        .toList()))
+                        .toList()) : null)
                 .build();
+        if (baseIngredientRepository.existsById(String.valueOf(globalZutat.getId()))) {
+            log.warn("MIGRATION BaseIngredient already exists!");
+            return false;
+        }
+
         try {
             baseIngredientRepository.save(baseIngredient);
         } catch (IllegalArgumentException ex) {
