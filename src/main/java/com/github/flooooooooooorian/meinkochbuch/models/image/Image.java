@@ -23,4 +23,6 @@ public class Image {
     @ManyToOne
     @JoinColumn(name = "owner_id")
     private ChefUser owner;
+
+    private String url;
 }
