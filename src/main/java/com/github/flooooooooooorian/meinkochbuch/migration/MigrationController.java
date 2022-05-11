@@ -1,13 +1,7 @@
 package com.github.flooooooooooorian.meinkochbuch.migration;
 
-import com.github.flooooooooooorian.meinkochbuch.migration.models.GlobalZutat;
-import com.github.flooooooooooorian.meinkochbuch.migration.models.Kochbuchuser;
-import com.github.flooooooooooorian.meinkochbuch.migration.models.Rezept;
-import com.github.flooooooooooorian.meinkochbuch.migration.models.Zutat;
-import com.github.flooooooooooorian.meinkochbuch.migration.services.BaseIngredientMigrationService;
-import com.github.flooooooooooorian.meinkochbuch.migration.services.IngredientMigrationService;
-import com.github.flooooooooooorian.meinkochbuch.migration.services.RecipeMigrationService;
-import com.github.flooooooooooorian.meinkochbuch.migration.services.UserMigration;
+import com.github.flooooooooooorian.meinkochbuch.migration.models.*;
+import com.github.flooooooooooorian.meinkochbuch.migration.services.*;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,6 +19,7 @@ public class MigrationController {
     private final BaseIngredientMigrationService baseIngredientMigrationService;
     private final IngredientMigrationService ingredientMigrationService;
     private final RecipeMigrationService recipeMigrationService;
+    private final ImageMigrationService imageMigrationService;
 
     @PostMapping("users")
     public MigrationResponse migrateUsers(@RequestBody List<Kochbuchuser> kochbuchuserList) {
@@ -68,6 +63,19 @@ public class MigrationController {
                         .toList()
                         .size())
                 .successful(ingredientMigrationService.migrateIngredientsToRecipes(zutats))
+                .build();
+    }
+
+    @PostMapping("recipes/images")
+    public MigrationResponse migrateRecipesImages(@RequestBody List<Bild> bilder) {
+        return MigrationResponse.builder()
+                .total(bilder.stream()
+                        .map(Bild::getRezept_id)
+                        .map(String::valueOf)
+                        .distinct()
+                        .toList()
+                        .size())
+                .successful(imageMigrationService.migrateImagesToRecipes(bilder))
                 .build();
     }
 }

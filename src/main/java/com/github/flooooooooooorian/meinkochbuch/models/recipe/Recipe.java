@@ -48,7 +48,7 @@ public class Recipe {
     @OneToOne(cascade = CascadeType.ALL)
     private Image thumbnail;
 
-    @OneToMany(mappedBy = "owner")
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
     private List<Image> images;
 
     @OneToMany(cascade = CascadeType.ALL)
