@@ -6,7 +6,6 @@ import com.github.flooooooooooorian.meinkochbuch.mapper.ChefUserMapper;
 import com.github.flooooooooooorian.meinkochbuch.security.dtos.LoginJWTDto;
 import com.github.flooooooooooorian.meinkochbuch.security.dtos.UserLoginDto;
 import com.github.flooooooooooorian.meinkochbuch.security.service.AuthenticationService;
-import com.github.flooooooooooorian.meinkochbuch.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

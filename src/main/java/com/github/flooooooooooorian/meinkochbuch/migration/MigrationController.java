@@ -57,4 +57,17 @@ public class MigrationController {
                 .successful(recipeMigrationService.migrateRecipes(rezepts))
                 .build();
     }
+
+    @PostMapping("recipes/ingredients")
+    public MigrationResponse migrateRecipesIngredients(@RequestBody List<Zutat> zutats) {
+        return MigrationResponse.builder()
+                .total(zutats.stream()
+                        .map(Zutat::getRezept_id)
+                        .map(String::valueOf)
+                        .distinct()
+                        .toList()
+                        .size())
+                .successful(ingredientMigrationService.migrateIngredientsToRecipes(zutats))
+                .build();
+    }
 }

@@ -15,4 +15,5 @@ public class Zutat {
     private String zutat;
     private float menge;
     private GlobalZutat globalZutat;
+    private int rezept_id;
 }

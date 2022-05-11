@@ -48,9 +48,6 @@ public class RecipeMigrationService {
                 .averageRating(rezept.getAvgRating())
                 .privacy(rezept.isPrivacy())
                 .duration(rezept.getDuration())
-                //TODO ingredients
-                //TODO images
-                //TODO ratings
                 .difficulty(Difficulty.ofId(rezept.getDifficultyId()))
                 .portions(rezept.getPortions())
                 .owner(ChefUser.ofId(String.valueOf(rezept.getOwnerId())))

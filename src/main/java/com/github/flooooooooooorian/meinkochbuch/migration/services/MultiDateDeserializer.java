@@ -36,7 +36,8 @@ public class MultiDateDeserializer extends StdDeserializer<Instant> {
         for (String DATE_FORMAT : DATE_FORMATS) {
             try {
                 return new SimpleDateFormat(DATE_FORMAT).parse(date).toInstant();
-            } catch (ParseException e) {
+            } catch (ParseException ignored) {
+
             }
         }
         throw new JsonParseException(jp, "Unparseable date: \"" + date + "\". Supported formats: " + Arrays.toString(DATE_FORMATS));
