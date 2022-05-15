@@ -21,12 +21,21 @@ public class MigrationController {
     private final RecipeMigrationService recipeMigrationService;
     private final ImageMigrationService imageMigrationService;
     private final RatingMigrationService ratingMigrationService;
+    private final FavoriteMigrationService favoriteMigrationService;
 
     @PostMapping("users")
     public MigrationResponse migrateUsers(@RequestBody List<Kochbuchuser> kochbuchuserList) {
         return MigrationResponse.builder()
                 .total(kochbuchuserList.size())
                 .successful(userMigration.migrateUsers(kochbuchuserList))
+                .build();
+    }
+
+    @PostMapping("users/favorites")
+    public MigrationResponse migrateUsersFavoriteRecipes(@RequestBody List<LieblingsRezept> lieblingsRezepts) {
+        return MigrationResponse.builder()
+                .total(lieblingsRezepts.size())
+                .successful(favoriteMigrationService.migrateAllFavorites(lieblingsRezepts))
                 .build();
     }
 

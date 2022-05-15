@@ -53,7 +53,7 @@ public class ChefUser implements UserDetails {
     @Column(nullable = false)
     private String name;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany()
     @OrderBy("name")
     private List<Recipe> favoriteRecipes;
 
