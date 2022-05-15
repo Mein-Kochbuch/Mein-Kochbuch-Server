@@ -22,6 +22,7 @@ public class MigrationController {
     private final ImageMigrationService imageMigrationService;
     private final RatingMigrationService ratingMigrationService;
     private final FavoriteMigrationService favoriteMigrationService;
+    private final CookbookMigrationService cookbookMigrationService;
 
     @PostMapping("users")
     public MigrationResponse migrateUsers(@RequestBody List<Kochbuchuser> kochbuchuserList) {
@@ -99,6 +100,27 @@ public class MigrationController {
                         .toList()
                         .size())
                 .successful(ratingMigrationService.migrateRatingsToRecipes(bewertungen))
+                .build();
+    }
+
+    @PostMapping("cookbooks")
+    public MigrationResponse migrateCookbooks(@RequestBody List<Kochbuch> kochbuchs) {
+        return MigrationResponse.builder()
+                .total(kochbuchs.size())
+                .successful(cookbookMigrationService.migrateCookbooks(kochbuchs))
+                .build();
+    }
+
+    @PostMapping("cookbooks/recipes")
+    public MigrationResponse migrateRecipesToCookbooks(@RequestBody List<KochbuchRezept> kochbuchRezepts) {
+        return MigrationResponse.builder()
+                .total(kochbuchRezepts.stream()
+                        .map(KochbuchRezept::getSammlung_id)
+                        .map(String::valueOf)
+                        .distinct()
+                        .toList()
+                        .size())
+                .successful(cookbookMigrationService.migrateRecipesToCookbooks(kochbuchRezepts))
                 .build();
     }
 }
