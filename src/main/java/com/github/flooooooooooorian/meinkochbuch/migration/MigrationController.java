@@ -20,6 +20,7 @@ public class MigrationController {
     private final IngredientMigrationService ingredientMigrationService;
     private final RecipeMigrationService recipeMigrationService;
     private final ImageMigrationService imageMigrationService;
+    private final RatingMigrationService ratingMigrationService;
 
     @PostMapping("users")
     public MigrationResponse migrateUsers(@RequestBody List<Kochbuchuser> kochbuchuserList) {
@@ -76,6 +77,19 @@ public class MigrationController {
                         .toList()
                         .size())
                 .successful(imageMigrationService.migrateImagesToRecipes(bilder))
+                .build();
+    }
+
+    @PostMapping("recipes/ratings")
+    public MigrationResponse migrateRecipesRatings(@RequestBody List<Bewertung> bewertungen) {
+        return MigrationResponse.builder()
+                .total(bewertungen.stream()
+                        .map(Bewertung::getRezept_id)
+                        .map(String::valueOf)
+                        .distinct()
+                        .toList()
+                        .size())
+                .successful(ratingMigrationService.migrateRatingsToRecipes(bewertungen))
                 .build();
     }
 }

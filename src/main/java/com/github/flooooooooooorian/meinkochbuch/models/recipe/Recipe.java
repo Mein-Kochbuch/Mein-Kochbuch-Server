@@ -61,7 +61,7 @@ public class Recipe {
     @OneToMany(mappedBy = "recipe")
     private List<RecipeTagging> taggings;
 
-    @OneToMany(mappedBy = "recipe")
+    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL)
     private List<Rating> ratings;
 
     private double averageRating;
