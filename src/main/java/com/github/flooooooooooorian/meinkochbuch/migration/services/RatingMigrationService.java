@@ -4,7 +4,7 @@ import com.github.flooooooooooorian.meinkochbuch.migration.models.Bewertung;
 import com.github.flooooooooooorian.meinkochbuch.models.rating.Rating;
 import com.github.flooooooooooorian.meinkochbuch.models.recipe.Recipe;
 import com.github.flooooooooooorian.meinkochbuch.repository.RecipeRepository;
-import com.github.flooooooooooorian.meinkochbuch.security.models.ChefUser;
+import com.github.flooooooooooorian.meinkochbuch.security.repository.ChefUserRepository;
 import com.github.flooooooooooorian.meinkochbuch.services.RecipeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,31 +22,35 @@ public class RatingMigrationService {
 
     private final RecipeRepository recipeRepository;
     private final RecipeService recipeService;
+    private final ChefUserRepository chefUserRepository;
 
     public int migrateRatingsToRecipes(List<Bewertung> bewertungen) {
         int successfullyCount = 0;
-        List<String> recipeIds = bewertungen.stream()
+        List<Integer> recipeIds = bewertungen.stream()
                 .map(Bewertung::getRezept_id)
-                .map(String::valueOf)
                 .distinct()
                 .toList();
 
-        for (String recipeId : recipeIds) {
+        for (int recipeId : recipeIds) {
             List<Bewertung> bewertungenOfRecipe = bewertungen.stream()
-                    .filter(bewertung -> String.valueOf(bewertung.getRezept_id()).equals(recipeId))
+                    .filter(bewertung -> bewertung.getRezept_id() == recipeId)
                     .toList();
 
-            if (migrateRatingsToRecipe(recipeId, bewertungenOfRecipe)) {
-                successfullyCount++;
+            try {
+                if (migrateRatingsToRecipe(recipeId, bewertungenOfRecipe)) {
+                    successfullyCount++;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
         return successfullyCount;
     }
 
     @Transactional
-    public boolean migrateRatingsToRecipe(String recipeId, List<Bewertung> bewertungen) {
+    public boolean migrateRatingsToRecipe(int recipeId, List<Bewertung> bewertungen) {
 
-        Optional<Recipe> optionalRecipe = recipeRepository.findById(recipeId);
+        Optional<Recipe> optionalRecipe = recipeRepository.findByMigrationId(recipeId);
 
         if (optionalRecipe.isEmpty()) {
             log.error("MIGRATION Recipe " + recipeId + " does not exist!");
@@ -57,9 +61,10 @@ public class RatingMigrationService {
 
         recipe.setRatings(bewertungen.stream()
                 .map(bewertung -> Rating.builder()
+                        .migrationId(bewertung.getId())
                         .value(bewertung.getRating())
-                        .user(ChefUser.ofId(String.valueOf(bewertung.getUser_id())))
-                        .recipe(Recipe.ofId(recipeId))
+                        .user(chefUserRepository.findByMigrationId(bewertung.getUser_id()).orElseThrow())
+                        .recipe(recipe)
                         .build())
                 .collect(Collectors.toList()));
 

@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface BaseIngredientRepository extends JpaRepository<BaseIngredient, String> {
+    boolean existsByMigrationId(int id);
 }

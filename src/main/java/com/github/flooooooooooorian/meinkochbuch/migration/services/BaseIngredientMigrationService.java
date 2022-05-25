@@ -3,6 +3,7 @@ package com.github.flooooooooooorian.meinkochbuch.migration.services;
 import com.github.flooooooooooorian.meinkochbuch.migration.models.GlobalZutat;
 import com.github.flooooooooooorian.meinkochbuch.models.recipe.ingredient.BaseIngredient;
 import com.github.flooooooooooorian.meinkochbuch.repository.BaseIngredientRepository;
+import com.github.flooooooooooorian.meinkochbuch.services.utils.IdUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import java.util.List;
 public class BaseIngredientMigrationService {
 
     private final BaseIngredientRepository baseIngredientRepository;
+    private final IdUtils idUtils;
 
     public int migrateBaseIngredients(List<GlobalZutat> globalZutats) {
         int successfullyCount = 0;
@@ -30,7 +32,8 @@ public class BaseIngredientMigrationService {
 
     public boolean migrateBaseIngredient(GlobalZutat globalZutat) {
         BaseIngredient baseIngredient = BaseIngredient.builder()
-                .id(String.valueOf(globalZutat.getId()))
+                .id(idUtils.generateId())
+                .migrationId(globalZutat.getId())
                 .name(globalZutat.getName())
                 .singular(globalZutat.getSingular())
                 .synonyms(globalZutat.getSynonyms() != null ? new HashSet<>(globalZutat.getSynonyms()) : null)
@@ -40,7 +43,7 @@ public class BaseIngredientMigrationService {
                         .map(BaseIngredient::ofId)
                         .toList()) : null)
                 .build();
-        if (baseIngredientRepository.existsById(String.valueOf(globalZutat.getId()))) {
+        if (baseIngredientRepository.existsByMigrationId(globalZutat.getId())) {
             log.warn("MIGRATION BaseIngredient already exists!");
             return false;
         }

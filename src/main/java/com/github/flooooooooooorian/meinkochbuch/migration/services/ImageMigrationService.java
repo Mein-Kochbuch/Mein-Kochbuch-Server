@@ -4,7 +4,8 @@ import com.github.flooooooooooorian.meinkochbuch.migration.models.Bild;
 import com.github.flooooooooooorian.meinkochbuch.models.image.Image;
 import com.github.flooooooooooorian.meinkochbuch.models.recipe.Recipe;
 import com.github.flooooooooooorian.meinkochbuch.repository.RecipeRepository;
-import com.github.flooooooooooorian.meinkochbuch.security.models.ChefUser;
+import com.github.flooooooooooorian.meinkochbuch.security.repository.ChefUserRepository;
+import com.github.flooooooooooorian.meinkochbuch.services.utils.IdUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,32 +20,38 @@ import java.util.stream.Collectors;
 public class ImageMigrationService {
 
     private final RecipeRepository recipeRepository;
+    private final ChefUserRepository chefUserRepository;
+    private final IdUtils idUtils;
 
     public int migrateImagesToRecipes(List<Bild> bilder) {
         int successfullyCount = 0;
-        List<String> recipeIds = bilder.stream()
+        List<Integer> recipeIds = bilder.stream()
                 .map(Bild::getRezept_id)
-                .map(String::valueOf)
                 .distinct()
                 .toList();
 
-        for (String recipeId : recipeIds) {
+        for (int recipeId : recipeIds) {
             List<Bild> bilderOfRecipes = bilder.stream()
-                    .filter(bild -> String.valueOf(bild.getRezept_id()).equals(recipeId))
+                    .filter(bild -> bild.getRezept_id() == recipeId)
                     .toList();
 
-            if (migrateImagesToRecipe(recipeId, bilderOfRecipes)) {
-                successfullyCount++;
+            try {
+                if (migrateImagesToRecipe(recipeId, bilderOfRecipes)) {
+                    successfullyCount++;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
+
         }
 
 
         return successfullyCount;
     }
 
-    private boolean migrateImagesToRecipe(String recipeId, List<Bild> bilder) {
+    private boolean migrateImagesToRecipe(int recipeId, List<Bild> bilder) {
 
-        Optional<Recipe> optionalRecipe = recipeRepository.findById(recipeId);
+        Optional<Recipe> optionalRecipe = recipeRepository.findByMigrationId(recipeId);
 
         if (optionalRecipe.isEmpty()) {
             log.error("MIGRATION Recipe " + recipeId + " does not exist!");
@@ -55,9 +62,10 @@ public class ImageMigrationService {
 
         recipe.setImages(bilder.stream()
                 .map(bild -> Image.builder()
-                        .id(String.valueOf(bild.getId()))
+                        .id(idUtils.generateId())
+                        .migrationId(bild.getId())
                         .url(bild.getImage())
-                        .owner(bild.getOwner_id() != 0 ? ChefUser.ofId(String.valueOf(bild.getOwner_id())) : null)
+                        .owner(bild.getOwner_id() != 0 ? chefUserRepository.findByMigrationId(bild.getOwner_id()).orElseThrow() : null)
                         .build())
                 .collect(Collectors.toList()));
 

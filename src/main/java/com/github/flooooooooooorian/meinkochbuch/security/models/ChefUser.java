@@ -77,6 +77,8 @@ public class ChefUser implements UserDetails {
     @OneToOne(cascade = CascadeType.ALL)
     private OAuthGoogle OAuthGoogle;
 
+    private Integer migrationId;
+
     public static ChefUser ofId(String userId) {
         return ChefUser.builder().id(userId).build();
     }

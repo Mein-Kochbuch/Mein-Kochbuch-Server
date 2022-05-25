@@ -4,9 +4,10 @@ import com.github.flooooooooooorian.meinkochbuch.migration.models.Kochbuch;
 import com.github.flooooooooooorian.meinkochbuch.migration.models.KochbuchRezept;
 import com.github.flooooooooooorian.meinkochbuch.models.cookbook.Cookbook;
 import com.github.flooooooooooorian.meinkochbuch.models.cookbook.CookbookContent;
-import com.github.flooooooooooorian.meinkochbuch.models.recipe.Recipe;
 import com.github.flooooooooooorian.meinkochbuch.repository.CookbookRepository;
+import com.github.flooooooooooorian.meinkochbuch.repository.RecipeRepository;
 import com.github.flooooooooooorian.meinkochbuch.security.models.ChefUser;
+import com.github.flooooooooooorian.meinkochbuch.security.repository.ChefUserRepository;
 import com.github.flooooooooooorian.meinkochbuch.services.utils.IdUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +23,8 @@ import java.util.stream.Collectors;
 public class CookbookMigrationService {
 
     private final CookbookRepository cookbookRepository;
+    private final ChefUserRepository chefUserRepository;
+    private final RecipeRepository recipeRepository;
     private final IdUtils idUtils;
 
     public int migrateCookbooks(List<Kochbuch> kochbuchs) {
@@ -37,14 +40,22 @@ public class CookbookMigrationService {
 
     private boolean mirgateCookbook(Kochbuch kochbuch) {
 
-        if (cookbookRepository.existsById(String.valueOf(kochbuch.getId()))) {
+        if (cookbookRepository.existsByMigrationId(kochbuch.getId())) {
             log.warn("MIGRATION Cookbook " + kochbuch.getId() + " already exists!");
             return false;
         }
 
+        Optional<ChefUser> optionalChefUser = chefUserRepository.findByMigrationId(kochbuch.getOwner_id());
+
+        if (optionalChefUser.isEmpty()) {
+            log.error("MIGRATION Cookbook " + kochbuch.getOwner_id() + " User not found!");
+            return false;
+        }
+
         Cookbook cookbook = Cookbook.builder()
-                .id(String.valueOf(kochbuch.getId()))
-                .owner(ChefUser.ofId(String.valueOf(kochbuch.getOwner_id())))
+                .id(idUtils.generateId())
+                .migrationId(kochbuch.getId())
+                .owner(optionalChefUser.get())
                 .name(kochbuch.getName())
                 .privacy(kochbuch.isPrivacy())
                 .build();
@@ -61,15 +72,14 @@ public class CookbookMigrationService {
 
     public int migrateRecipesToCookbooks(List<KochbuchRezept> kochbuchRezepts) {
         int successfullyCount = 0;
-        List<String> cookbooksIds = kochbuchRezepts.stream()
+        List<Integer> cookbooksIds = kochbuchRezepts.stream()
                 .map(KochbuchRezept::getSammlung_id)
-                .map(String::valueOf)
                 .distinct()
                 .toList();
 
-        for (String cookbookId : cookbooksIds) {
+        for (int cookbookId : cookbooksIds) {
             List<KochbuchRezept> recipesOfCookbook = kochbuchRezepts.stream()
-                    .filter(kochbuchRezept -> String.valueOf(kochbuchRezept.getSammlung_id()).equals(cookbookId))
+                    .filter(kochbuchRezept -> kochbuchRezept.getSammlung_id() == cookbookId)
                     .toList();
 
             if (migrateRecipesToCookbook(cookbookId, recipesOfCookbook)) {
@@ -81,9 +91,9 @@ public class CookbookMigrationService {
         return successfullyCount;
     }
 
-    private boolean migrateRecipesToCookbook(String cookbookId, List<KochbuchRezept> recipes) {
+    private boolean migrateRecipesToCookbook(int cookbookId, List<KochbuchRezept> recipes) {
 
-        Optional<Cookbook> optionalCookbook = cookbookRepository.findById(cookbookId);
+        Optional<Cookbook> optionalCookbook = cookbookRepository.findByMigrationId(cookbookId);
 
         if (optionalCookbook.isEmpty()) {
             log.error("MIGRATION Cookbook " + cookbookId + " does not exist!");
@@ -94,11 +104,10 @@ public class CookbookMigrationService {
 
         cookbook.setContents(recipes.stream()
                 .map(KochbuchRezept::getRezept_id)
-                .map(String::valueOf)
-                .map(Recipe::ofId)
+                .map(recipeRepository::findByMigrationId)
                 .map(recipe -> CookbookContent.builder()
-                        .cookbook(Cookbook.ofId(cookbookId))
-                        .recipe(recipe)
+                        .cookbook(cookbook)
+                        .recipe(recipe.get())
                         .build())
                 .collect(Collectors.toList()));
 

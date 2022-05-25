@@ -6,6 +6,7 @@ import com.github.flooooooooooorian.meinkochbuch.models.recipe.ingredient.BaseIn
 import com.github.flooooooooooorian.meinkochbuch.models.recipe.ingredient.Ingredient;
 import com.github.flooooooooooorian.meinkochbuch.repository.IngredientRepository;
 import com.github.flooooooooooorian.meinkochbuch.repository.RecipeRepository;
+import com.github.flooooooooooorian.meinkochbuch.services.utils.IdUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -18,8 +19,9 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Slf4j
 public class IngredientMigrationService {
-    private IngredientRepository ingredientRepository;
-    private RecipeRepository recipeRepository;
+    private final IngredientRepository ingredientRepository;
+    private final RecipeRepository recipeRepository;
+    private final IdUtils idUtils;
 
     public int migrateIngredients(List<Zutat> zutats) {
         int successfullyCount = 0;
@@ -34,13 +36,14 @@ public class IngredientMigrationService {
 
     private boolean migrateZutat(Zutat zutat) {
         Ingredient ingredient = Ingredient.builder()
-                .id(String.valueOf(zutat.getId()))
+                .id(idUtils.generateId())
+                .migrationId(zutat.getId())
                 .baseIngredient(zutat.getGlobalZutat() != null ? BaseIngredient.ofId(String.valueOf(zutat.getGlobalZutat().getId())) : null)
                 .amount(zutat.getMenge())
                 .text(zutat.getZutat())
                 .build();
 
-        if (ingredientRepository.existsById(String.valueOf(zutat.getId()))) {
+        if (ingredientRepository.existsByMigrationId(zutat.getId())) {
             log.warn("MIGRATION Ingredient already exists!");
             return false;
         }
@@ -57,15 +60,14 @@ public class IngredientMigrationService {
 
     public int migrateIngredientsToRecipes(List<Zutat> zutats) {
         int successfullyCount = 0;
-        List<String> recipeIds = zutats.stream()
+        List<Integer> recipeIds = zutats.stream()
                 .map(Zutat::getRezept_id)
-                .map(String::valueOf)
                 .distinct()
                 .toList();
 
-        for (String recipeId : recipeIds) {
+        for (int recipeId : recipeIds) {
             List<Zutat> zutatsOfRecipe = zutats.stream()
-                    .filter(zutat -> String.valueOf(zutat.getRezept_id()).equals(recipeId))
+                    .filter(zutat -> zutat.getRezept_id() == recipeId)
                     .toList();
 
             if (migrateIngredientsToRecipe(recipeId, zutatsOfRecipe)) {
@@ -77,9 +79,9 @@ public class IngredientMigrationService {
         return successfullyCount;
     }
 
-    private boolean migrateIngredientsToRecipe(String recipeId, List<Zutat> zutat) {
+    private boolean migrateIngredientsToRecipe(int recipeId, List<Zutat> zutat) {
 
-        Optional<Recipe> optionalRecipe = recipeRepository.findById(recipeId);
+        Optional<Recipe> optionalRecipe = recipeRepository.findByMigrationId(recipeId);
 
         if (optionalRecipe.isEmpty()) {
             log.error("MIGRATION Recipe " + recipeId + " does not exist!");
@@ -90,8 +92,7 @@ public class IngredientMigrationService {
 
         recipe.setIngredients(zutat.stream()
                 .map(Zutat::getId)
-                .map(String::valueOf)
-                .map(Ingredient::ofId)
+                .map(migrationId -> ingredientRepository.findByMigrationId(migrationId).get())
                 .collect(Collectors.toList()));
 
         try {

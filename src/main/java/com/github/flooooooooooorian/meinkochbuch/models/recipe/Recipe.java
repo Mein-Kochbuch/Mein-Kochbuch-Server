@@ -66,6 +66,8 @@ public class Recipe {
 
     private double averageRating;
 
+    private Integer migrationId;
+
     public static Recipe ofId(String recipeId) {
         return Recipe.builder()
                 .id(recipeId)

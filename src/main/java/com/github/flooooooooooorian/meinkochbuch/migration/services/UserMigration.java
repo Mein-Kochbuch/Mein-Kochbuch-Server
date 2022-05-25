@@ -34,7 +34,8 @@ public class UserMigration {
 
     public boolean migrateUser(Kochbuchuser kochbuchuser) {
         ChefUser migratedUser = ChefUser.builder()
-                .id(String.valueOf(kochbuchuser.getId()))
+                .id(idUtils.generateId())
+                .migrationId(kochbuchuser.getId())
                 .name(kochbuchuser.getUsername())
                 .enabled(kochbuchuser.isActive())
                 .credentialsNonExpired(false)
@@ -57,7 +58,7 @@ public class UserMigration {
             migratedUser.setAuthorities(Set.of(ChefAuthorities.ADMIN));
         }
 
-        if (chefUserRepository.existsById(migratedUser.getId())) {
+        if (chefUserRepository.existsByMigrationId(migratedUser.getMigrationId())) {
             log.warn("MIGRATION User already exists!");
             return false;
         }
