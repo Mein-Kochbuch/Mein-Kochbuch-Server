@@ -11,6 +11,7 @@ public interface ImageMapper {
         }
         return ImageDto.builder()
                 .id(image.getId())
+                .url(image.getUrl())
                 .build();
     }
 }
