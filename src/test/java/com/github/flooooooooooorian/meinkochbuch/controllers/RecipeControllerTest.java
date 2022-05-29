@@ -2,6 +2,7 @@ package com.github.flooooooooooorian.meinkochbuch.controllers;
 
 import com.github.flooooooooooorian.meinkochbuch.IntegrationTest;
 import com.github.flooooooooooorian.meinkochbuch.controllers.responses.RecipeListResponse;
+import com.github.flooooooooooorian.meinkochbuch.dtos.ImageDto;
 import com.github.flooooooooooorian.meinkochbuch.dtos.chefuser.ChefUserPreviewDto;
 import com.github.flooooooooooorian.meinkochbuch.dtos.ingredient.IngredientCreationDto;
 import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipeCreationDto;
@@ -10,25 +11,43 @@ import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipeEditDto;
 import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipePreviewDto;
 import com.github.flooooooooooorian.meinkochbuch.models.recipe.difficulty.Difficulty;
 import com.github.flooooooooooorian.meinkochbuch.models.recipe.ingredient.Ingredient;
+import com.github.flooooooooooorian.meinkochbuch.services.utils.IdUtils;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.S3Utilities;
 
+import java.net.MalformedURLException;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class RecipeControllerTest extends IntegrationTest {
 
     @LocalServerPort
     private int port;
+
+    @MockBean
+    private S3Client s3Client;
+
+    @MockBean
+    private IdUtils idUtils;
 
     private WebClient webClient;
 
@@ -340,8 +359,10 @@ class RecipeControllerTest extends IntegrationTest {
     }
 
     @Test
-    void addRecipe() {
+    void addRecipeWithOutImage() {
         //GIVEN
+        when(idUtils.generateId()).thenReturn("test_id");
+
         webClient = WebClient.create("http://localhost:" + port + "/api");
 
         RecipeCreationDto editRecipeDto = RecipeCreationDto.builder()
@@ -360,9 +381,79 @@ class RecipeControllerTest extends IntegrationTest {
 
         //WHEN
 
+
+        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        body.add("editRecipeDto", editRecipeDto);
+
         ResponseEntity<RecipeDto> result = webClient.post()
                 .uri("/recipes")
-                .bodyValue(editRecipeDto)
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.MULTIPART_MIXED_VALUE)
+                .bodyValue(body)
+                .header("Authorization", "Bearer " + getTokenByUserId("some-user-id"))
+                .retrieve()
+                .toEntity(RecipeDto.class)
+                .block();
+
+        //THEN
+
+        assertThat(result, notNullValue());
+        assertThat(result.getBody(), notNullValue());
+        assertThat(result.getStatusCode(), is(HttpStatus.OK));
+        assertThat(result.getBody().getId(), is("test_id"));
+        assertThat(result.getBody().getName(), is(editRecipeDto.getName()));
+        assertThat(result.getBody().getInstruction(), is(editRecipeDto.getInstruction()));
+        assertThat(result.getBody().getDifficulty(), is(editRecipeDto.getDifficulty()));
+        assertThat(result.getBody().getDuration(), is(editRecipeDto.getDuration()));
+        assertThat(result.getBody().getImages(), empty());
+        assertThat(result.getBody().getOwner().getId(), is("some-user-id"));
+        assertThat(result.getBody().getIngredients().stream().map(Ingredient::getText).toList(), is(editRecipeDto.getIngredients().stream().map(IngredientCreationDto::getText).toList()));
+        assertThat(result.getBody().getPortions(), is(editRecipeDto.getPortions()));
+        assertThat(result.getBody().getRatingAverage(), is(0.0));
+        assertThat(result.getBody().getRatingCount(), is(0));
+        assertThat(result.getBody().getTags(), empty());
+        assertThat(result.getBody().getThumbnail(), nullValue());
+        assertThat(result.getBody().isPrivacy(), is(editRecipeDto.isPrivacy()));
+    }
+
+    @Test
+    void addRecipeWithImage() throws MalformedURLException {
+        //GIVEN
+//        S3Utilities s3Utilities = mock(S3Utilities.class);
+        when(s3Client.utilities()).thenReturn(S3Utilities.builder()
+                .region(Region.EU_CENTRAL_1)
+                .build());
+//        when(s3Utilities.getUrl(Mockito.any(GetUrlRequest.class))).thenReturn(new URL("test_image_url"));
+        when(idUtils.generateId())
+                .thenReturn("test_recipe_id")
+                .thenReturn("test_image_id");
+
+        webClient = WebClient.create("http://localhost:" + port + "/api");
+
+        RecipeCreationDto editRecipeDto = RecipeCreationDto.builder()
+                .name("test-recipe-name")
+                .difficulty(Difficulty.MEDIUM)
+                .duration(40)
+                .ingredients(List.of(IngredientCreationDto.builder()
+                        .text("test-ingredient-text")
+                        .amount(10)
+                        .build()))
+                .portions(4)
+                .instruction("test-instructions")
+                .privacy(false)
+                .build();
+
+
+        //WHEN
+
+
+        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        body.add("editRecipeDto", editRecipeDto);
+        body.add("file", new ClassPathResource("test_img.jpg"));
+
+        ResponseEntity<RecipeDto> result = webClient.post()
+                .uri("/recipes")
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.MULTIPART_MIXED_VALUE)
+                .bodyValue(body)
                 .header("Authorization", "Bearer " + getTokenByUserId("some-user-id"))
                 .retrieve()
                 .toEntity(RecipeDto.class)
@@ -378,14 +469,20 @@ class RecipeControllerTest extends IntegrationTest {
         assertThat(result.getBody().getInstruction(), is(editRecipeDto.getInstruction()));
         assertThat(result.getBody().getDifficulty(), is(editRecipeDto.getDifficulty()));
         assertThat(result.getBody().getDuration(), is(editRecipeDto.getDuration()));
-        assertThat(result.getBody().getImages(), empty());
+        assertThat(result.getBody().getImages(), containsInAnyOrder(ImageDto.builder()
+                .id("test_image_id")
+                .url("https://s3.eu-central-1.amazonaws.com/testBucketName/test_recipe_id.jpg")
+                .build()));
         assertThat(result.getBody().getOwner().getId(), is("some-user-id"));
         assertThat(result.getBody().getIngredients().stream().map(Ingredient::getText).toList(), is(editRecipeDto.getIngredients().stream().map(IngredientCreationDto::getText).toList()));
         assertThat(result.getBody().getPortions(), is(editRecipeDto.getPortions()));
         assertThat(result.getBody().getRatingAverage(), is(0.0));
         assertThat(result.getBody().getRatingCount(), is(0));
         assertThat(result.getBody().getTags(), empty());
-        assertThat(result.getBody().getThumbnail(), nullValue());
+        assertThat(result.getBody().getThumbnail(), is(ImageDto.builder()
+                .id("test_image_id")
+                .url("https://s3.eu-central-1.amazonaws.com/testBucketName/test_recipe_id.jpg")
+                .build()));
         assertThat(result.getBody().isPrivacy(), is(editRecipeDto.isPrivacy()));
     }
 
@@ -426,6 +523,9 @@ class RecipeControllerTest extends IntegrationTest {
     @Test
     void changeRecipe_valid() {
         //GIVEN
+        when(idUtils.generateId())
+                .thenReturn("test_ingredient_id_1")
+                .thenReturn("test_ingredient_id_2");
         webClient = WebClient.create("http://localhost:" + port + "/api");
 
         RecipeEditDto editRecipeDto = RecipeEditDto.builder()
@@ -462,7 +562,7 @@ class RecipeControllerTest extends IntegrationTest {
         assertThat(result, notNullValue());
         assertThat(result.getBody(), notNullValue());
         assertThat(result.getStatusCode(), is(HttpStatus.OK));
-        assertThat(result.getBody().getId(), notNullValue());
+        assertThat(result.getBody().getId(), is("test-recipe-id-1"));
         assertThat(result.getBody().getName(), is(editRecipeDto.getName()));
         assertThat(result.getBody().getInstruction(), is(editRecipeDto.getInstruction()));
         assertThat(result.getBody().getDifficulty(), is(editRecipeDto.getDifficulty()));
@@ -481,6 +581,11 @@ class RecipeControllerTest extends IntegrationTest {
     @Test
     void changeRecipe_newRecipe() {
         //GIVEN
+        when(idUtils.generateId())
+                .thenReturn("test_ingredient_id_1")
+                .thenReturn("test_ingredient_id_2")
+                .thenReturn("test_recipe_id");
+
         webClient = WebClient.create("http://localhost:" + port + "/api");
 
         RecipeEditDto editRecipeDto = RecipeEditDto.builder()
@@ -517,7 +622,7 @@ class RecipeControllerTest extends IntegrationTest {
         assertThat(result, notNullValue());
         assertThat(result.getBody(), notNullValue());
         assertThat(result.getStatusCode(), is(HttpStatus.OK));
-        assertThat(result.getBody().getId(), notNullValue());
+        assertThat(result.getBody().getId(), is("test_recipe_id"));
         assertThat(result.getBody().getName(), is(editRecipeDto.getName()));
         assertThat(result.getBody().getInstruction(), is(editRecipeDto.getInstruction()));
         assertThat(result.getBody().getDifficulty(), is(editRecipeDto.getDifficulty()));

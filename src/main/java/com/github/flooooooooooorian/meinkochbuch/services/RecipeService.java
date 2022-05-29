@@ -1,12 +1,14 @@
 package com.github.flooooooooooorian.meinkochbuch.services;
 
 import com.github.flooooooooooorian.meinkochbuch.controllers.recipes.RecipesFilterParams;
+import com.github.flooooooooooorian.meinkochbuch.dtos.ImageDto;
 import com.github.flooooooooooorian.meinkochbuch.dtos.ingredient.IngredientCreationDto;
 import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipeCreationDto;
 import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipeEditDto;
 import com.github.flooooooooooorian.meinkochbuch.exceptions.RecipeDoesNotExistException;
 import com.github.flooooooooooorian.meinkochbuch.exceptions.RecipeEditForbiddenException;
 import com.github.flooooooooooorian.meinkochbuch.exceptions.RecipePrivacyForbiddenException;
+import com.github.flooooooooooorian.meinkochbuch.models.image.Image;
 import com.github.flooooooooooorian.meinkochbuch.models.rating.Rating;
 import com.github.flooooooooooorian.meinkochbuch.models.recipe.Recipe;
 import com.github.flooooooooooorian.meinkochbuch.models.recipe.ingredient.Ingredient;
@@ -16,23 +18,24 @@ import com.github.flooooooooooorian.meinkochbuch.security.models.ChefUser;
 import com.github.flooooooooooorian.meinkochbuch.services.utils.IdUtils;
 import com.github.flooooooooooorian.meinkochbuch.utils.TimeUtils;
 import lombok.RequiredArgsConstructor;
-import org.apache.juli.logging.Log;
-import org.apache.juli.logging.LogFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class RecipeService {
 
-    private static final Log LOG = LogFactory.getLog(RecipeService.class);
     private final RecipeRepository recipeRepository;
     private final IngredientRepository ingredientRepository;
+    private final ImageService imageService;
     private final IdUtils idUtils;
     private final TimeUtils timeUtils;
 
@@ -50,9 +53,27 @@ public class RecipeService {
     }
 
     @Transactional
-    public Recipe addRecipe(RecipeCreationDto recipeCreationDto, String userId) {
+    public Recipe addRecipe(RecipeCreationDto recipeCreationDto, Optional<MultipartFile> file, String userId) {
+
+        Image image = null;
+        List<ImageDto> imageDtos = recipeCreationDto.getImages();
+        if (imageDtos == null) {
+            imageDtos = new ArrayList<>();
+        }
+        List<Image> images = imageDtos.stream()
+                .map(imageDto -> Image.builder()
+                        .url(imageDto.getUrl())
+                        .id(imageDto.getId())
+                        .owner(ChefUser.ofId(userId))
+                        .build())
+                .collect(Collectors.toList());
+
+        if (file.isPresent()) {
+            image = imageService.addImage(userId, file.get());
+            images.add(image);
+        }
+
         List<Ingredient> ingredients = recipeCreationDto.getIngredients().stream()
-                //.map(ingredientService::addIngredient)
                 .map(ingredientCreationDto -> Ingredient.builder()
                         .id(idUtils.generateId())
                         .text(ingredientCreationDto.getText())
@@ -63,6 +84,8 @@ public class RecipeService {
 
         Recipe recipeToAdd = Recipe.builder()
                 .id(idUtils.generateId())
+                .thumbnail(image)
+                .images(images)
                 .owner(ChefUser.ofId(userId))
                 .name(recipeCreationDto.getName())
                 .createdAt(timeUtils.now())
@@ -101,6 +124,7 @@ public class RecipeService {
                             .tags(editRecipeDto.getTags())
                             .thumbnail(editRecipeDto.getThumbnail())
                             .build(),
+                    Optional.empty(),
                     userId);
         }
 
@@ -109,8 +133,6 @@ public class RecipeService {
         if (!recipeToUpdate.getOwner().getId().equals(userId)) {
             throw new RecipeEditForbiddenException("Recipe Edit forbidden! Not Owner of Recipe!");
         }
-
-        recipeToUpdate.setRelevance(calculateRelevance(recipeToUpdate));
 
         recipeToUpdate.getIngredients().stream()
                 .map(Ingredient::getId)
@@ -127,7 +149,7 @@ public class RecipeService {
                 .id(recipeId)
                 .owner(ChefUser.ofId(userId))
                 .name(editRecipeDto.getName())
-                .createdAt(timeUtils.now())
+                .createdAt(recipeToUpdate.getCreatedAt())
                 .privacy(editRecipeDto.isPrivacy())
                 .difficulty(editRecipeDto.getDifficulty())
                 .duration(editRecipeDto.getDuration())
@@ -135,6 +157,8 @@ public class RecipeService {
                 .instruction(editRecipeDto.getInstruction())
                 .portions(editRecipeDto.getPortions())
                 .build();
+
+        recipeToAdd.setRelevance(calculateRelevance(recipeToAdd));
 
         return recipeRepository.save(recipeToAdd);
     }

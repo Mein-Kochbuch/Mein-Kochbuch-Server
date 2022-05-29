@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.security.Principal;
@@ -53,9 +54,9 @@ public class RecipeController {
     }
 
     @PostMapping()
-    public RecipeDto addRecipe(@Valid @RequestBody RecipeCreationDto editRecipeDto, Principal principal) {
+    public RecipeDto addRecipe(@Valid @RequestPart RecipeCreationDto editRecipeDto, @RequestPart("file") Optional<MultipartFile> optionalFile, Principal principal) {
         log.debug("GET Add Recipe");
-        return RecipeMapper.recipeToRecipeDto(recipeService.addRecipe(editRecipeDto, principal.getName()));
+        return RecipeMapper.recipeToRecipeDto(recipeService.addRecipe(editRecipeDto, optionalFile, principal.getName()));
     }
 
     @PutMapping("{recipeId}")
