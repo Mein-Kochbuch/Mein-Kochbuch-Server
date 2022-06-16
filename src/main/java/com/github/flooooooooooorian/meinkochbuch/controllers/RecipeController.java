@@ -9,11 +9,14 @@ import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipeEditDto;
 import com.github.flooooooooooorian.meinkochbuch.mapper.RecipeMapper;
 import com.github.flooooooooooorian.meinkochbuch.security.utils.SecurityContextUtil;
 import com.github.flooooooooooorian.meinkochbuch.services.RecipeService;
+import com.github.flooooooooooorian.meinkochbuch.services.utils.FileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.security.Principal;
@@ -26,6 +29,7 @@ import java.util.Optional;
 public class RecipeController {
     private final RecipeService recipeService;
     private final SecurityContextUtil securityContextUtil;
+    private final FileService fileService;
 
     @Value("${domain.url:}")
     private String domainUrl;
@@ -54,9 +58,16 @@ public class RecipeController {
     }
 
     @PostMapping()
-    public RecipeDto addRecipe(@Valid @RequestPart RecipeCreationDto editRecipeDto, @RequestPart("file") Optional<MultipartFile> optionalFile, Principal principal) {
+    public RecipeDto addRecipe(@Valid @RequestPart RecipeCreationDto editRecipeDto, @RequestPart("file") Optional<MultipartFile> optionalMultipartFile, Principal principal) {
         log.debug("GET Add Recipe");
-        return RecipeMapper.recipeToRecipeDto(recipeService.addRecipe(editRecipeDto, optionalFile, principal.getName()));
+        if (optionalMultipartFile.isPresent()) {
+            MultipartFile file = optionalMultipartFile.get();
+            if (!fileService.validateMultiParImage(file)) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "File Type not supported!");
+            }
+        }
+
+        return RecipeMapper.recipeToRecipeDto(recipeService.addRecipe(editRecipeDto, optionalMultipartFile, principal.getName()));
     }
 
     @PutMapping("{recipeId}")
