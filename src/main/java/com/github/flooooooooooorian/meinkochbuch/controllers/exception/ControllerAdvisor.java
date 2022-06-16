@@ -1,6 +1,7 @@
 package com.github.flooooooooooorian.meinkochbuch.controllers.exception;
 
 import com.github.flooooooooooorian.meinkochbuch.exceptions.*;
+import com.github.flooooooooooorian.meinkochbuch.exceptions.aws.AwsS3UploadException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -94,6 +95,15 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
         ApiError apiError = new ApiError("Access denied!", ex.getMessage());
 
         return new ResponseEntity<>(apiError, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(AwsS3UploadException.class)
+    public ResponseEntity<ApiError> handleAccessAwsS3UploadException(AwsS3UploadException ex) {
+        log.error("Aws S3 Image Upload Exception", ex);
+
+        ApiError apiError = new ApiError("Image Upload Exception", ex.getMessage());
+
+        return new ResponseEntity<>(apiError, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(Throwable.class)

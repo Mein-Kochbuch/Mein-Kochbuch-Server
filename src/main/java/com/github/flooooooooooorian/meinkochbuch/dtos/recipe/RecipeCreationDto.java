@@ -1,6 +1,5 @@
 package com.github.flooooooooooorian.meinkochbuch.dtos.recipe;
 
-import com.github.flooooooooooorian.meinkochbuch.dtos.ImageDto;
 import com.github.flooooooooooorian.meinkochbuch.dtos.ingredient.IngredientCreationDto;
 import com.github.flooooooooooorian.meinkochbuch.models.recipe.difficulty.Difficulty;
 import com.github.flooooooooooorian.meinkochbuch.models.tag.Tag;
@@ -25,6 +24,4 @@ public class RecipeCreationDto {
     private List<IngredientCreationDto> ingredients;
     private boolean privacy;
     private List<Tag> tags;
-    private ImageDto thumbnail;
-    private List<ImageDto> images;
 }

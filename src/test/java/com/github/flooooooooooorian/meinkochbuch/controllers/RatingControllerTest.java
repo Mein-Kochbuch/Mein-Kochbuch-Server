@@ -5,36 +5,32 @@ import com.github.flooooooooooorian.meinkochbuch.dtos.rating.CreateRatingDto;
 import com.github.flooooooooooorian.meinkochbuch.dtos.rating.RatingDto;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
+import org.springframework.test.web.reactive.server.WebTestClient;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class RatingControllerTest extends IntegrationTest {
 
-    @LocalServerPort
-    private int port;
-
-    private WebClient webClient;
+    @Autowired
+    private WebTestClient webClient;
 
     @Test
     void getOwnRatingFromRecipe_valid() {
         //GIVEN
-        webClient = WebClient.create("http://localhost:" + port + "/api");
-
         //WHEN
 
-        ResponseEntity<RatingDto> result = webClient.get()
-                .uri("/ratings/test-recipe-id-1")
+        RatingDto result = webClient.get()
+                .uri("/api/ratings/test-recipe-id-1")
                 .header("Authorization", "Bearer " + getTokenByUserId("some-user-id"))
-                .retrieve()
-                .toEntity(RatingDto.class)
-                .block();
+                .exchange()
+                .expectStatus()
+                .is2xxSuccessful()
+                .expectBody(RatingDto.class)
+                .returnResult()
+                .getResponseBody();
 
         //THEN
         RatingDto expected = RatingDto.builder()
@@ -42,24 +38,23 @@ class RatingControllerTest extends IntegrationTest {
                 .rating(3)
                 .build();
 
-        assertThat(result, Matchers.notNullValue());
-        assertThat(result.getStatusCode(), Matchers.is(HttpStatus.OK));
-        assertThat(result.getBody(), Matchers.is(expected));
+        assertThat(result, Matchers.is(expected));
     }
 
     @Test
     void getOwnRatingFromRecipe_notRated() {
         //GIVEN
-        webClient = WebClient.create("http://localhost:" + port + "/api");
-
         //WHEN
 
-        ResponseEntity<RatingDto> result = webClient.get()
-                .uri("/ratings/test-recipe-id-2")
+        RatingDto result = webClient.get()
+                .uri("/api/ratings/test-recipe-id-2")
                 .header("Authorization", "Bearer " + getTokenByUserId("some-user-id"))
-                .retrieve()
-                .toEntity(RatingDto.class)
-                .block();
+                .exchange()
+                .expectStatus()
+                .is2xxSuccessful()
+                .expectBody(RatingDto.class)
+                .returnResult()
+                .getResponseBody();
 
         //THEN
         RatingDto expected = RatingDto.builder()
@@ -67,140 +62,111 @@ class RatingControllerTest extends IntegrationTest {
                 .rating(0)
                 .build();
 
-        assertThat(result, Matchers.notNullValue());
-        assertThat(result.getStatusCode(), Matchers.is(HttpStatus.OK));
-        assertThat(result.getBody(), Matchers.is(expected));
+        assertThat(result, Matchers.is(expected));
     }
 
     @Test
     void getOwnRatingFromRecipe_notLoggedIn() {
         //GIVEN
-        webClient = WebClient.create("http://localhost:" + port + "/api");
-
         //WHEN
 
-        ResponseEntity<RatingDto> result = webClient.get()
-                .uri("/ratings/test-recipe-id-1")
-                .retrieve()
-                .onStatus(HttpStatus::isError, response -> Mono.empty())
-                .toEntity(RatingDto.class)
-                .block();
-
-        //THEN
-
-        assertThat(result, Matchers.notNullValue());
-        assertThat(result.getStatusCode(), Matchers.is(HttpStatus.FORBIDDEN));
+        webClient.get()
+                .uri("/api/ratings/test-recipe-id-1")
+                .exchange()
+                .expectStatus()
+                //THEN
+                .isForbidden();
     }
 
     @Test
     void addRating_newRating() {
         //GIVEN
-        webClient = WebClient.create("http://localhost:" + port + "/api");
-
         //WHEN
         CreateRatingDto ratingDto = CreateRatingDto.builder()
                 .rating(3)
                 .build();
 
-        ResponseEntity<RatingDto> result = webClient.put()
-                .uri("/ratings/test-recipe-id-2")
+        RatingDto result = webClient.put()
+                .uri("/api/ratings/test-recipe-id-2")
                 .bodyValue(ratingDto)
                 .header("Authorization", "Bearer " + getTokenByUserId("some-user-id"))
-                .retrieve()
-                .toEntity(RatingDto.class)
-                .block();
+                .exchange()
+                .expectStatus()
+                .is2xxSuccessful()
+                .expectBody(RatingDto.class)
+                .returnResult()
+                .getResponseBody();
 
         //THEN
-
         RatingDto expected = RatingDto.builder()
                 .recipeId("test-recipe-id-2")
                 .rating(3)
                 .build();
 
-        assertThat(result, Matchers.notNullValue());
-        assertThat(result.getStatusCode(), Matchers.is(HttpStatus.OK));
-        assertThat(result.getBody(), Matchers.is(expected));
+        assertThat(result, Matchers.is(expected));
     }
 
     @Test
     void addRating_changeRating() {
         //GIVEN
-        webClient = WebClient.create("http://localhost:" + port + "/api");
-
         //WHEN
         CreateRatingDto ratingDto = CreateRatingDto.builder()
                 .rating(5)
                 .build();
 
-        ResponseEntity<RatingDto> result = webClient.put()
-                .uri("/ratings/test-recipe-id-1")
+        RatingDto result = webClient.put()
+                .uri("/api/ratings/test-recipe-id-1")
                 .bodyValue(ratingDto)
                 .header("Authorization", "Bearer " + getTokenByUserId("some-user-id"))
-                .retrieve()
-                .toEntity(RatingDto.class)
-                .block();
+                .exchange()
+                .expectStatus()
+                .is2xxSuccessful()
+                .expectBody(RatingDto.class)
+                .returnResult()
+                .getResponseBody();
 
         //THEN
-
         RatingDto expected = RatingDto.builder()
                 .rating(5)
                 .recipeId("test-recipe-id-1")
                 .build();
 
-        assertThat(result, Matchers.notNullValue());
-        assertThat(result.getStatusCode(), Matchers.is(HttpStatus.OK));
-        assertThat(result.getBody(), Matchers.is(expected));
-
+        assertThat(result, Matchers.is(expected));
     }
 
     @Test
     void addRating_RecipeDoesNotExcists() {
         //GIVEN
-        webClient = WebClient.create("http://localhost:" + port + "/api");
-
         //WHEN
         CreateRatingDto ratingDto = CreateRatingDto.builder()
                 .rating(3)
                 .build();
 
-        ResponseEntity<RatingDto> result = webClient.put()
-                .uri("/ratings/test-recipe-id-not-exists")
+        webClient.put()
+                .uri("/api/ratings/test-recipe-id-not-exists")
                 .bodyValue(ratingDto)
                 .header("Authorization", "Bearer " + getTokenByUserId("some-user-id"))
-                .retrieve()
-                .onStatus(HttpStatus::isError, response -> Mono.empty())
-                .toEntity(RatingDto.class)
-                .block();
-
-        //THEN
-
-        assertThat(result, Matchers.notNullValue());
-        assertThat(result.getStatusCode(), Matchers.is(HttpStatus.BAD_REQUEST));
+                .exchange()
+                .expectStatus()
+                //THEN
+                .isBadRequest();
     }
 
     @Test
     void addRating_notLoggedIn() {
         //GIVEN
-        webClient = WebClient.create("http://localhost:" + port + "/api");
-
         //WHEN
         RatingDto ratingDto = RatingDto.builder()
                 .rating(3)
                 .recipeId("test-recipe-id-2")
                 .build();
 
-        ResponseEntity<RatingDto> result = webClient.post()
-                .uri("/ratings/test-recipe-id-2")
+        webClient.post()
+                .uri("/api/ratings/test-recipe-id-2")
                 .bodyValue(ratingDto)
-                .retrieve()
-                .onStatus(HttpStatus::isError, response -> Mono.empty())
-                .toEntity(RatingDto.class)
-                .block();
-
-        //THEN
-
-        assertThat(result, Matchers.notNullValue());
-        assertThat(result.getStatusCode(), Matchers.is(HttpStatus.FORBIDDEN));
-
+                .exchange()
+                .expectStatus()
+                //THEN
+                .isForbidden();
     }
 }
