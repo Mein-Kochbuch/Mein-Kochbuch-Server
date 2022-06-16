@@ -39,10 +39,11 @@ class RecipeServiceTest {
 
     private final RecipeRepository recipeRepository = mock(RecipeRepository.class);
     private final IngredientRepository ingredientRepository = mock(IngredientRepository.class);
+    private final ImageService imageService = mock(ImageService.class);
     private final IdUtils idUtils = mock(IdUtils.class);
     private final TimeUtils timeUtils = mock(TimeUtils.class);
 
-    private final RecipeService recipeService = new RecipeService(recipeRepository, ingredientRepository, idUtils, timeUtils);
+    private final RecipeService recipeService = new RecipeService(recipeRepository, ingredientRepository, imageService, idUtils, timeUtils);
 
     @Captor
     private ArgumentCaptor<Recipe> argumentCaptor;
@@ -492,7 +493,7 @@ class RecipeServiceTest {
 
         //WHEN
 
-        Recipe result = recipeService.addRecipe(creationDto, chefUser1.getId());
+        Recipe result = recipeService.addRecipe(creationDto, Optional.empty(), chefUser1.getId());
 
         //THEN
 

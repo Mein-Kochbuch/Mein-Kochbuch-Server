@@ -11,8 +11,10 @@ import javax.persistence.Id;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class OAuthDataApple {
+public class OAuthApple {
 
     @Id
     private String id;
+
+    private String accessToken;
 }
