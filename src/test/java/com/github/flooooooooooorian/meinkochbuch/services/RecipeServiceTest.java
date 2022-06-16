@@ -27,6 +27,7 @@ import org.springframework.data.domain.PageRequest;
 import java.math.BigInteger;
 import java.time.Instant;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 
@@ -709,40 +710,9 @@ class RecipeServiceTest {
         when(idUtils.generateId()).thenReturn("15");
 
         //WHEN
-
-        Recipe result = recipeService.changeRecipe("1", recipeEditDto, chefUser1.getId());
-
         //THEN
-
-        assertThat(result.getId(), Matchers.is(r1Result.getId()));
-        assertThat(result.isPrivacy(), Matchers.is(r1Result.isPrivacy()));
-        assertThat(result.getOwner().getId(), Matchers.is(r1Result.getOwner().getId()));
-        assertThat(result.getName(), Matchers.is(r1Result.getName()));
-        assertThat(result.getDifficulty(), Matchers.is(r1Result.getDifficulty()));
-        assertThat(result.getDuration(), Matchers.is(r1Result.getDuration()));
-        assertThat(result.getInstruction(), Matchers.is(r1Result.getInstruction()));
-        assertThat(result.getPortions(), Matchers.is(r1Result.getPortions()));
-        assertThat(result.getThumbnail(), Matchers.is(r1Result.getThumbnail()));
-
-        if (result.getIngredients() != null) {
-            for (int i = 0; i < result.getIngredients().size(); i++) {
-                assertThat(result.getIngredients().get(i).getText(), Matchers.is(r1Result.getIngredients().get(i).getText()));
-            }
-        }
-
-        if (result.getImages() != null) {
-            for (int i = 0; i < result.getImages().size(); i++) {
-                assertThat(result.getImages().get(i).getId(), Matchers.is(r1Result.getImages().get(i).getId()));
-            }
-        }
-
-        if (result.getTaggings() != null) {
-            for (int i = 0; i < result.getTaggings().size(); i++) {
-                assertThat(result.getTaggings().get(i).getTag().getId(), Matchers.is(r1Result.getTaggings().get(i).getTag().getId()));
-            }
-        }
-
-        assertThat(result, Matchers.is(r1Result));
+        assertThrows(NoSuchElementException.class,
+                () -> recipeService.changeRecipe("1", recipeEditDto, chefUser1.getId()));
     }
 
     @Test

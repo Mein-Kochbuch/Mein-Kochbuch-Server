@@ -1,8 +1,6 @@
 package com.github.flooooooooooorian.meinkochbuch.services;
 
 import com.github.flooooooooooorian.meinkochbuch.controllers.recipes.RecipesFilterParams;
-import com.github.flooooooooooorian.meinkochbuch.dtos.ImageDto;
-import com.github.flooooooooooorian.meinkochbuch.dtos.ingredient.IngredientCreationDto;
 import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipeCreationDto;
 import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipeEditDto;
 import com.github.flooooooooooorian.meinkochbuch.exceptions.RecipeDoesNotExistException;
@@ -27,7 +25,6 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -56,17 +53,7 @@ public class RecipeService {
     public Recipe addRecipe(RecipeCreationDto recipeCreationDto, Optional<MultipartFile> file, String userId) {
 
         Image image = null;
-        List<ImageDto> imageDtos = recipeCreationDto.getImages();
-        if (imageDtos == null) {
-            imageDtos = new ArrayList<>();
-        }
-        List<Image> images = imageDtos.stream()
-                .map(imageDto -> Image.builder()
-                        .url(imageDto.getUrl())
-                        .id(imageDto.getId())
-                        .owner(ChefUser.ofId(userId))
-                        .build())
-                .collect(Collectors.toList());
+        List<Image> images = new ArrayList<>();
 
         if (file.isPresent()) {
             image = imageService.addImage(userId, file.get());
@@ -104,31 +91,7 @@ public class RecipeService {
 
     @Transactional
     public Recipe changeRecipe(String recipeId, RecipeEditDto editRecipeDto, String userId) {
-        Optional<Recipe> optionalRecipe = recipeRepository.findById(recipeId);
-
-        if (optionalRecipe.isEmpty()) {
-            return addRecipe(RecipeCreationDto.builder()
-                            .privacy(editRecipeDto.isPrivacy())
-                            .instruction(editRecipeDto.getInstruction())
-                            .portions(editRecipeDto.getPortions())
-                            .duration(editRecipeDto.getDuration())
-                            .difficulty(editRecipeDto.getDifficulty())
-                            .name(editRecipeDto.getName())
-                            .ingredients(editRecipeDto.getIngredients().stream().map(ingredient -> IngredientCreationDto.builder()
-                                            .text(ingredient.getText())
-                                            .baseIngredient(ingredient.getBaseIngredient())
-                                            .amount(ingredient.getAmount())
-                                            .build())
-                                    .toList())
-                            .images(editRecipeDto.getImages())
-                            .tags(editRecipeDto.getTags())
-                            .thumbnail(editRecipeDto.getThumbnail())
-                            .build(),
-                    Optional.empty(),
-                    userId);
-        }
-
-        Recipe recipeToUpdate = optionalRecipe.get();
+        Recipe recipeToUpdate = recipeRepository.findById(recipeId).orElseThrow();
 
         if (!recipeToUpdate.getOwner().getId().equals(userId)) {
             throw new RecipeEditForbiddenException("Recipe Edit forbidden! Not Owner of Recipe!");
