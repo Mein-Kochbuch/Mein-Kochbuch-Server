@@ -52,11 +52,10 @@ public class CookbookService {
                     .anyMatch(Recipe::isPrivacy);
         }
 
-        Image thumbnail = recipes.stream()
+        Optional<Image> optionalThubnail = recipes.stream()
                 .filter(recipe -> recipe.getThumbnail() != null)
-                .max((r1, r2) -> r1.getRatingAverage() >= r2.getRatingAverage() ? 1 : -1)
-                .orElseGet(Recipe::new)
-                .getThumbnail();
+                .max((r1, r2) -> r1.getAverageRating() >= r2.getAverageRating() ? 1 : -1)
+                .map(Recipe::getThumbnail);
 
         String generateId = idUtils.generateId();
         Cookbook newCookbook = Cookbook.builder()
@@ -70,8 +69,9 @@ public class CookbookService {
                                 .recipe(Recipe.ofId(id))
                                 .build())
                         .toList())
-                .thumbnail(thumbnail)
                 .build();
+
+        optionalThubnail.ifPresent(newCookbook::setThumbnail);
 
         return cookbookRepository.save(newCookbook);
     }
