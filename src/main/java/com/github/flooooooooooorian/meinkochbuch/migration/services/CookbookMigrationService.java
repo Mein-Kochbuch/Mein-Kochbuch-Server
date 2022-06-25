@@ -4,6 +4,8 @@ import com.github.flooooooooooorian.meinkochbuch.migration.models.Kochbuch;
 import com.github.flooooooooooorian.meinkochbuch.migration.models.KochbuchRezept;
 import com.github.flooooooooooorian.meinkochbuch.models.cookbook.Cookbook;
 import com.github.flooooooooooorian.meinkochbuch.models.cookbook.CookbookContent;
+import com.github.flooooooooooorian.meinkochbuch.models.image.Image;
+import com.github.flooooooooooorian.meinkochbuch.models.recipe.Recipe;
 import com.github.flooooooooooorian.meinkochbuch.repository.CookbookRepository;
 import com.github.flooooooooooorian.meinkochbuch.repository.RecipeRepository;
 import com.github.flooooooooooorian.meinkochbuch.security.models.ChefUser;
@@ -60,6 +62,7 @@ public class CookbookMigrationService {
                 .privacy(kochbuch.isPrivacy())
                 .build();
 
+
         try {
             cookbookRepository.save(cookbook);
         } catch (IllegalArgumentException ex) {
@@ -110,6 +113,14 @@ public class CookbookMigrationService {
                         .recipe(recipe.get())
                         .build())
                 .collect(Collectors.toList()));
+
+        Optional<Image> optionalThumbnail = cookbook.getContents().stream()
+                .map(CookbookContent::getRecipe)
+                .filter(recipe -> recipe.getThumbnail() != null)
+                .findFirst()
+                .map(Recipe::getThumbnail);
+
+        optionalThumbnail.ifPresent(cookbook::setThumbnail);
 
         try {
             cookbookRepository.save(cookbook);

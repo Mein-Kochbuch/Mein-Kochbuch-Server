@@ -25,6 +25,7 @@ public class Image {
     private ChefUser owner;
 
     private String url;
+    private String thumbail;
 
     private Integer migrationId;
 }
