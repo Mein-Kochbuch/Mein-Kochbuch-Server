@@ -17,10 +17,11 @@ public class ImageService {
     private final IdUtils idUtils;
 
     public Image addImage(String userId, MultipartFile file) {
-        String imageUrl = awsS3Service.uploadImage(file);
+        String key = awsS3Service.uploadImage(file);
         Image image = Image.builder()
                 .id(idUtils.generateId())
-                .url(imageUrl)
+                .url(awsS3Service.getImageUrl(key))
+                .thumbnail(awsS3Service.getThumbnailUrl(key))
                 .owner(ChefUser.ofId(userId))
                 .build();
         return imageRepository.save(image);

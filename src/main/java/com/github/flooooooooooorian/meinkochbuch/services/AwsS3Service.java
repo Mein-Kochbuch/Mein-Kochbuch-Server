@@ -37,15 +37,27 @@ public class AwsS3Service {
             RequestBody requestBody = RequestBody.fromInputStream(file.getInputStream(), file.getSize());
 
             s3.putObject(objectRequest, requestBody);
-            return s3.utilities().getUrl(GetUrlRequest.builder()
-                            .bucket(awsConfig.getAwsS3BucketName())
-                            .key(fileKey)
-                            .build())
-                    .toString();
+            return fileKey;
 
         } catch (IOException e) {
             throw new AwsS3UploadException("Cant read file!", e);
         }
+    }
+
+    public String getImageUrl(String key) {
+        return s3.utilities().getUrl(GetUrlRequest.builder()
+                        .bucket(awsConfig.getAwsS3BucketName())
+                        .key(key)
+                        .build())
+                .toString();
+    }
+
+    public String getThumbnailUrl(String key) {
+        return s3.utilities().getUrl(GetUrlRequest.builder()
+                        .bucket(awsConfig.getAwsS3BucketName() + "-resized")
+                        .key(key.split("\\.")[0] + "-thumbnail." + key.split("\\.")[1])
+                        .build())
+                .toString();
     }
 
     private String getFileType(String fileName) {

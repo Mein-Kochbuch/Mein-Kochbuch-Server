@@ -65,7 +65,7 @@ public class ImageMigrationService {
                         .id(idUtils.generateId())
                         .migrationId(bild.getId())
                         .url(bild.getImage())
-                        .thumbail(bild.getImage().split("\\.")[0] + "-thumbnail" + bild.getImage().split("\\.")[1])
+                        .thumbnail(bild.getImage().split("\\.")[0] + "-thumbnail." + bild.getImage().split("\\.")[1])
                         .owner(bild.getOwner_id() != 0 ? chefUserRepository.findByMigrationId(bild.getOwner_id()).orElseThrow() : null)
                         .build())
                 .collect(Collectors.toList()));
