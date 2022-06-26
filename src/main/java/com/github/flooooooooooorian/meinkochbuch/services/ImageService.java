@@ -20,8 +20,7 @@ public class ImageService {
         String key = awsS3Service.uploadImage(file);
         Image image = Image.builder()
                 .id(idUtils.generateId())
-                .url(awsS3Service.getImageUrl(key))
-                .thumbnail(awsS3Service.getThumbnailUrl(key))
+                .key(key)
                 .owner(ChefUser.ofId(userId))
                 .build();
         return imageRepository.save(image);

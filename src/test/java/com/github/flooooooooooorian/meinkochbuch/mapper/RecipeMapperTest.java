@@ -19,16 +19,32 @@ import java.util.List;
 import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class RecipeMapperTest {
+
+    private final ImageMapper imageMapperMock = mock(ImageMapper.class);
+    private final ChefUserMapper chefUserMapperMock = mock(ChefUserMapper.class);
+    private final RecipeMapper recipeMapper = new RecipeMapper(imageMapperMock, chefUserMapperMock);
 
     @Test
     void recipeToRecipePreviewDto() {
         //GIVEN
         Recipe recipe = MapperUtils.exampleRecipe;
 
+        when(chefUserMapperMock.chefUserToChefUserPreviewDto(any())).thenReturn(ChefUserPreviewDto.builder()
+                .id("1")
+                .name("test-name")
+                .build());
+
+        when(imageMapperMock.imageToThumbnailDto(any())).thenReturn(ImageDto.builder()
+                .id("1")
+                .build());
+
         //WHEN
-        RecipePreviewDto result = RecipeMapper.recipeToRecipePreviewDto(recipe);
+        RecipePreviewDto result = recipeMapper.recipeToRecipePreviewDto(recipe);
 
         //THEN
         RecipePreviewDto expected = RecipePreviewDto.builder()
@@ -68,8 +84,13 @@ class RecipeMapperTest {
                 .relevance(BigInteger.ONE)
                 .build();
 
+        when(chefUserMapperMock.chefUserToChefUserPreviewDto(any())).thenReturn(ChefUserPreviewDto.builder()
+                .id("1")
+                .name("test-name")
+                .build());
+
         //WHEN
-        RecipePreviewDto result = RecipeMapper.recipeToRecipePreviewDto(recipe);
+        RecipePreviewDto result = recipeMapper.recipeToRecipePreviewDto(recipe);
 
         //THEN
         RecipePreviewDto expected = RecipePreviewDto.builder()
@@ -90,8 +111,22 @@ class RecipeMapperTest {
         //GIVEN
         Recipe recipe = MapperUtils.exampleRecipe;
 
+        when(chefUserMapperMock.chefUserToChefUserPreviewDto(any())).thenReturn(ChefUserPreviewDto.builder()
+                .id("1")
+                .name("test-name")
+                .build());
+
+        when(imageMapperMock.imageToImageDto(any()))
+                .thenReturn(ImageDto.builder()
+                        .id("2")
+                        .build());
+        when(imageMapperMock.imageToThumbnailDto(any()))
+                .thenReturn(ImageDto.builder()
+                        .id("1")
+                        .build());
+
         //WHEN
-        RecipeDto result = RecipeMapper.recipeToRecipeDto(recipe);
+        RecipeDto result = recipeMapper.recipeToRecipeDto(recipe);
 
         //THEN
         RecipeDto expected = RecipeDto.builder()
@@ -133,25 +168,7 @@ class RecipeMapperTest {
                 .ratingAverage(4)
                 .build();
 
-
-        //assertThat(result, Matchers.is(expected));
-        assertThat(result.getId(), Matchers.is(expected.getId()));
-        assertThat(result.getDifficulty(), Matchers.is(expected.getDifficulty()));
-        assertThat(result.getDuration(), Matchers.is(expected.getDuration()));
-        assertThat(result.getPortions(), Matchers.is(expected.getPortions()));
-        assertThat(result.getInstruction(), Matchers.is(expected.getInstruction()));
-        assertThat(result.getName(), Matchers.is(expected.getName()));
-        assertThat(result.getOwner().getId(), Matchers.is(expected.getOwner().getId()));
-        assertThat(result.getRatingAverage(), Matchers.is(expected.getRatingAverage()));
-        assertThat(result.getRatingCount(), Matchers.is(expected.getRatingCount()));
-
-        for (int i = 0; i < result.getIngredients().size(); i++) {
-            assertThat(result.getIngredients().get(i).getId(), Matchers.is(expected.getIngredients().get(i).getId()));
-            assertThat(result.getIngredients().get(i).getAmount(), Matchers.is(expected.getIngredients().get(i).getAmount()));
-            assertThat(result.getIngredients().get(i).getText(), Matchers.is(expected.getIngredients().get(i).getText()));
-            assertThat(result.getIngredients().get(i).getBaseIngredient().getId(), Matchers.is(expected.getIngredients().get(i).getBaseIngredient().getId()));
-        }
-
+        assertThat(result, Matchers.is(expected));
     }
 
     @Test
@@ -175,8 +192,13 @@ class RecipeMapperTest {
                 .relevance(BigInteger.ONE)
                 .build();
 
+        when(chefUserMapperMock.chefUserToChefUserPreviewDto(any())).thenReturn(ChefUserPreviewDto.builder()
+                .id("1")
+                .name("test-name")
+                .build());
+
         //WHEN
-        RecipeDto result = RecipeMapper.recipeToRecipeDto(recipe);
+        RecipeDto result = recipeMapper.recipeToRecipeDto(recipe);
 
         //THEN
         RecipeDto expected = RecipeDto.builder()

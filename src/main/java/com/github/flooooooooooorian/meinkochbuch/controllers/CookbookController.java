@@ -20,26 +20,27 @@ import java.util.Optional;
 public class CookbookController {
 
     private final CookbookService cookbookService;
+    private final CookbookMapper cookbookMapper;
 
     @GetMapping
     public List<CookbookPreview> getAllCookbooks(Principal principal) {
         return cookbookService.findAllCookbooks(principal != null ? principal.getName() : null).stream()
-                .map(CookbookMapper::cookbookToCookbookPreview)
+                .map(cookbookMapper::cookbookToCookbookPreview)
                 .toList();
     }
 
     @GetMapping("{id}")
     public CookbookDto getCookbookById(@PathVariable String id, Principal principal) {
-        return CookbookMapper.cookbookToCookbookDto(cookbookService.findCookbookById(id, principal != null ? Optional.ofNullable(principal.getName()) : Optional.empty()));
+        return cookbookMapper.cookbookToCookbookDto(cookbookService.findCookbookById(id, principal != null ? Optional.ofNullable(principal.getName()) : Optional.empty()));
     }
 
     @PostMapping
     public CookbookDto createCookbook(@Valid @RequestBody CookbookCreationDto cookbookCreationDto, Principal principal) {
-        return CookbookMapper.cookbookToCookbookDto(cookbookService.addCookbook(cookbookCreationDto, principal.getName()));
+        return cookbookMapper.cookbookToCookbookDto(cookbookService.addCookbook(cookbookCreationDto, principal.getName()));
     }
 
     @PutMapping("{cookbookId}")
     public CookbookDto editCookbook(@PathVariable @NotEmpty String cookbookId, @RequestBody CookbookCreationDto cookbookCreationDto, Principal principal) {
-        return CookbookMapper.cookbookToCookbookDto(cookbookService.editCookbookById(cookbookId, cookbookCreationDto, principal.getName()));
+        return cookbookMapper.cookbookToCookbookDto(cookbookService.editCookbookById(cookbookId, cookbookCreationDto, principal.getName()));
     }
 }

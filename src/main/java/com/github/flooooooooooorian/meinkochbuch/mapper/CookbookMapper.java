@@ -5,20 +5,28 @@ import com.github.flooooooooooorian.meinkochbuch.dtos.cookbook.CookbookDto;
 import com.github.flooooooooooorian.meinkochbuch.dtos.cookbook.CookbookPreview;
 import com.github.flooooooooooorian.meinkochbuch.models.cookbook.Cookbook;
 import com.github.flooooooooooorian.meinkochbuch.models.cookbook.CookbookContent;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
-public interface CookbookMapper {
+@RequiredArgsConstructor
+@Service
+public class CookbookMapper {
 
-    static CookbookPreview cookbookToCookbookPreview(Cookbook cookbook) {
+    private final RecipeMapper recipeMapper;
+    private final ImageMapper imageMapper;
+    private final ChefUserMapper chefUserMapper;
+
+    public CookbookPreview cookbookToCookbookPreview(Cookbook cookbook) {
         return CookbookPreview.builder()
                 .id(cookbook.getId())
                 .name(cookbook.getName())
-                .owner(ChefUserMapper.chefUserToChefUserPreviewDto(cookbook.getOwner()))
-                .thumbnail(ImageMapper.imageToImageDto(cookbook.getThumbnail()))
+                .owner(chefUserMapper.chefUserToChefUserPreviewDto(cookbook.getOwner()))
+                .thumbnail(imageMapper.imageToThumbnailDto(cookbook.getThumbnail()))
                 .ratingAverage(cookbook.getAverageRating())
                 .build();
     }
 
-    static CookbookDto cookbookToCookbookDto(Cookbook cookbook) {
+    public CookbookDto cookbookToCookbookDto(Cookbook cookbook) {
         return CookbookDto.builder()
                 .id(cookbook.getId())
                 .privacy(cookbook.isPrivacy())
@@ -29,10 +37,10 @@ public interface CookbookMapper {
                         .build())
                 .recipes(cookbook.getContents().stream()
                         .map(CookbookContent::getRecipe)
-                        .map(RecipeMapper::recipeToRecipePreviewDto)
+                        .map(recipeMapper::recipeToRecipePreviewDto)
                         .toList())
                 .ratingAverage(cookbook.getAverageRating())
-                .thumbnail(ImageMapper.imageToImageDto(cookbook.getThumbnail()))
+                .thumbnail(imageMapper.imageToThumbnailDto(cookbook.getThumbnail()))
                 .build();
     }
 }

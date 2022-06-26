@@ -53,7 +53,7 @@ public class RecipeMigrationService {
                 .relevance(BigInteger.valueOf(rezept.getRelevanz()))
                 .thumbnail(rezept.getThumbnail() != null ? Image.builder()
                         .id(idUtils.generateId())
-                        .url(rezept.getThumbnail())
+                        .key(rezept.getThumbnail())
                         .owner(optionalChefUser.get())
                         .build() : null)
                 .averageRating(rezept.getAvgRating())

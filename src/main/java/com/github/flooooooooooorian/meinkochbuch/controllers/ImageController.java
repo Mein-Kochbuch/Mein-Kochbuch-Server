@@ -15,10 +15,11 @@ import java.security.Principal;
 public class ImageController {
 
     private final ImageService imageService;
+    private final ImageMapper imageMapper;
 
     @PostMapping
     public ImageDto uploadImage(Principal principal, @RequestParam("file") MultipartFile file) {
-        return ImageMapper.imageToImageDto(imageService.addImage(principal.getName(), file));
+        return imageMapper.imageToImageDto(imageService.addImage(principal.getName(), file));
     }
 
     @DeleteMapping

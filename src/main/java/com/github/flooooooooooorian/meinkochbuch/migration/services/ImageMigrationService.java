@@ -60,12 +60,13 @@ public class ImageMigrationService {
 
         Recipe recipe = optionalRecipe.get();
 
+        String id = idUtils.generateId();
+
         recipe.setImages(bilder.stream()
                 .map(bild -> Image.builder()
-                        .id(idUtils.generateId())
+                        .id(id)
                         .migrationId(bild.getId())
-                        .url(bild.getImage())
-                        .thumbnail(bild.getImage().split("\\.")[0] + "-thumbnail." + bild.getImage().split("\\.")[1])
+                        .key(bild.getImage())
                         .owner(bild.getOwner_id() != 0 ? chefUserRepository.findByMigrationId(bild.getOwner_id()).orElseThrow() : null)
                         .build())
                 .collect(Collectors.toList()));

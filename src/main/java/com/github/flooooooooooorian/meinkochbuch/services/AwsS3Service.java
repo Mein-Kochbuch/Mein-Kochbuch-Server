@@ -44,7 +44,7 @@ public class AwsS3Service {
         }
     }
 
-    public String getImageUrl(String key) {
+    public String getPreSignedImageUrl(String key) {
         return s3.utilities().getUrl(GetUrlRequest.builder()
                         .bucket(awsConfig.getAwsS3BucketName())
                         .key(key)
@@ -52,7 +52,7 @@ public class AwsS3Service {
                 .toString();
     }
 
-    public String getThumbnailUrl(String key) {
+    public String getPreSignedThumbnailUrl(String key) {
         return s3.utilities().getUrl(GetUrlRequest.builder()
                         .bucket(awsConfig.getAwsS3BucketName() + "-resized")
                         .key(key.split("\\.")[0] + "-thumbnail." + key.split("\\.")[1])

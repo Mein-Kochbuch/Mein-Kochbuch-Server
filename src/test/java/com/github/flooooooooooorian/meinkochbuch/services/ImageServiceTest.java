@@ -27,11 +27,11 @@ class ImageServiceTest {
         //GIVEN
         Image expected = Image.builder()
                 .id("test_image_id")
-                .url("test_image_url")
+                .key("test_image_key")
                 .owner(ChefUser.ofId("userId"))
                 .build();
 
-        when(awsS3Service.uploadImage(Mockito.any())).thenReturn("test_image_url");
+        when(awsS3Service.uploadImage(Mockito.any())).thenReturn("test_image_key");
         when(idUtils.generateId()).thenReturn("test_image_id");
         when(imageRepository.save(expected)).thenReturn(expected);
         MockMultipartFile multipartFile = new MockMultipartFile("file", "test-file.jpg".getBytes(StandardCharsets.UTF_8));
@@ -49,7 +49,7 @@ class ImageServiceTest {
         when(imageRepository.findById("test_id")).thenReturn(Optional.of(Image.builder()
                 .id("test_id")
                 .owner(ChefUser.ofId("userId"))
-                .url("test_url")
+                .key("test_url")
                 .build()));
 
         //WHEN
@@ -64,7 +64,7 @@ class ImageServiceTest {
         //GIVEN
         when(imageRepository.findById("test_id")).thenReturn(Optional.of(Image.builder()
                 .id("test_id")
-                .url("test_url")
+                .key("test_url")
                 .owner(ChefUser.ofId("wrong_id"))
                 .build()));
 

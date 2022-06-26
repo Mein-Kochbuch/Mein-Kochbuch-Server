@@ -4,37 +4,44 @@ import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipeDto;
 import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipePreviewDto;
 import com.github.flooooooooooorian.meinkochbuch.models.recipe.Recipe;
 import com.github.flooooooooooorian.meinkochbuch.models.tag.RecipeTagging;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-public interface RecipeMapper {
+@RequiredArgsConstructor
+@Service
+public class RecipeMapper {
 
-    static RecipePreviewDto recipeToRecipePreviewDto(Recipe recipe) {
+    private final ImageMapper imageMapper;
+    private final ChefUserMapper chefUserMapper;
+
+    public RecipePreviewDto recipeToRecipePreviewDto(Recipe recipe) {
         return RecipePreviewDto.builder()
                 .id(recipe.getId())
-                .owner(ChefUserMapper.chefUserToChefUserPreviewDto(recipe.getOwner()))
+                .owner(chefUserMapper.chefUserToChefUserPreviewDto(recipe.getOwner()))
                 .name(recipe.getName())
                 .ratingAverage(recipe.getAverageRating())
                 .ratingCount(recipe.getRatings() != null
                         ? recipe.getRatings().size()
                         : 0)
                 .thumbnail(recipe.getThumbnail() != null
-                        ? ImageMapper.imageToImageDto(recipe.getThumbnail())
+                        ? imageMapper.imageToThumbnailDto(recipe.getThumbnail())
                         : null)
                 .build();
     }
 
-    static RecipeDto recipeToRecipeDto(Recipe recipe) {
+    public RecipeDto recipeToRecipeDto(Recipe recipe) {
         return RecipeDto.builder()
                 .id(recipe.getId())
-                .owner(ChefUserMapper.chefUserToChefUserPreviewDto(recipe.getOwner()))
+                .owner(chefUserMapper.chefUserToChefUserPreviewDto(recipe.getOwner()))
                 .name(recipe.getName())
                 .instruction(recipe.getInstruction())
                 .duration(recipe.getDuration())
                 .difficulty(recipe.getDifficulty())
                 .portions(recipe.getPortions())
                 .images(recipe.getImages() != null
-                        ? recipe.getImages().stream().map(ImageMapper::imageToImageDto).toList()
+                        ? recipe.getImages().stream().map(imageMapper::imageToImageDto).toList()
                         : List.of())
                 .ingredients(recipe.getIngredients() != null
                         ? recipe.getIngredients()
@@ -47,7 +54,7 @@ public interface RecipeMapper {
                         : List.of())
                 .ratingAverage(recipe.getAverageRating())
                 .thumbnail(recipe.getThumbnail() != null
-                        ? ImageMapper.imageToImageDto(recipe.getThumbnail())
+                        ? imageMapper.imageToThumbnailDto(recipe.getThumbnail())
                         : null)
                 .build();
     }

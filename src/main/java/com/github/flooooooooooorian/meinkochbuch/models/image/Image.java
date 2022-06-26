@@ -24,8 +24,7 @@ public class Image {
     @JoinColumn(name = "owner_id")
     private ChefUser owner;
 
-    private String url;
-    private String thumbnail;
+    private String key;
 
     private Integer migrationId;
 }

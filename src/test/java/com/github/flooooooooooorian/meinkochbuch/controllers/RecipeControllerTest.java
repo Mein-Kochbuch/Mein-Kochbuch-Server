@@ -470,7 +470,7 @@ class RecipeControllerTest extends IntegrationTest {
         assertThat(result.getTags(), empty());
         assertThat(result.getThumbnail(), is(ImageDto.builder()
                 .id("test_image_id")
-                .url("https://s3.eu-central-1.amazonaws.com/testBucketName/test_recipe_id.jpg")
+                .url("https://s3.eu-central-1.amazonaws.com/testBucketName-resized/test_recipe_id-thumbnail.jpg")
                 .build()));
         assertThat(result.isPrivacy(), is(editRecipeDto.isPrivacy()));
     }
