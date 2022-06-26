@@ -16,14 +16,15 @@ import java.security.Principal;
 public class RatingController {
 
     private final RatingService ratingService;
+    private final RatingMapper ratingMapper;
 
     @GetMapping("{recipeId}")
     public RatingDto getOwnRatingFromRecipe(Principal principal, @PathVariable String recipeId) {
-        return RatingMapper.ratingToRatingDto(ratingService.getUsersRatingFromRecipe(principal.getName(), recipeId));
+        return ratingMapper.ratingToRatingDto(ratingService.getUsersRatingFromRecipe(principal.getName(), recipeId));
     }
 
     @PutMapping("{recipeId}")
     public RatingDto addRating(Principal principal, @RequestBody @Valid CreateRatingDto ratingDto, @PathVariable String recipeId) {
-        return RatingMapper.ratingToRatingDto(ratingService.addRating(principal.getName(), recipeId, ratingDto.getRating()));
+        return ratingMapper.ratingToRatingDto(ratingService.addRating(principal.getName(), recipeId, ratingDto.getRating()));
     }
 }

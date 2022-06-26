@@ -15,6 +15,10 @@ public interface RecipeRepository extends JpaRepository<Recipe, String> {
 
     List<Recipe> findAllByIdIn(List<String> ids);
 
+    boolean existsByMigrationId(int id);
+
+    Optional<Recipe> findByMigrationId(int id);
+
     @Override
     Optional<Recipe> findById(String id);
 }

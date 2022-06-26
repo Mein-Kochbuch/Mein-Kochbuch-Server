@@ -11,5 +11,9 @@ import java.util.Optional;
 public interface CookbookRepository extends JpaRepository<Cookbook, String> {
     List<Cookbook> findAllByPrivacyIsFalseOrOwner_Id(String id);
 
+    boolean existsByMigrationId(int id);
+
+    Optional<Cookbook> findByMigrationId(int id);
+
     Optional<Cookbook> findById(String id);
 }

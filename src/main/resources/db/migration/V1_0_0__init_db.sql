@@ -78,15 +78,22 @@ CREATE TABLE IF NOT EXISTS image
 
 CREATE TABLE IF NOT EXISTS recipe
 (
-    id           VARCHAR(200)             not null,
-    created_at   timestamp with time zone not null,
-    difficulty   int4,
-    duration     int4                     not null,
-    instruction  varchar(255),
-    name         varchar(255),
-    portions     int4                     not null,
-    privacy      boolean                  not null,
-    relevance    numeric(19, 2),
+    id VARCHAR
+(
+    200
+) not null,
+    created_at timestamp with time zone not null,
+                             difficulty int4,
+                             duration int4 not null,
+                             instruction text,
+                             name varchar (255),
+    portions int4 not null,
+    privacy boolean not null,
+    relevance numeric
+(
+    19,
+    2
+),
     average_rating double precision,
     owner_id VARCHAR
 (

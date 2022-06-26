@@ -14,8 +14,16 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class CookbookMapperTest {
+
+    private final ImageMapper imageMapperMock = mock(ImageMapper.class);
+    private final RecipeMapper recipeMapperMock = mock(RecipeMapper.class);
+    private final ChefUserMapper chefUserMapperMock = mock(ChefUserMapper.class);
+    private final CookbookMapper cookbookMapper = new CookbookMapper(recipeMapperMock, imageMapperMock, chefUserMapperMock);
 
     @Test
     void cookbookToCookbookPreview() {
@@ -46,8 +54,18 @@ class CookbookMapperTest {
 
         cookbook.setContents(List.of(cookbookContent1, cookbookContent2));
 
+        when(chefUserMapperMock.chefUserToChefUserPreviewDto(any()))
+                .thenReturn(ChefUserPreviewDto.builder()
+                        .id("1")
+                        .name("test-name")
+                        .build());
+
+        when(imageMapperMock.imageToThumbnailDto(any())).thenReturn(ImageDto.builder()
+                .id("1")
+                .build());
+
         //WHEN
-        CookbookPreview result = CookbookMapper.cookbookToCookbookPreview(cookbook);
+        CookbookPreview result = cookbookMapper.cookbookToCookbookPreview(cookbook);
 
         //THEN
         CookbookPreview expected = CookbookPreview.builder()
@@ -95,8 +113,40 @@ class CookbookMapperTest {
 
         cookbook.setContents(List.of(cookbookContent1, cookbookContent2));
 
+        when(recipeMapperMock.recipeToRecipePreviewDto(MapperUtils.exampleRecipe)).thenReturn(RecipePreviewDto.builder()
+                .id("1")
+                .name("test-name")
+                .ratingCount(1)
+                .ratingAverage(4)
+                .owner(ChefUserPreviewDto.builder()
+                        .id("1")
+                        .name("test-name")
+                        .build())
+                .thumbnail(ImageDto.builder()
+                        .id("1")
+                        .build())
+                .build());
+
+        when(recipeMapperMock.recipeToRecipePreviewDto(MapperUtils.exampleRecipePrivate)).thenReturn(RecipePreviewDto.builder()
+                .id("2")
+                .name("test-name")
+                .ratingCount(2)
+                .ratingAverage(4)
+                .owner(ChefUserPreviewDto.builder()
+                        .id("1")
+                        .name("test-name")
+                        .build())
+                .thumbnail(ImageDto.builder()
+                        .id("1")
+                        .build())
+                .build());
+
+        when(imageMapperMock.imageToThumbnailDto(cookbook.getThumbnail())).thenReturn(ImageDto.builder()
+                .id("1")
+                .build());
+
         //WHEN
-        CookbookDto result = CookbookMapper.cookbookToCookbookDto(cookbook);
+        CookbookDto result = cookbookMapper.cookbookToCookbookDto(cookbook);
 
         //THEN
         CookbookDto expected = CookbookDto.builder()

@@ -66,6 +66,8 @@ public class Cookbook {
         return ratingSum / ratingCount;
     }
 
+    private Integer migrationId;
+
     public static Cookbook ofId(String id) {
         return Cookbook.builder()
                 .id(id)

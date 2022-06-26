@@ -8,8 +8,7 @@ import com.github.flooooooooooorian.meinkochbuch.security.models.ChefUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
 import org.springframework.stereotype.Service;
-
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
