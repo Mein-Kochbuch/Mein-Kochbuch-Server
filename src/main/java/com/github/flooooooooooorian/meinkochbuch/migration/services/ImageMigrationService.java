@@ -40,7 +40,7 @@ public class ImageMigrationService {
                     successfullyCount++;
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error("MIGRATION Recipe unkown ecxeption: " + e.getMessage(), e);
             }
 
         }

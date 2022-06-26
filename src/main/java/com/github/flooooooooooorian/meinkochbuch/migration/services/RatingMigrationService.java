@@ -41,7 +41,7 @@ public class RatingMigrationService {
                     successfullyCount++;
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error("MIGRATION Ratings unkown ecxeption: " + e.getMessage(), e);
             }
         }
         return successfullyCount;
