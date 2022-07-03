@@ -3,7 +3,7 @@ package com.github.flooooooooooorian.meinkochbuch.mapper;
 import com.github.flooooooooooorian.meinkochbuch.dtos.ImageDto;
 import com.github.flooooooooooorian.meinkochbuch.dtos.chefuser.ChefUserPreviewDto;
 import com.github.flooooooooooorian.meinkochbuch.dtos.chefuser.ChefUserProfileDto;
-import com.github.flooooooooooorian.meinkochbuch.dtos.cookbook.CookbookPreview;
+import com.github.flooooooooooorian.meinkochbuch.dtos.cookbook.CookbookPreviewDto;
 import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipePreviewDto;
 import com.github.flooooooooooorian.meinkochbuch.security.models.ChefAuthorities;
 import com.github.flooooooooooorian.meinkochbuch.security.models.ChefUser;
@@ -40,7 +40,7 @@ class ChefUserProfileMapperTest {
                         .build());
 
         when(cookbookMapperMock.cookbookToCookbookPreview(chefUser.getCookbooks().get(0)))
-                .thenReturn(CookbookPreview.builder()
+                .thenReturn(CookbookPreviewDto.builder()
                         .id("1")
                         .name("cookbook-name")
                         .thumbnail(ImageDto.builder()
@@ -60,7 +60,7 @@ class ChefUserProfileMapperTest {
         ChefUserProfileDto expected = ChefUserProfileDto.builder()
                 .id("1")
                 .name("test-name")
-                .cookbooks(List.of(CookbookPreview.builder()
+                .cookbooks(List.of(CookbookPreviewDto.builder()
                         .id("1")
                         .name("cookbook-name")
                         .thumbnail(ImageDto.builder()

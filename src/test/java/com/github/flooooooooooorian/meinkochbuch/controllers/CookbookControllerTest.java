@@ -1,10 +1,12 @@
 package com.github.flooooooooooorian.meinkochbuch.controllers;
 
 import com.github.flooooooooooorian.meinkochbuch.IntegrationTest;
+import com.github.flooooooooooorian.meinkochbuch.controllers.responses.CookBookListResponse;
+import com.github.flooooooooooorian.meinkochbuch.controllers.responses.ResponseInfo;
 import com.github.flooooooooooorian.meinkochbuch.dtos.chefuser.ChefUserPreviewDto;
 import com.github.flooooooooooorian.meinkochbuch.dtos.cookbook.CookbookCreationDto;
 import com.github.flooooooooooorian.meinkochbuch.dtos.cookbook.CookbookDto;
-import com.github.flooooooooooorian.meinkochbuch.dtos.cookbook.CookbookPreview;
+import com.github.flooooooooooorian.meinkochbuch.dtos.cookbook.CookbookPreviewDto;
 import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipePreviewDto;
 import com.github.flooooooooooorian.meinkochbuch.services.utils.IdUtils;
 import org.junit.jupiter.api.Test;
@@ -32,17 +34,17 @@ class CookbookControllerTest extends IntegrationTest {
     void getAllCookbooksAnonymous() {
         //GIVEN
         //WHEN
-        List<CookbookPreview> result = webClient.get()
+        CookBookListResponse result = webClient.get()
                 .uri("/api/cookbooks")
                 .exchange()
                 .expectStatus()
                 .is2xxSuccessful()
-                .expectBodyList(CookbookPreview.class)
+                .expectBody(CookBookListResponse.class)
                 .returnResult()
                 .getResponseBody();
 
         //THEN
-        CookbookPreview expected1 = CookbookPreview.builder()
+        CookbookPreviewDto expected1 = CookbookPreviewDto.builder()
                 .id("test-cookbook-id-1")
                 .name("test-cookbook-name-1")
                 .owner(ChefUserPreviewDto.builder()
@@ -52,7 +54,7 @@ class CookbookControllerTest extends IntegrationTest {
                 .ratingAverage(3)
                 .build();
 
-        CookbookPreview expected2 = CookbookPreview.builder()
+        CookbookPreviewDto expected2 = CookbookPreviewDto.builder()
                 .id("test-cookbook-id-3")
                 .name("test-cookbook-name-3")
                 .owner(ChefUserPreviewDto.builder()
@@ -62,26 +64,34 @@ class CookbookControllerTest extends IntegrationTest {
                 .ratingAverage(3)
                 .build();
 
+        ResponseInfo expectedInfo = ResponseInfo.builder()
+                .pages(0)
+                .count(2)
+                .next(null)
+                .prev(null)
+                .build();
+
         assertThat(result, notNullValue());
-        assertThat(result, containsInAnyOrder(expected1, expected2));
+        assertThat(result.getInfo(), is(expectedInfo));
+        assertThat(result.getResults(), containsInAnyOrder(expected1, expected2));
     }
 
     @Test
-    void getAllRecipesOwnAndPublic() {
+    void getAllCookbooksOwnAndPublic() {
         //GIVEN
         //WHEN
-        List<CookbookPreview> result = webClient.get()
+        CookBookListResponse result = webClient.get()
                 .uri("/api/cookbooks")
                 .header("Authorization", "Bearer " + getTokenByUserId("some-user-id"))
                 .exchange()
                 .expectStatus()
                 .is2xxSuccessful()
-                .expectBodyList(CookbookPreview.class)
+                .expectBody(CookBookListResponse.class)
                 .returnResult()
                 .getResponseBody();
 
         //THEN
-        CookbookPreview expected1 = CookbookPreview.builder()
+        CookbookPreviewDto expected1 = CookbookPreviewDto.builder()
                 .id("test-cookbook-id-1")
                 .name("test-cookbook-name-1")
                 .owner(ChefUserPreviewDto.builder()
@@ -91,7 +101,7 @@ class CookbookControllerTest extends IntegrationTest {
                 .ratingAverage(3)
                 .build();
 
-        CookbookPreview expected2 = CookbookPreview.builder()
+        CookbookPreviewDto expected2 = CookbookPreviewDto.builder()
                 .id("test-cookbook-id-3")
                 .name("test-cookbook-name-3")
                 .owner(ChefUserPreviewDto.builder()
@@ -101,7 +111,7 @@ class CookbookControllerTest extends IntegrationTest {
                 .ratingAverage(3)
                 .build();
 
-        CookbookPreview expected3 = CookbookPreview.builder()
+        CookbookPreviewDto expected3 = CookbookPreviewDto.builder()
                 .id("test-cookbook-id-2")
                 .name("test-cookbook-name-2")
                 .owner(ChefUserPreviewDto.builder()
@@ -112,7 +122,7 @@ class CookbookControllerTest extends IntegrationTest {
                 .build();
 
         assertThat(result, notNullValue());
-        assertThat(result, containsInAnyOrder(expected1, expected2, expected3));
+        assertThat(result.getResults(), containsInAnyOrder(expected1, expected2, expected3));
     }
 
     @Test

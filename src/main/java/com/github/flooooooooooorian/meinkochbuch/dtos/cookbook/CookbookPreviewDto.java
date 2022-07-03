@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CookbookPreview {
+public class CookbookPreviewDto {
 
     private String id;
     private String name;
