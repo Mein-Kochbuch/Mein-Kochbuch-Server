@@ -27,7 +27,7 @@ public class AuthController {
         return authenticationService.login(userLoginDto);
     }
 
-    @PostMapping()
+    @PostMapping("register")
     public ChefUserProfileDto register(@Valid @RequestBody ChefUserRegistrationDto chefUserRegistraionDto) {
         return chefUserProfileMapper.chefUserToChefUserProfileDto(authenticationService.registerUser(chefUserRegistraionDto.getUsername(), chefUserRegistraionDto.getName(), chefUserRegistraionDto.getPassword()));
     }

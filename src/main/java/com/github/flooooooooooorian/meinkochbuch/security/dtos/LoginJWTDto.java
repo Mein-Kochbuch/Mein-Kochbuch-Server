@@ -15,4 +15,5 @@ import java.util.Set;
 public class LoginJWTDto {
     private String jwt;
     private Set<ChefAuthorities> authorities;
+    private String username;
 }

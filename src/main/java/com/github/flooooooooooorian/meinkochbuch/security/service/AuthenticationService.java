@@ -63,6 +63,7 @@ public class AuthenticationService {
                         .map(ChefAuthorities.class::cast)
                         .collect(Collectors.toSet()))
                 .jwt(jwtUtilsService.createToken(claims, ((ChefUser) auth.getPrincipal()).getId()))
+                .username(userLoginDto.getUsername())
                 .build();
     }
 }
