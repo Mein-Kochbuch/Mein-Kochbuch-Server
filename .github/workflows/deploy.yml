@@ -33,7 +33,7 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: build
-          path: .
+          path: ./
       - name: deploy to ec2
         uses: appleboy/scp-action@master
         with:
@@ -41,7 +41,7 @@ jobs:
           username: ${{ secrets.USERNAME }}
           port: ${{ secrets.SSH_PORT }}
           key: ${{ secrets.SSH_KEY }}
-          source: "./server.jar,Dockerfile"
+          source: "./target/server.jar,Dockerfile"
           target: "/server"
       - name: ssh to ec2
         uses: appleboy/ssh-action@master
@@ -55,5 +55,5 @@ jobs:
             docker build -t mein-kochbuch-server .
             docker stop mein-kochbuch-server
             docker rm mein-kochbuch-server
-            docker run --name mein-kochbuch-server --env-file ./env -d -p 8080:8080 mein-kochbuch-server
+            docker run --name mein-kochbuch-server --env-file ./env -d -p 80:8080 mein-kochbuch-server
 
