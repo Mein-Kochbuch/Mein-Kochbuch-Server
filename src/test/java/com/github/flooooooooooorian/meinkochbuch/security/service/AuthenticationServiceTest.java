@@ -5,7 +5,6 @@ import com.github.flooooooooooorian.meinkochbuch.security.dtos.UserLoginDto;
 import com.github.flooooooooooorian.meinkochbuch.security.models.ChefAuthorities;
 import com.github.flooooooooooorian.meinkochbuch.security.models.ChefUser;
 import com.github.flooooooooooorian.meinkochbuch.security.repository.ChefUserRepository;
-import com.github.flooooooooooorian.meinkochbuch.services.UserService;
 import com.github.flooooooooooorian.meinkochbuch.services.utils.IdUtils;
 import com.github.flooooooooooorian.meinkochbuch.utils.TimeUtils;
 import org.hamcrest.Matchers;
@@ -26,7 +25,6 @@ import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertThrows;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -90,7 +88,7 @@ class AuthenticationServiceTest {
 
         //THEN
 
-        assertThat(result, Matchers.is(LoginJWTDto.builder().jwt("test-jwt").authorities(Set.of()).build()));
+        assertThat(result, Matchers.is(LoginJWTDto.builder().jwt("test-jwt").username("test-username").authorities(Set.of()).build()));
     }
 
     @Test
