@@ -3,13 +3,14 @@ package com.github.flooooooooooorian.meinkochbuch.security.models;
 import com.github.flooooooooooorian.meinkochbuch.models.cookbook.Cookbook;
 import com.github.flooooooooooorian.meinkochbuch.models.image.Image;
 import com.github.flooooooooooorian.meinkochbuch.models.recipe.Recipe;
+import com.github.flooooooooooorian.meinkochbuch.security.models.oauth.OAuthApple;
+import com.github.flooooooooooorian.meinkochbuch.security.models.oauth.OAuthGoogle;
 import lombok.*;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
 import java.time.Instant;
 import java.util.List;
 import java.util.Set;
@@ -26,8 +27,6 @@ public class ChefUser implements UserDetails {
     @Column(nullable = false)
     private String id;
 
-    @NotEmpty
-    @Size(min = 8)
     private String password;
 
     @Email
@@ -54,7 +53,7 @@ public class ChefUser implements UserDetails {
     @Column(nullable = false)
     private String name;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany()
     @OrderBy("name")
     private List<Recipe> favoriteRecipes;
 
@@ -70,6 +69,15 @@ public class ChefUser implements UserDetails {
     private List<Image> images;
 
     private Instant joinedAt;
+    private Instant lastLogin;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    private OAuthApple OAuthApple;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    private OAuthGoogle OAuthGoogle;
+
+    private Integer migrationId;
 
     public static ChefUser ofId(String userId) {
         return ChefUser.builder().id(userId).build();

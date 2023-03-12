@@ -14,10 +14,10 @@ import com.github.flooooooooooorian.meinkochbuch.security.service.JwtUtilsServic
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 
-import javax.transaction.Transactional;
 import java.math.BigInteger;
 import java.time.Instant;
 import java.util.HashMap;

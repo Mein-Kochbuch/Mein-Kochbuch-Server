@@ -5,6 +5,7 @@ import com.github.flooooooooooorian.meinkochbuch.exceptions.CookPrivacyForbidden
 import com.github.flooooooooooorian.meinkochbuch.exceptions.CookbookDoesNotExist;
 import com.github.flooooooooooorian.meinkochbuch.models.cookbook.Cookbook;
 import com.github.flooooooooooorian.meinkochbuch.models.cookbook.CookbookContent;
+import com.github.flooooooooooorian.meinkochbuch.models.image.Image;
 import com.github.flooooooooooorian.meinkochbuch.models.recipe.Recipe;
 import com.github.flooooooooooorian.meinkochbuch.repository.CookbookRepository;
 import com.github.flooooooooooorian.meinkochbuch.security.models.ChefUser;
@@ -12,8 +13,8 @@ import com.github.flooooooooooorian.meinkochbuch.services.utils.IdUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -44,10 +45,17 @@ public class CookbookService {
 
         boolean privacy = cookbookCreationDto.isPrivacy();
 
+        List<Recipe> recipes = recipeService.getAllRecipesByIds(cookbookCreationDto.getRecipeIds());
+
         if (!privacy) {
-            privacy = recipeService.getAllRecipesByIds(cookbookCreationDto.getRecipeIds()).stream()
+            privacy = recipes.stream()
                     .anyMatch(Recipe::isPrivacy);
         }
+
+        Optional<Image> optionalThubnail = recipes.stream()
+                .filter(recipe -> recipe.getThumbnail() != null)
+                .max((r1, r2) -> r1.getAverageRating() >= r2.getAverageRating() ? 1 : -1)
+                .map(Recipe::getThumbnail);
 
         String generateId = idUtils.generateId();
         Cookbook newCookbook = Cookbook.builder()
@@ -61,9 +69,9 @@ public class CookbookService {
                                 .recipe(Recipe.ofId(id))
                                 .build())
                         .toList())
-                //TODO add CookbookThumbnail
-                .thumbnail(null)
                 .build();
+
+        optionalThubnail.ifPresent(newCookbook::setThumbnail);
 
         return cookbookRepository.save(newCookbook);
     }
@@ -94,5 +102,9 @@ public class CookbookService {
         //TODO Change Cookbook Thumbnail
 
         return cookbookRepository.save(cookbook);
+    }
+
+    public int cookbookCount(Optional<String> userId) {
+        return cookbookRepository.countAllByPrivacyIsFalseOrOwner_Id(userId.orElse(null));
     }
 }

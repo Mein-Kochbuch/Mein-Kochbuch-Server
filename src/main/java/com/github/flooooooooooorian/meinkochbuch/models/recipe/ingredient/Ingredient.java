@@ -26,4 +26,12 @@ public class Ingredient {
 
     private String text;
     private double amount;
+
+    private Integer migrationId;
+
+    public static Ingredient ofId(String id) {
+        return Ingredient.builder()
+                .id(id)
+                .build();
+    }
 }

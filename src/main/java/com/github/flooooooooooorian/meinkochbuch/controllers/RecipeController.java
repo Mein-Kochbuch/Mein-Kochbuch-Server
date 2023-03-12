@@ -9,10 +9,14 @@ import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipeEditDto;
 import com.github.flooooooooooorian.meinkochbuch.mapper.RecipeMapper;
 import com.github.flooooooooooorian.meinkochbuch.security.utils.SecurityContextUtil;
 import com.github.flooooooooooorian.meinkochbuch.services.RecipeService;
+import com.github.flooooooooooorian.meinkochbuch.services.utils.FileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.security.Principal;
@@ -25,8 +29,10 @@ import java.util.Optional;
 public class RecipeController {
     private final RecipeService recipeService;
     private final SecurityContextUtil securityContextUtil;
+    private final FileService fileService;
+    private final RecipeMapper recipeMapper;
 
-    @Value("${domain.url:}")
+    @Value("${domain.url}")
     private String domainUrl;
 
     @GetMapping()
@@ -41,7 +47,7 @@ public class RecipeController {
                         .prev(params.getPage() > 0 ? domainUrl + "/api/recipes?page=" + (params.getPage() - 1) : null)
                         .build())
                 .results(recipeService.getAllRecipes(principal != null ? principal.getName() : null, params).stream()
-                        .map(RecipeMapper::recipeToRecipePreviewDto)
+                        .map(recipeMapper::recipeToRecipePreviewDto)
                         .toList())
                 .build();
     }
@@ -49,18 +55,25 @@ public class RecipeController {
     @GetMapping("{recipeId}")
     public RecipeDto getRecipeById(@PathVariable String recipeId) {
         log.debug("GET Recipe: " + recipeId);
-        return RecipeMapper.recipeToRecipeDto(recipeService.getRecipeById(recipeId, securityContextUtil.getUser()));
+        return recipeMapper.recipeToRecipeDto(recipeService.getRecipeById(recipeId, securityContextUtil.getUser()));
     }
 
     @PostMapping()
-    public RecipeDto addRecipe(@Valid @RequestBody RecipeCreationDto editRecipeDto, Principal principal) {
+    public RecipeDto addRecipe(@Valid @RequestPart RecipeCreationDto editRecipeDto, @RequestPart("file") Optional<MultipartFile> optionalMultipartFile, Principal principal) {
         log.debug("GET Add Recipe");
-        return RecipeMapper.recipeToRecipeDto(recipeService.addRecipe(editRecipeDto, principal.getName()));
+        if (optionalMultipartFile.isPresent()) {
+            MultipartFile file = optionalMultipartFile.get();
+            if (!fileService.validateMultiParImage(file)) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "File Type not supported!");
+            }
+        }
+
+        return recipeMapper.recipeToRecipeDto(recipeService.addRecipe(editRecipeDto, optionalMultipartFile, principal.getName()));
     }
 
     @PutMapping("{recipeId}")
     public RecipeDto changeRecipe(@Valid @RequestBody RecipeEditDto editRecipeDto, @PathVariable String recipeId, Principal principal) {
         log.debug("PUT Change Recipe");
-        return RecipeMapper.recipeToRecipeDto(recipeService.changeRecipe(recipeId, editRecipeDto, principal.getName()));
+        return recipeMapper.recipeToRecipeDto(recipeService.changeRecipe(recipeId, editRecipeDto, principal.getName()));
     }
 }

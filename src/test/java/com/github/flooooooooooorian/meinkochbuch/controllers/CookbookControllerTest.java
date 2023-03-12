@@ -1,21 +1,20 @@
 package com.github.flooooooooooorian.meinkochbuch.controllers;
 
 import com.github.flooooooooooorian.meinkochbuch.IntegrationTest;
+import com.github.flooooooooooorian.meinkochbuch.controllers.responses.CookBookListResponse;
+import com.github.flooooooooooorian.meinkochbuch.controllers.responses.ResponseInfo;
 import com.github.flooooooooooorian.meinkochbuch.dtos.chefuser.ChefUserPreviewDto;
 import com.github.flooooooooooorian.meinkochbuch.dtos.cookbook.CookbookCreationDto;
 import com.github.flooooooooooorian.meinkochbuch.dtos.cookbook.CookbookDto;
-import com.github.flooooooooooorian.meinkochbuch.dtos.cookbook.CookbookPreview;
+import com.github.flooooooooooorian.meinkochbuch.dtos.cookbook.CookbookPreviewDto;
 import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipePreviewDto;
 import com.github.flooooooooooorian.meinkochbuch.services.utils.IdUtils;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
+import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.util.List;
 
@@ -25,30 +24,27 @@ import static org.mockito.Mockito.when;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class CookbookControllerTest extends IntegrationTest {
-
-    @LocalServerPort
-    private int port;
-
     @MockBean
     private IdUtils idUtils;
 
-    private WebClient webClient;
+    @Autowired
+    private WebTestClient webClient;
 
     @Test
     void getAllCookbooksAnonymous() {
         //GIVEN
-        webClient = WebClient.create("http://localhost:" + port + "/api");
-
         //WHEN
-        ResponseEntity<List<CookbookPreview>> result = webClient.get()
-                .uri("/cookbooks")
-                .retrieve()
-                .toEntityList(CookbookPreview.class)
-                .block();
+        CookBookListResponse result = webClient.get()
+                .uri("/api/cookbooks")
+                .exchange()
+                .expectStatus()
+                .is2xxSuccessful()
+                .expectBody(CookBookListResponse.class)
+                .returnResult()
+                .getResponseBody();
 
         //THEN
-
-        CookbookPreview expected1 = CookbookPreview.builder()
+        CookbookPreviewDto expected1 = CookbookPreviewDto.builder()
                 .id("test-cookbook-id-1")
                 .name("test-cookbook-name-1")
                 .owner(ChefUserPreviewDto.builder()
@@ -58,7 +54,7 @@ class CookbookControllerTest extends IntegrationTest {
                 .ratingAverage(3)
                 .build();
 
-        CookbookPreview expected2 = CookbookPreview.builder()
+        CookbookPreviewDto expected2 = CookbookPreviewDto.builder()
                 .id("test-cookbook-id-3")
                 .name("test-cookbook-name-3")
                 .owner(ChefUserPreviewDto.builder()
@@ -66,29 +62,36 @@ class CookbookControllerTest extends IntegrationTest {
                         .id("some-admin-id")
                         .build())
                 .ratingAverage(3)
+                .build();
+
+        ResponseInfo expectedInfo = ResponseInfo.builder()
+                .pages(0)
+                .count(2)
+                .next(null)
+                .prev(null)
                 .build();
 
         assertThat(result, notNullValue());
-        assertThat(result.getStatusCode(), is(HttpStatus.OK));
-        assertThat(result.getBody(), containsInAnyOrder(expected1, expected2));
+        assertThat(result.getInfo(), is(expectedInfo));
+        assertThat(result.getResults(), containsInAnyOrder(expected1, expected2));
     }
 
     @Test
-    void getAllRecipesOwnAndPublic() {
+    void getAllCookbooksOwnAndPublic() {
         //GIVEN
-        webClient = WebClient.create("http://localhost:" + port + "/api");
-
         //WHEN
-        ResponseEntity<List<CookbookPreview>> result = webClient.get()
-                .uri("/cookbooks")
+        CookBookListResponse result = webClient.get()
+                .uri("/api/cookbooks")
                 .header("Authorization", "Bearer " + getTokenByUserId("some-user-id"))
-                .retrieve()
-                .toEntityList(CookbookPreview.class)
-                .block();
+                .exchange()
+                .expectStatus()
+                .is2xxSuccessful()
+                .expectBody(CookBookListResponse.class)
+                .returnResult()
+                .getResponseBody();
 
         //THEN
-
-        CookbookPreview expected1 = CookbookPreview.builder()
+        CookbookPreviewDto expected1 = CookbookPreviewDto.builder()
                 .id("test-cookbook-id-1")
                 .name("test-cookbook-name-1")
                 .owner(ChefUserPreviewDto.builder()
@@ -98,7 +101,7 @@ class CookbookControllerTest extends IntegrationTest {
                 .ratingAverage(3)
                 .build();
 
-        CookbookPreview expected2 = CookbookPreview.builder()
+        CookbookPreviewDto expected2 = CookbookPreviewDto.builder()
                 .id("test-cookbook-id-3")
                 .name("test-cookbook-name-3")
                 .owner(ChefUserPreviewDto.builder()
@@ -108,7 +111,7 @@ class CookbookControllerTest extends IntegrationTest {
                 .ratingAverage(3)
                 .build();
 
-        CookbookPreview expected3 = CookbookPreview.builder()
+        CookbookPreviewDto expected3 = CookbookPreviewDto.builder()
                 .id("test-cookbook-id-2")
                 .name("test-cookbook-name-2")
                 .owner(ChefUserPreviewDto.builder()
@@ -119,21 +122,21 @@ class CookbookControllerTest extends IntegrationTest {
                 .build();
 
         assertThat(result, notNullValue());
-        assertThat(result.getStatusCode(), is(HttpStatus.OK));
-        assertThat(result.getBody(), containsInAnyOrder(expected1, expected2, expected3));
+        assertThat(result.getResults(), containsInAnyOrder(expected1, expected2, expected3));
     }
 
     @Test
     void getCookbookByIdAnonymousPublic() {
         //GIVEN
-        webClient = WebClient.create("http://localhost:" + port + "/api");
-
         //WHEN
-        ResponseEntity<CookbookDto> result = webClient.get()
-                .uri("/cookbooks/test-cookbook-id-1")
-                .retrieve()
-                .toEntity(CookbookDto.class)
-                .block();
+        CookbookDto result = webClient.get()
+                .uri("/api/cookbooks/test-cookbook-id-1")
+                .exchange()
+                .expectStatus()
+                .is2xxSuccessful()
+                .expectBody(CookbookDto.class)
+                .returnResult()
+                .getResponseBody();
 
         //THEN
         CookbookDto expected = CookbookDto.builder()
@@ -157,54 +160,36 @@ class CookbookControllerTest extends IntegrationTest {
                 .thumbnail(null)
                 .build();
 
-        assertThat(result, notNullValue());
-        assertThat(result.getStatusCode(), is(HttpStatus.OK));
-        assertThat(result.getBody(), is(expected));
+        assertThat(result, is(expected));
     }
 
     @Test
     void getCookbookByIdAnonymousPrivate() {
         //GIVEN
-        webClient = WebClient.create("http://localhost:" + port + "/api");
-
         //WHEN
-        ResponseEntity<CookbookDto> result = webClient.get()
-                .uri("/cookbooks/test-cookbook-id-2")
-                .retrieve()
-                .onStatus(HttpStatus::isError, response -> Mono.empty())
-                .toEntity(CookbookDto.class)
-                .block();
-
-        //THEN
-        assertThat(result, notNullValue());
-        assertThat(result.getStatusCode(), is(HttpStatus.FORBIDDEN));
+        webClient.get()
+                .uri("/api/cookbooks/test-cookbook-id-2")
+                .exchange()
+                .expectStatus()
+                //THEN
+                .isForbidden();
     }
 
     @Test
     void getCookbookByIdNotExisting() {
         //GIVEN
-        webClient = WebClient.create("http://localhost:" + port + "/api");
-
-
         //WHEN
-        ResponseEntity<CookbookDto> result = webClient.get()
-                .uri("/cookbooks/test-cookbook-id-not-found")
-                .retrieve()
-                .onStatus(HttpStatus::isError, response -> Mono.empty())
-                .toEntity(CookbookDto.class)
-                .block();
-
-        //THEN
-
-        assertThat(result, notNullValue());
-        assertThat(result.getStatusCode(), is(HttpStatus.NOT_FOUND));
+        webClient.get()
+                .uri("/api/cookbooks/test-cookbook-id-not-found")
+                .exchange()
+                .expectStatus()
+                //THEN
+                .isNotFound();
     }
 
     @Test
     void createCookbookOnlyPublic() {
         //GIVEN
-        webClient = WebClient.create("http://localhost:" + port + "/api");
-
         when(idUtils.generateId()).thenReturn("test-cookbook-id");
 
         CookbookCreationDto cookbookCreationDto = CookbookCreationDto.builder()
@@ -214,15 +199,16 @@ class CookbookControllerTest extends IntegrationTest {
                 .build();
 
         //WHEN
-
         CookbookDto actual = webClient.post()
-                .uri("/cookbooks")
+                .uri("/api/cookbooks")
                 .header(HttpHeaders.AUTHORIZATION, getTokenByUserId("some-user-id"))
                 .bodyValue(cookbookCreationDto)
-                .retrieve()
-                .toEntity(CookbookDto.class)
-                .block()
-                .getBody();
+                .exchange()
+                .expectStatus()
+                .is2xxSuccessful()
+                .expectBody(CookbookDto.class)
+                .returnResult()
+                .getResponseBody();
 
         //THEN
         CookbookDto expected = CookbookDto.builder()
@@ -262,8 +248,6 @@ class CookbookControllerTest extends IntegrationTest {
     @Test
     void createCookbookWithPrivacy() {
         //GIVEN
-        webClient = WebClient.create("http://localhost:" + port + "/api");
-
         when(idUtils.generateId()).thenReturn("test-cookbook-id");
 
         CookbookCreationDto cookbookCreationDto = CookbookCreationDto.builder()
@@ -273,15 +257,16 @@ class CookbookControllerTest extends IntegrationTest {
                 .build();
 
         //WHEN
-
         CookbookDto actual = webClient.post()
-                .uri("/cookbooks")
+                .uri("/api/cookbooks")
                 .header(HttpHeaders.AUTHORIZATION, getTokenByUserId("some-user-id"))
                 .bodyValue(cookbookCreationDto)
-                .retrieve()
-                .toEntity(CookbookDto.class)
-                .block()
-                .getBody();
+                .exchange()
+                .expectStatus()
+                .is2xxSuccessful()
+                .expectBody(CookbookDto.class)
+                .returnResult()
+                .getResponseBody();
 
         //THEN
         CookbookDto expected = CookbookDto.builder()
@@ -321,7 +306,7 @@ class CookbookControllerTest extends IntegrationTest {
     @Test
     void editCookbook() {
         //GIVEN
-        webClient = WebClient.create("http://localhost:" + port + "/api");
+
 
         CookbookCreationDto cookbookCreationDto = CookbookCreationDto.builder()
                 .name("test-cookbook-name-1-new")
@@ -330,14 +315,15 @@ class CookbookControllerTest extends IntegrationTest {
                 .build();
         //WHEN
         CookbookDto actual = webClient.put()
-                .uri("/cookbooks/test-cookbook-id-1")
+                .uri("/api/cookbooks/test-cookbook-id-1")
                 .bodyValue(cookbookCreationDto)
                 .header(HttpHeaders.AUTHORIZATION, getTokenByUserId("some-user-id"))
-                .retrieve()
-                .toEntity(CookbookDto.class)
-                .block()
-                .getBody();
-
+                .exchange()
+                .expectStatus()
+                .is2xxSuccessful()
+                .expectBody(CookbookDto.class)
+                .returnResult()
+                .getResponseBody();
 
         //THEN
         CookbookDto expected = CookbookDto.builder()
@@ -354,10 +340,10 @@ class CookbookControllerTest extends IntegrationTest {
                         .name("test-recipe-name-C")
                         .ratingCount(2)
                         .ratingAverage(4.5)
-                                .owner(ChefUserPreviewDto.builder()
-                                        .name("some-admin-name")
-                                        .id("some-admin-id")
-                                        .build())
+                        .owner(ChefUserPreviewDto.builder()
+                                .name("some-admin-name")
+                                .id("some-admin-id")
+                                .build())
                         .build()))
                 .build();
 
@@ -367,26 +353,19 @@ class CookbookControllerTest extends IntegrationTest {
     @Test
     void editCookbookAccessDenied() {
         //GIVEN
-        webClient = WebClient.create("http://localhost:" + port + "/api");
-
         CookbookCreationDto cookbookCreationDto = CookbookCreationDto.builder()
                 .name("test-cookbook-name-1-new")
                 .privacy(true)
                 .recipeIds(List.of("test-recipe-id-3"))
                 .build();
         //WHEN
-        ResponseEntity<CookbookDto> actual = webClient.put()
-                .uri("/cookbooks/test-cookbook-id-1")
+        webClient.put()
+                .uri("/api/cookbooks/test-cookbook-id-1")
                 .bodyValue(cookbookCreationDto)
                 .header(HttpHeaders.AUTHORIZATION, getTokenByUserId("some-admin-id"))
-                .retrieve()
-                .onStatus(HttpStatus::isError, clientResponse -> Mono.empty())
-                .toEntity(CookbookDto.class)
-                .block();
-
-
-        //THEN
-        assertThat(actual.getStatusCode(), is(HttpStatus.FORBIDDEN));
-
+                .exchange()
+                .expectStatus()
+                //THEN
+                .isForbidden();
     }
 }

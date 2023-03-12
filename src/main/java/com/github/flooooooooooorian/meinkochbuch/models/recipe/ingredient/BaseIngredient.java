@@ -30,4 +30,12 @@ public class BaseIngredient {
 
     @ElementCollection
     private Set<String> synonyms;
+
+    private Integer migrationId;
+
+    public static BaseIngredient ofId(String id) {
+        return BaseIngredient.builder()
+                .id(id)
+                .build();
+    }
 }

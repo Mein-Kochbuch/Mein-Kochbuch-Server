@@ -34,4 +34,6 @@ public class Rating {
     private ChefUser user;
 
     private double value;
+
+    private Integer migrationId;
 }

@@ -45,10 +45,10 @@ public class Recipe {
     private Difficulty difficulty;
     private int portions;
 
-    @OneToOne()
+    @OneToOne(cascade = CascadeType.ALL)
     private Image thumbnail;
 
-    @OneToMany(mappedBy = "owner")
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
     private List<Image> images;
 
     @OneToMany(cascade = CascadeType.ALL)
@@ -61,10 +61,12 @@ public class Recipe {
     @OneToMany(mappedBy = "recipe")
     private List<RecipeTagging> taggings;
 
-    @OneToMany(mappedBy = "recipe")
+    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL)
     private List<Rating> ratings;
 
     private double averageRating;
+
+    private Integer migrationId;
 
     public static Recipe ofId(String recipeId) {
         return Recipe.builder()

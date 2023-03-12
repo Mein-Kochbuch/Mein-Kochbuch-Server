@@ -1,6 +1,6 @@
 package com.github.flooooooooooorian.meinkochbuch.dtos.chefuser;
 
-import com.github.flooooooooooorian.meinkochbuch.dtos.cookbook.CookbookPreview;
+import com.github.flooooooooooorian.meinkochbuch.dtos.cookbook.CookbookPreviewDto;
 import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipePreviewDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,5 +19,5 @@ public class ChefUserProfileDto {
     private String name;
 
     private List<RecipePreviewDto> recipes;
-    private List<CookbookPreview> cookbooks;
+    private List<CookbookPreviewDto> cookbooks;
 }

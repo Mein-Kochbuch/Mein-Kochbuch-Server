@@ -11,7 +11,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class RecipesFilterParams {
+    @Builder.Default
     public static final int PAGE_SIZE = 50;
+
+    @Builder.Default
     private RecipeSorting sort = RecipeSorting.RELEVANCE;
+
+    @Builder.Default
     private int page = 0;
 }
