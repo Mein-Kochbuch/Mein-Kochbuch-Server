@@ -35,7 +35,6 @@ public class RecipeService {
     private final ImageService imageService;
     private final IdUtils idUtils;
     private final TimeUtils timeUtils;
-    private final IngredientService ingredientService;
 
     public List<Recipe> getAllRecipes(String userId, RecipesFilterParams params) {
         return recipeRepository.findAllByPrivacyIsFalseOrOwner_Id(userId, PageRequest.of(params.getPage(), RecipesFilterParams.PAGE_SIZE, params.getSort().sortValue));
@@ -65,7 +64,7 @@ public class RecipeService {
                 .map(ingredientCreationDto -> Ingredient.builder()
                         .id(idUtils.generateId())
                         .text(ingredientCreationDto.getText())
-                        .baseIngredient(ingredientCreationDto.getBaseIngredient() != null ? ingredientCreationDto.getBaseIngredient() : ingredientService.findMatchingBaseIngredient(ingredientCreationDto.getText()))
+                        .baseIngredient(ingredientCreationDto.getBaseIngredient())
                         .amount(ingredientCreationDto.getAmount())
                         .build())
                 .toList();

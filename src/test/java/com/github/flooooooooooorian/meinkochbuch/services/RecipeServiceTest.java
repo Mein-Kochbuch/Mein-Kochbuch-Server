@@ -43,9 +43,8 @@ class RecipeServiceTest {
     private final ImageService imageService = mock(ImageService.class);
     private final IdUtils idUtils = mock(IdUtils.class);
     private final TimeUtils timeUtils = mock(TimeUtils.class);
-    private final IngredientService ingredientService = mock(IngredientService.class);
 
-    private final RecipeService recipeService = new RecipeService(recipeRepository, ingredientRepository, imageService, idUtils, timeUtils, ingredientService);
+    private final RecipeService recipeService = new RecipeService(recipeRepository, ingredientRepository, imageService, idUtils, timeUtils);
 
     @Captor
     private ArgumentCaptor<Recipe> argumentCaptor;
