@@ -3,7 +3,7 @@ package com.github.flooooooooooorian.meinkochbuch.mapper;
 import com.github.flooooooooooorian.meinkochbuch.dtos.ImageDto;
 import com.github.flooooooooooorian.meinkochbuch.dtos.chefuser.ChefUserPreviewDto;
 import com.github.flooooooooooorian.meinkochbuch.dtos.cookbook.CookbookDto;
-import com.github.flooooooooooorian.meinkochbuch.dtos.cookbook.CookbookPreview;
+import com.github.flooooooooooorian.meinkochbuch.dtos.cookbook.CookbookPreviewDto;
 import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipePreviewDto;
 import com.github.flooooooooooorian.meinkochbuch.models.cookbook.Cookbook;
 import com.github.flooooooooooorian.meinkochbuch.models.cookbook.CookbookContent;
@@ -65,10 +65,10 @@ class CookbookMapperTest {
                 .build());
 
         //WHEN
-        CookbookPreview result = cookbookMapper.cookbookToCookbookPreview(cookbook);
+        CookbookPreviewDto result = cookbookMapper.cookbookToCookbookPreview(cookbook);
 
         //THEN
-        CookbookPreview expected = CookbookPreview.builder()
+        CookbookPreviewDto expected = CookbookPreviewDto.builder()
                 .id("1")
                 .name("test-name")
                 .thumbnail(ImageDto.builder()

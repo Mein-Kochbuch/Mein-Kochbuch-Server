@@ -3,7 +3,7 @@ package com.github.flooooooooooorian.meinkochbuch.controllers;
 import com.github.flooooooooooorian.meinkochbuch.IntegrationTest;
 import com.github.flooooooooooorian.meinkochbuch.dtos.chefuser.ChefUserPreviewDto;
 import com.github.flooooooooooorian.meinkochbuch.dtos.chefuser.ChefUserProfileDto;
-import com.github.flooooooooooorian.meinkochbuch.dtos.cookbook.CookbookPreview;
+import com.github.flooooooooooorian.meinkochbuch.dtos.cookbook.CookbookPreviewDto;
 import com.github.flooooooooooorian.meinkochbuch.dtos.recipe.RecipePreviewDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +39,7 @@ class UserControllerTest extends IntegrationTest {
         //THEN
         ChefUserProfileDto expected = ChefUserProfileDto.builder()
                 .id("some-user-id")
-                .cookbooks(List.of(CookbookPreview.builder()
+                .cookbooks(List.of(CookbookPreviewDto.builder()
                                 .id("test-cookbook-id-1")
                                 .name("test-cookbook-name-1")
                                 .owner(ChefUserPreviewDto.builder()
@@ -48,7 +48,7 @@ class UserControllerTest extends IntegrationTest {
                                         .build())
                                 .ratingAverage(3)
                                 .build(),
-                        CookbookPreview.builder()
+                        CookbookPreviewDto.builder()
                                 .id("test-cookbook-id-2")
                                 .name("test-cookbook-name-2")
                                 .owner(ChefUserPreviewDto.builder()
@@ -100,7 +100,7 @@ class UserControllerTest extends IntegrationTest {
 
         ChefUserProfileDto expected = ChefUserProfileDto.builder()
                 .id("some-admin-id")
-                .cookbooks(List.of(CookbookPreview.builder()
+                .cookbooks(List.of(CookbookPreviewDto.builder()
                         .id("test-cookbook-id-3")
                         .name("test-cookbook-name-3")
                         .owner(ChefUserPreviewDto.builder()
@@ -142,7 +142,7 @@ class UserControllerTest extends IntegrationTest {
 
         ChefUserProfileDto expected = ChefUserProfileDto.builder()
                 .id("some-admin-id")
-                .cookbooks(List.of(CookbookPreview.builder()
+                .cookbooks(List.of(CookbookPreviewDto.builder()
                         .id("test-cookbook-id-3")
                         .name("test-cookbook-name-3")
                         .owner(ChefUserPreviewDto.builder()

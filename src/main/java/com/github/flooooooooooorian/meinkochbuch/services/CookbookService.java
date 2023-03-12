@@ -103,4 +103,8 @@ public class CookbookService {
 
         return cookbookRepository.save(cookbook);
     }
+
+    public int cookbookCount(Optional<String> userId) {
+        return cookbookRepository.countAllByPrivacyIsFalseOrOwner_Id(userId.orElse(null));
+    }
 }

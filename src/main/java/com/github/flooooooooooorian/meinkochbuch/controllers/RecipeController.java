@@ -32,7 +32,7 @@ public class RecipeController {
     private final FileService fileService;
     private final RecipeMapper recipeMapper;
 
-    @Value("${domain.url:}")
+    @Value("${domain.url}")
     private String domainUrl;
 
     @GetMapping()

@@ -15,5 +15,6 @@ public interface CookbookRepository extends JpaRepository<Cookbook, String> {
 
     Optional<Cookbook> findByMigrationId(int id);
 
+    int countAllByPrivacyIsFalseOrOwner_Id(String id);
     Optional<Cookbook> findById(String id);
 }
