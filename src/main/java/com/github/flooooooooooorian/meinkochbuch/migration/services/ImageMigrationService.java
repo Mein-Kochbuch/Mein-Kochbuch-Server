@@ -5,11 +5,15 @@ import com.github.flooooooooooorian.meinkochbuch.models.image.Image;
 import com.github.flooooooooooorian.meinkochbuch.models.recipe.Recipe;
 import com.github.flooooooooooorian.meinkochbuch.repository.RecipeRepository;
 import com.github.flooooooooooorian.meinkochbuch.security.repository.ChefUserRepository;
+import com.github.flooooooooooorian.meinkochbuch.services.AwsS3Service;
 import com.github.flooooooooooorian.meinkochbuch.services.utils.IdUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -22,6 +26,15 @@ public class ImageMigrationService {
     private final RecipeRepository recipeRepository;
     private final ChefUserRepository chefUserRepository;
     private final IdUtils idUtils;
+
+    private final AwsS3Service awsS3Service;
+
+    private final WebClient webClient = WebClient.builder()
+            .baseUrl("https://mein-kochbuch.org/media/")
+            .codecs(codecs -> codecs
+                    .defaultCodecs()
+                    .maxInMemorySize(500 * 1024 * 1024))
+            .build();
 
     public int migrateImagesToRecipes(List<Bild> bilder) {
         int successfullyCount = 0;
@@ -71,15 +84,37 @@ public class ImageMigrationService {
                         .build())
                 .collect(Collectors.toList()));
 
-        recipe.setThumbnail(recipe.getImages().get(0));
+        for (Bild bild : bilder) {
+            if (!fetchImageAndUploadToS3(bild)) {
+                return false;
+            }
+        }
 
         try {
             recipeRepository.save(recipe);
-        } catch (IllegalArgumentException ex) {
-            log.error("MIGRATION", ex);
+        } catch (Exception ex) {
+            log.error("MIGRATION " + recipe, ex);
             return false;
         }
 
+        return true;
+    }
+
+    private boolean fetchImageAndUploadToS3(Bild bild) {
+
+        byte[] image = webClient.get()
+                .uri(bild.getImage())
+                .retrieve()
+                .bodyToMono(byte[].class)
+                .block();
+
+        try {
+            InputStream stream = new ByteArrayInputStream(image);
+            awsS3Service.uploadImage(stream, bild.getImage(), image.length);
+        } catch (Exception e) {
+            log.error("MIGRATION", e);
+            return false;
+        }
         return true;
     }
 }

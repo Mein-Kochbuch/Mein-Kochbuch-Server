@@ -1,7 +1,6 @@
 package com.github.flooooooooooorian.meinkochbuch.controllers.exception;
 
 import com.github.flooooooooooorian.meinkochbuch.exceptions.*;
-import com.github.flooooooooooorian.meinkochbuch.exceptions.aws.AwsS3UploadException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -97,13 +96,13 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(apiError, HttpStatus.FORBIDDEN);
     }
 
-    @ExceptionHandler(AwsS3UploadException.class)
-    public ResponseEntity<ApiError> handleAccessAwsS3UploadException(AwsS3UploadException ex) {
-        log.error("Aws S3 Image Upload Exception", ex);
+    @ExceptionHandler(InvalidFileException.class)
+    public ResponseEntity<ApiError> handleAccessInvalidFileException(InvalidFileException ex) {
+        log.error("Reading File failed!", ex);
 
         ApiError apiError = new ApiError("Image Upload Exception", ex.getMessage());
 
-        return new ResponseEntity<>(apiError, HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(Throwable.class)

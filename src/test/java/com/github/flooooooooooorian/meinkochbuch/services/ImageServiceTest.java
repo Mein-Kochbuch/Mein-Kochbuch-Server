@@ -31,7 +31,7 @@ class ImageServiceTest {
                 .owner(ChefUser.ofId("userId"))
                 .build();
 
-        when(awsS3Service.uploadImage(Mockito.any())).thenReturn("test_image_key");
+        when(awsS3Service.uploadImage(Mockito.any(), Mockito.any(), Mockito.anyLong())).thenReturn("test_image_key");
         when(idUtils.generateId()).thenReturn("test_image_id");
         when(imageRepository.save(expected)).thenReturn(expected);
         MockMultipartFile multipartFile = new MockMultipartFile("file", "test-file.jpg".getBytes(StandardCharsets.UTF_8));

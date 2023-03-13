@@ -1,7 +1,6 @@
 package com.github.flooooooooooorian.meinkochbuch.migration.services;
 
 import com.github.flooooooooooorian.meinkochbuch.migration.models.Rezept;
-import com.github.flooooooooooorian.meinkochbuch.models.image.Image;
 import com.github.flooooooooooorian.meinkochbuch.models.recipe.Recipe;
 import com.github.flooooooooooorian.meinkochbuch.models.recipe.difficulty.Difficulty;
 import com.github.flooooooooooorian.meinkochbuch.repository.RecipeRepository;
@@ -51,11 +50,7 @@ public class RecipeMigrationService {
                 .name(rezept.getName())
                 .instruction(rezept.getInstruction())
                 .relevance(BigInteger.valueOf(rezept.getRelevanz()))
-                .thumbnail(rezept.getThumbnail() != null ? Image.builder()
-                        .id(idUtils.generateId())
-                        .key(rezept.getThumbnail())
-                        .owner(optionalChefUser.get())
-                        .build() : null)
+                .thumbnail(null)
                 .averageRating(rezept.getAvgRating())
                 .privacy(rezept.isPrivacy())
                 .duration(rezept.getDuration())
